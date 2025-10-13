@@ -74,6 +74,7 @@ export type Database = {
           geo_lat: number | null
           geo_lng: number | null
           id: string
+          lifestyle: string | null
           mood_tags: string[] | null
           notes: string | null
           project_type: Database["public"]["Enums"]["project_type"]
@@ -90,6 +91,7 @@ export type Database = {
           geo_lat?: number | null
           geo_lng?: number | null
           id?: string
+          lifestyle?: string | null
           mood_tags?: string[] | null
           notes?: string | null
           project_type: Database["public"]["Enums"]["project_type"]
@@ -106,6 +108,7 @@ export type Database = {
           geo_lat?: number | null
           geo_lng?: number | null
           id?: string
+          lifestyle?: string | null
           mood_tags?: string[] | null
           notes?: string | null
           project_type?: Database["public"]["Enums"]["project_type"]
@@ -431,6 +434,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       users_extended: {
         Row: {
           avatar_url: string | null
@@ -481,9 +505,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "creator" | "client"
       project_type:
         | "wedding"
         | "portrait"
@@ -621,6 +652,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "creator", "client"],
       project_type: [
         "wedding",
         "portrait",

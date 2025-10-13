@@ -42,14 +42,23 @@ const Onboarding = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase.from("users_extended").insert({
+      // Insert into users_extended
+      const { error: userError } = await supabase.from("users_extended").insert({
         id: user.id,
         email: user.email,
         name: user.user_metadata?.name || "User",
         role,
       });
 
-      if (error) throw error;
+      if (userError) throw userError;
+
+      // Insert role into user_roles table for security
+      const { error: roleError } = await supabase.from("user_roles").insert({
+        user_id: user.id,
+        role: role,
+      });
+
+      if (roleError && !roleError.message.includes("duplicate")) throw roleError;
 
       if (role === "creator") {
         // Create creator profile

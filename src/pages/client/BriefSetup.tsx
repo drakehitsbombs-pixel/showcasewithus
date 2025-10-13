@@ -25,6 +25,7 @@ const BriefSetup = () => {
   const [budgetLow, setBudgetLow] = useState("");
   const [budgetHigh, setBudgetHigh] = useState("");
   const [selectedMoodTags, setSelectedMoodTags] = useState<string[]>([]);
+  const [lifestyle, setLifestyle] = useState("");
   const [notes, setNotes] = useState("");
   
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ const BriefSetup = () => {
         budget_low: parseFloat(budgetLow),
         budget_high: parseFloat(budgetHigh),
         mood_tags: selectedMoodTags,
+        lifestyle: lifestyle || null,
         notes,
       });
 
@@ -184,7 +186,18 @@ const BriefSetup = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Additional Notes</Label>
+              <Label htmlFor="lifestyle">Lifestyle Preferences (Optional)</Label>
+              <Textarea
+                id="lifestyle"
+                value={lifestyle}
+                onChange={(e) => setLifestyle(e.target.value)}
+                placeholder="Describe your lifestyle or the vibe you're looking for (e.g., modern minimalist, bohemian, luxury, outdoor adventure)..."
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Additional Notes (Optional)</Label>
               <Textarea
                 id="notes"
                 value={notes}

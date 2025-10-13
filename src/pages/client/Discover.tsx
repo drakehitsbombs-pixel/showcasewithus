@@ -46,21 +46,44 @@ const Discover = () => {
     const creator = creators[currentIndex];
 
     try {
-      await supabase.from("matches").insert({
-        creator_user_id: creator.user_id,
-        client_user_id: user.id,
-        client_liked: true,
-        match_score: 85, // Placeholder score
-      });
+      // Create match
+      const { data: matchData, error: matchError } = await supabase
+        .from("matches")
+        .insert({
+          creator_user_id: creator.user_id,
+          client_user_id: user.id,
+          client_liked: true,
+          match_score: 85, // Placeholder score
+        })
+        .select()
+        .single();
+
+      if (matchError) throw matchError;
+
+      // Send automatic notification message
+      const { error: messageError } = await supabase
+        .from("messages")
+        .insert({
+          match_id: matchData.id,
+          sender_user_id: user.id,
+          text: `Hi! I viewed your profile and I'm interested in your work. I'd love to discuss my project with you!`,
+        });
+
+      if (messageError) throw messageError;
 
       toast({
         title: "Liked!",
-        description: "We'll notify you if they like you back.",
+        description: "Message sent to photographer.",
       });
 
       setCurrentIndex((prev) => prev + 1);
     } catch (error: any) {
       console.error(error);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 

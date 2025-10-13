@@ -10,6 +10,8 @@ import CreatorProfileSetup from "./pages/creator/ProfileSetup";
 import CreatorDashboard from "./pages/creator/Dashboard";
 import ClientBriefSetup from "./pages/client/BriefSetup";
 import ClientDiscover from "./pages/client/Discover";
+import Matches from "./pages/Matches";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/creator/dashboard" element={<CreatorDashboard />} />
           <Route path="/client/brief-setup" element={<ClientBriefSetup />} />
           <Route path="/client/discover" element={<ClientDiscover />} />
+          <Route path="/matches" element={<Matches />} />
+          <Route path="/chat/:matchId" element={<Chat />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
