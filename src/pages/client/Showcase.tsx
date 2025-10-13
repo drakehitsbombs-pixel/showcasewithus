@@ -24,8 +24,7 @@ const Showcase = () => {
         .from("creator_profiles")
         .select(`
           *,
-          users_extended!inner(name, city, bio),
-          portfolio_images(url)
+          users_extended!inner(name, city, bio)
         `)
         .not("price_band_low", "is", null)
         .order("rating_avg", { ascending: false, nullsFirst: false })
@@ -33,7 +32,21 @@ const Showcase = () => {
         .limit(24);
 
       if (error) throw error;
-      setCreators(data || []);
+      
+      // Load portfolio images separately for each creator
+      const creatorsWithPortfolio = await Promise.all(
+        (data || []).map(async (creator) => {
+          const { data: portfolio } = await supabase
+            .from("portfolio_images")
+            .select("url")
+            .eq("creator_user_id", creator.user_id)
+            .limit(4);
+          
+          return { ...creator, portfolio_images: portfolio || [] };
+        })
+      );
+      
+      setCreators(creatorsWithPortfolio);
     } catch (error) {
       console.error("Error loading showcase:", error);
     } finally {

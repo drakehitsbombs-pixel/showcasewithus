@@ -135,10 +135,11 @@ const Discover = () => {
   useEffect(() => {
     // Apply style filter from URL
     const styleParam = searchParams.get("style");
-    if (styleParam && !filters.styles.includes(styleParam)) {
+    if (styleParam) {
+      const stylesArray = styleParam.split(',').filter(s => s);
       setFilters(prev => ({
         ...prev,
-        styles: [styleParam]
+        styles: stylesArray
       }));
     }
   }, [searchParams]);

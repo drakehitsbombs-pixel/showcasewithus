@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Camera, Search, MessageSquare, LayoutDashboard, Briefcase, Award, ChevronDown } from "lucide-react";
+import { Camera, Search, MessageSquare, LayoutDashboard, Briefcase, Award, ChevronDown, Waves } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 
 const Navigation = () => {
@@ -31,6 +31,7 @@ const Navigation = () => {
     "Real Estate",
     "Food",
     "Sports",
+    "Surfing",
   ];
 
   useEffect(() => {
@@ -159,6 +160,14 @@ const Navigation = () => {
                 Showcase
               </Button>
               <Button
+                variant={isActive("/surfing") ? "default" : "ghost"}
+                onClick={() => navigate("/surfing")}
+                className="gap-2"
+              >
+                <Waves className="h-4 w-4" />
+                Surfing
+              </Button>
+              <Button
                 variant={isActive("/client/brief-setup") ? "default" : "ghost"}
                 onClick={() => navigate("/client/brief-setup")}
                 className="gap-2"
@@ -170,14 +179,24 @@ const Navigation = () => {
           )}
 
           {userRole === "creator" && (
-            <Button
-              variant={isActive("/creator/dashboard") ? "default" : "ghost"}
-              onClick={() => navigate("/creator/dashboard")}
-              className="gap-2"
-            >
-              <LayoutDashboard className="h-4 w-4" />
-              Dashboard
-            </Button>
+            <>
+              <Button
+                variant={isActive("/creator/dashboard") ? "default" : "ghost"}
+                onClick={() => navigate("/creator/dashboard")}
+                className="gap-2"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Button>
+              <Button
+                variant={isActive("/surfing") ? "default" : "ghost"}
+                onClick={() => navigate("/surfing")}
+                className="gap-2"
+              >
+                <Waves className="h-4 w-4" />
+                Surfing
+              </Button>
+            </>
           )}
 
           <Button

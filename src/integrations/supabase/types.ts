@@ -130,10 +130,13 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           id: string
+          is_discoverable: boolean | null
           price_band_high: number | null
           price_band_low: number | null
           rating_avg: number | null
           review_count: number | null
+          showcase_rank: number | null
+          showcase_score: number | null
           styles: string[] | null
           travel_radius_km: number | null
           updated_at: string
@@ -145,10 +148,13 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id?: string
+          is_discoverable?: boolean | null
           price_band_high?: number | null
           price_band_low?: number | null
           rating_avg?: number | null
           review_count?: number | null
+          showcase_rank?: number | null
+          showcase_score?: number | null
           styles?: string[] | null
           travel_radius_km?: number | null
           updated_at?: string
@@ -160,10 +166,13 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id?: string
+          is_discoverable?: boolean | null
           price_band_high?: number | null
           price_band_low?: number | null
           rating_avg?: number | null
           review_count?: number | null
+          showcase_rank?: number | null
+          showcase_score?: number | null
           styles?: string[] | null
           travel_radius_km?: number | null
           updated_at?: string
@@ -463,8 +472,10 @@ export type Database = {
           created_at: string
           creator_user_id: string
           id: string
+          media_urls: string[] | null
           rating_int: number
           text: string | null
+          updated_at: string
         }
         Insert: {
           booking_id: string
@@ -472,8 +483,10 @@ export type Database = {
           created_at?: string
           creator_user_id: string
           id?: string
+          media_urls?: string[] | null
           rating_int: number
           text?: string | null
+          updated_at?: string
         }
         Update: {
           booking_id?: string
@@ -481,8 +494,10 @@ export type Database = {
           created_at?: string
           creator_user_id?: string
           id?: string
+          media_urls?: string[] | null
           rating_int?: number
           text?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -620,6 +635,7 @@ export type Database = {
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
+          username: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -634,6 +650,7 @@ export type Database = {
           phone?: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at?: string
+          username?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -648,6 +665,7 @@ export type Database = {
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }

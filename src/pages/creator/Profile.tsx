@@ -8,6 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, MapPin, DollarSign, Star, CheckCircle, MessageSquare, FileText, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { ReviewModal } from "@/components/ReviewModal";
 
 interface CreatorProfile {
   id: string;
@@ -43,6 +44,17 @@ interface Project {
   }>;
 }
 
+interface Review {
+  id: string;
+  rating_int: number;
+  text: string | null;
+  created_at: string;
+  client_user_id: string;
+  client: {
+    name: string;
+  };
+}
+
 const CreatorProfile = () => {
   const { userId, username } = useParams();
   const navigate = useNavigate();
@@ -50,11 +62,13 @@ const CreatorProfile = () => {
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -100,7 +114,7 @@ const CreatorProfile = () => {
 
       setResolvedUserId(finalUserId);
 
-      const [profileRes, userRes, projectsRes, portfolioRes] = await Promise.all([
+      const [profileRes, userRes, projectsRes, portfolioRes, reviewsRes] = await Promise.all([
         supabase.from("creator_profiles").select("*").eq("user_id", finalUserId).single(),
         supabase.from("users_extended").select("name, bio, city").eq("id", finalUserId).single(),
         supabase
@@ -115,12 +129,22 @@ const CreatorProfile = () => {
           .from("portfolio_images")
           .select("*")
           .eq("creator_user_id", finalUserId)
-          .limit(12)
+          .limit(12),
+        supabase
+          .from("reviews")
+          .select(`
+            *,
+            client:users_extended!reviews_client_user_id_fkey(name)
+          `)
+          .eq("creator_user_id", finalUserId)
+          .order("created_at", { ascending: false })
+          .limit(10)
       ]);
 
       if (profileRes.data) setProfile(profileRes.data);
       if (userRes.data) setUserData(userRes.data);
       if (projectsRes.data) setProjects(projectsRes.data as any);
+      if (reviewsRes.data) setReviews(reviewsRes.data as any);
       
       // Fallback to portfolio images if no projects
       if (projectsRes.data?.length === 0 && portfolioRes.data) {
@@ -350,6 +374,10 @@ const CreatorProfile = () => {
                       <FileText className="w-4 h-4" />
                       Request Quote
                     </Button>
+                    <Button variant="outline" className="gap-2" onClick={() => setShowReviewModal(true)}>
+                      <Star className="w-4 h-4" />
+                      Leave Review
+                    </Button>
                   </>
                 )}
                 {isOwnProfile && (
@@ -428,7 +456,56 @@ const CreatorProfile = () => {
             </div>
           )}
         </div>
+
+        {/* Reviews Section */}
+        {reviews.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold mb-4">Reviews</h3>
+            <div className="space-y-4">
+              {reviews.map((review) => (
+                <Card key={review.id} className="p-4">
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback>
+                        {review.client?.name?.charAt(0)?.toUpperCase() || "C"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-semibold">{review.client?.name || "Client"}</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`h-4 w-4 ${
+                                star <= review.rating_int
+                                  ? "fill-yellow-500 text-yellow-500"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(review.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      {review.text && <p className="text-sm">{review.text}</p>}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal
+        open={showReviewModal}
+        onOpenChange={setShowReviewModal}
+        creatorUserId={resolvedUserId || ""}
+        onSuccess={() => loadProfile()}
+      />
 
       {/* Project Modal */}
       <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>

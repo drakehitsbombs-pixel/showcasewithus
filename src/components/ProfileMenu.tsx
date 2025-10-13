@@ -81,14 +81,23 @@ const ProfileMenu = ({ userId }: ProfileMenuProps) => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate(`/creator/${userId}`)}>
-          <UserCircle className="mr-2 h-4 w-4" />
-          View Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate("/creator/profile-setup")}>
-          <User className="mr-2 h-4 w-4" />
-          Edit Profile
-        </DropdownMenuItem>
+        {userData.role === "creator" ? (
+          <>
+            <DropdownMenuItem onClick={() => navigate(`/creator/id/${userId}`)}>
+              <UserCircle className="mr-2 h-4 w-4" />
+              View Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/creator/profile-setup")}>
+              <User className="mr-2 h-4 w-4" />
+              Edit Profile
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <DropdownMenuItem onClick={() => navigate("/client/profile")}>
+            <User className="mr-2 h-4 w-4" />
+            My Profile
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={() => navigate("/settings")}>
           <Settings className="mr-2 h-4 w-4" />
           Settings
@@ -97,10 +106,12 @@ const ProfileMenu = ({ userId }: ProfileMenuProps) => {
           <Bell className="mr-2 h-4 w-4" />
           Notifications
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate("/subscription")}>
-          <CreditCard className="mr-2 h-4 w-4" />
-          Subscription
-        </DropdownMenuItem>
+        {userData.role === "creator" && (
+          <DropdownMenuItem onClick={() => navigate("/subscription")}>
+            <CreditCard className="mr-2 h-4 w-4" />
+            Subscription
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
