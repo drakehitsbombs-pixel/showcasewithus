@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Camera, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { profileSchema, creatorProfileSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const STYLE_OPTIONS = ["wedding", "portrait", "product", "event", "commercial", "real_estate"];
 
@@ -58,19 +60,34 @@ const ProfileSetup = () => {
     setLoading(true);
 
     try {
+      // Validate profile data
+      const profileData = profileSchema.parse({ 
+        name, 
+        city: city || undefined, 
+        bio: bio || undefined 
+      });
+
+      // Validate creator profile data
+      const creatorData = creatorProfileSchema.parse({
+        priceBandLow: priceLow ? parseFloat(priceLow) : undefined,
+        priceBandHigh: priceHigh ? parseFloat(priceHigh) : undefined,
+        travelRadius: parseInt(travelRadius),
+        styles: selectedStyles,
+      });
+
       // Update user profile
       await supabase.from("users_extended").update({
-        name,
-        bio,
-        city,
+        name: profileData.name,
+        bio: profileData.bio,
+        city: profileData.city,
       }).eq("id", user.id);
 
       // Update creator profile
       await supabase.from("creator_profiles").update({
-        price_band_low: parseFloat(priceLow),
-        price_band_high: parseFloat(priceHigh),
-        travel_radius_km: parseInt(travelRadius),
-        styles: selectedStyles,
+        price_band_low: creatorData.priceBandLow,
+        price_band_high: creatorData.priceBandHigh,
+        travel_radius_km: creatorData.travelRadius,
+        styles: creatorData.styles,
       }).eq("user_id", user.id);
 
       // Upload portfolio images
@@ -103,11 +120,19 @@ const ProfileSetup = () => {
 
       navigate("/creator/dashboard");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

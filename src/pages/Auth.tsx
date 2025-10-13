@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Camera } from "lucide-react";
+import { authSchema, profileSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
@@ -22,9 +24,12 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate input
+      const validated = authSchema.parse({ email, password });
+
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: validated.email,
+        password: validated.password,
       });
 
       if (error) throw error;
@@ -36,11 +41,19 @@ const Auth = () => {
 
       navigate("/onboarding");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -51,13 +64,19 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate authentication credentials
+      const validatedAuth = authSchema.parse({ email, password });
+      
+      // Validate name
+      const validatedProfile = profileSchema.pick({ name: true }).parse({ name });
+
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: validatedAuth.email,
+        password: validatedAuth.password,
         options: {
           emailRedirectTo: `${window.location.origin}/onboarding`,
           data: {
-            name,
+            name: validatedProfile.name,
           },
         },
       });
@@ -66,16 +85,24 @@ const Auth = () => {
 
       toast({
         title: "Account created!",
-        description: "Welcome to Shutter Match. Let's set up your profile.",
+        description: "Welcome to ShowCase. Let's set up your profile.",
       });
 
       navigate("/onboarding");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

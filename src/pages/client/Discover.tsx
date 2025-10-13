@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Heart, X, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { messageSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const Discover = () => {
   const [user, setUser] = useState<any>(null);
@@ -46,6 +48,10 @@ const Discover = () => {
     const creator = creators[currentIndex];
 
     try {
+      // Validate automatic message
+      const messageText = `Hi! I viewed your profile and I'm interested in your work. I'd love to discuss my project with you!`;
+      const validated = messageSchema.parse({ text: messageText });
+
       // Create match
       const { data: matchData, error: matchError } = await supabase
         .from("matches")
@@ -66,7 +72,7 @@ const Discover = () => {
         .insert({
           match_id: matchData.id,
           sender_user_id: user.id,
-          text: `Hi! I viewed your profile and I'm interested in your work. I'd love to discuss my project with you!`,
+          text: validated.text,
         });
 
       if (messageError) throw messageError;
@@ -78,12 +84,19 @@ const Discover = () => {
 
       setCurrentIndex((prev) => prev + 1);
     } catch (error: any) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     }
   };
 

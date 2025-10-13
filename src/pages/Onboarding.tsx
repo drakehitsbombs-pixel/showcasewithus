@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { profileSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const Onboarding = () => {
   const [user, setUser] = useState<any>(null);
@@ -42,11 +44,15 @@ const Onboarding = () => {
     if (!user) return;
 
     try {
+      // Validate name
+      const userName = user.user_metadata?.name || "User";
+      const validated = profileSchema.pick({ name: true }).parse({ name: userName });
+
       // Insert into users_extended
       const { error: userError } = await supabase.from("users_extended").insert({
         id: user.id,
         email: user.email,
-        name: user.user_metadata?.name || "User",
+        name: validated.name,
         role,
       });
 
@@ -82,11 +88,19 @@ const Onboarding = () => {
         description: `Let's set up your ${role} profile.`,
       });
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     }
   };
 

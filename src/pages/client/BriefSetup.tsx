@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { briefSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const PROJECT_TYPES = ["wedding", "portrait", "product", "event", "commercial", "real_estate", "other"];
 const MOOD_TAGS = ["bright", "moody", "candid", "studio", "outdoor", "indoor", "vintage", "modern"];
@@ -52,17 +54,30 @@ const BriefSetup = () => {
     setLoading(true);
 
     try {
+      // Validate brief data
+      const validated = briefSchema.parse({
+        projectType: projectType as "wedding" | "portrait" | "product" | "event",
+        dateStart: dateStart || undefined,
+        dateEnd: dateEnd || undefined,
+        city: city || undefined,
+        budgetMin: budgetLow || undefined,
+        budgetMax: budgetHigh || undefined,
+        moodTags: selectedMoodTags,
+        lifestyle: lifestyle || undefined,
+        notes: notes || undefined,
+      });
+
       await supabase.from("client_briefs").insert({
         client_user_id: user.id,
-        project_type: projectType as any,
-        date_window_start: dateStart,
-        date_window_end: dateEnd,
-        city,
-        budget_low: parseFloat(budgetLow),
-        budget_high: parseFloat(budgetHigh),
-        mood_tags: selectedMoodTags,
-        lifestyle: lifestyle || null,
-        notes,
+        project_type: validated.projectType as any,
+        date_window_start: validated.dateStart,
+        date_window_end: validated.dateEnd,
+        city: validated.city,
+        budget_low: validated.budgetMin ? parseFloat(validated.budgetMin) : null,
+        budget_high: validated.budgetMax ? parseFloat(validated.budgetMax) : null,
+        mood_tags: validated.moodTags,
+        lifestyle: validated.lifestyle,
+        notes: validated.notes,
       });
 
       toast({
@@ -72,11 +87,19 @@ const BriefSetup = () => {
 
       navigate("/client/discover");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
