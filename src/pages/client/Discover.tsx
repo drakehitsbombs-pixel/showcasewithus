@@ -143,36 +143,102 @@ const Discover = () => {
     const creator = creators[currentIndex];
 
     try {
-      // Create match
-      const { data: matchData, error: matchError } = await supabase
+      // Check if match already exists
+      const { data: existingMatch } = await supabase
         .from("matches")
-        .insert({
-          creator_user_id: creator.user_id,
-          client_user_id: user.id,
-          client_liked: true,
-          match_score: creator.match_score || 85,
-          brief_id: brief?.id,
-        })
-        .select()
-        .single();
+        .select("*")
+        .eq("creator_user_id", creator.user_id)
+        .eq("client_user_id", user.id)
+        .eq("brief_id", brief?.id)
+        .maybeSingle();
 
-      if (matchError) throw matchError;
+      let matchData = existingMatch;
 
-      // Send automatic notification message
-      const { error: messageError } = await supabase
-        .from("messages")
-        .insert({
-          match_id: matchData.id,
-          sender_user_id: user.id,
-          text: `Hi! I viewed your profile and I'm interested in your work. I'd love to discuss my project with you!`,
+      if (!existingMatch) {
+        // Create new match
+        const { data, error: matchError } = await supabase
+          .from("matches")
+          .insert({
+            creator_user_id: creator.user_id,
+            client_user_id: user.id,
+            client_liked: true,
+            match_score: creator.match_score || 85,
+            brief_id: brief?.id,
+          })
+          .select()
+          .single();
+
+        if (matchError) throw matchError;
+        matchData = data;
+      } else {
+        // Update existing match
+        const { data, error: updateError } = await supabase
+          .from("matches")
+          .update({ client_liked: true })
+          .eq("id", existingMatch.id)
+          .select()
+          .single();
+
+        if (updateError) throw updateError;
+        matchData = data;
+      }
+
+      // Check for mutual match (both liked)
+      const isMutualMatch = matchData.client_liked && matchData.creator_liked;
+
+      if (isMutualMatch) {
+        // Find or create thread
+        const { data: existingThread } = await supabase
+          .from("threads")
+          .select("id")
+          .eq("creator_user_id", creator.user_id)
+          .eq("client_user_id", user.id)
+          .eq("status", "open")
+          .maybeSingle();
+
+        let threadId = existingThread?.id;
+
+        if (!existingThread) {
+          const { data: newThread, error: threadError } = await supabase
+            .from("threads")
+            .insert({
+              creator_user_id: creator.user_id,
+              client_user_id: user.id,
+              status: "open",
+            })
+            .select("id")
+            .single();
+
+          if (threadError) throw threadError;
+          threadId = newThread.id;
+        }
+
+        // Send initial message
+        const { error: messageError } = await supabase
+          .from("messages")
+          .insert({
+            thread_id: threadId,
+            sender_user_id: user.id,
+            text: `Hi! I viewed your profile and I'm interested in your work. I'd love to discuss my project with you!`,
+          });
+
+        if (messageError) throw messageError;
+
+        toast.success("🎉 It's a Match!", {
+          description: `You and ${creator.users_extended?.name} like each other!`,
+          action: {
+            label: "Message Now",
+            onClick: () => navigate(`/messages/${threadId}`),
+          },
         });
+      } else {
+        toast.success("Like sent! We'll notify you if it's a match.");
+      }
 
-      if (messageError) throw messageError;
-
-      toast.success("Liked! Message sent to photographer.");
       setCurrentIndex((prev) => prev + 1);
     } catch (error: any) {
-      toast.error(error.message || "Error creating match");
+      console.error("Error in like flow:", error);
+      toast.error("Couldn't send like. Please try again.");
     }
   };
 
@@ -498,29 +564,91 @@ const Discover = () => {
                             onClick={async (e) => {
                               e.stopPropagation();
                               try {
-                                const { data: matchData, error: matchError } = await supabase
+                                // Check if match already exists
+                                const { data: existingMatch } = await supabase
                                   .from("matches")
-                                  .insert({
-                                    creator_user_id: creator.user_id,
-                                    client_user_id: user.id,
-                                    client_liked: true,
-                                    match_score: creator.match_score || 85,
-                                    brief_id: brief?.id,
-                                  })
-                                  .select()
-                                  .single();
+                                  .select("*")
+                                  .eq("creator_user_id", creator.user_id)
+                                  .eq("client_user_id", user.id)
+                                  .eq("brief_id", brief?.id)
+                                  .maybeSingle();
 
-                                if (matchError) throw matchError;
+                                let matchData = existingMatch;
 
-                                await supabase.from("messages").insert({
-                                  match_id: matchData.id,
-                                  sender_user_id: user.id,
-                                  text: `Hi! I'm interested in your work. I'd love to discuss my project with you!`,
-                                });
+                                if (!existingMatch) {
+                                  const { data, error: matchError } = await supabase
+                                    .from("matches")
+                                    .insert({
+                                      creator_user_id: creator.user_id,
+                                      client_user_id: user.id,
+                                      client_liked: true,
+                                      match_score: creator.match_score || 85,
+                                      brief_id: brief?.id,
+                                    })
+                                    .select()
+                                    .single();
 
-                                toast.success("Match created!");
+                                  if (matchError) throw matchError;
+                                  matchData = data;
+                                } else {
+                                  const { data, error: updateError } = await supabase
+                                    .from("matches")
+                                    .update({ client_liked: true })
+                                    .eq("id", existingMatch.id)
+                                    .select()
+                                    .single();
+
+                                  if (updateError) throw updateError;
+                                  matchData = data;
+                                }
+
+                                const isMutualMatch = matchData.client_liked && matchData.creator_liked;
+
+                                if (isMutualMatch) {
+                                  const { data: existingThread } = await supabase
+                                    .from("threads")
+                                    .select("id")
+                                    .eq("creator_user_id", creator.user_id)
+                                    .eq("client_user_id", user.id)
+                                    .eq("status", "open")
+                                    .maybeSingle();
+
+                                  let threadId = existingThread?.id;
+
+                                  if (!existingThread) {
+                                    const { data: newThread, error: threadError } = await supabase
+                                      .from("threads")
+                                      .insert({
+                                        creator_user_id: creator.user_id,
+                                        client_user_id: user.id,
+                                        status: "open",
+                                      })
+                                      .select("id")
+                                      .single();
+
+                                    if (threadError) throw threadError;
+                                    threadId = newThread.id;
+                                  }
+
+                                  await supabase.from("messages").insert({
+                                    thread_id: threadId,
+                                    sender_user_id: user.id,
+                                    text: `Hi! I'm interested in your work. I'd love to discuss my project with you!`,
+                                  });
+
+                                  toast.success("🎉 It's a Match!", {
+                                    description: `You and ${creator.users_extended?.name} like each other!`,
+                                    action: {
+                                      label: "Message Now",
+                                      onClick: () => navigate(`/messages/${threadId}`),
+                                    },
+                                  });
+                                } else {
+                                  toast.success("Like sent! We'll notify you if it's a match.");
+                                }
                               } catch (error: any) {
-                                toast.error(error.message || "Error creating match");
+                                console.error("Error in like flow:", error);
+                                toast.error("Couldn't send like. Please try again.");
                               }
                             }}
                           >

@@ -242,41 +242,34 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          match_id: string
+          match_id: string | null
           media_url: string | null
           read_at: string | null
           sender_user_id: string
           text: string
-          thread_id: string | null
+          thread_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          match_id: string
+          match_id?: string | null
           media_url?: string | null
           read_at?: string | null
           sender_user_id: string
           text: string
-          thread_id?: string | null
+          thread_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          match_id?: string
+          match_id?: string | null
           media_url?: string | null
           read_at?: string | null
           sender_user_id?: string
           text?: string
-          thread_id?: string | null
+          thread_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "messages_match_id_fkey"
-            columns: ["match_id"]
-            isOneToOne: false
-            referencedRelation: "matches"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "messages_sender_user_id_fkey"
             columns: ["sender_user_id"]

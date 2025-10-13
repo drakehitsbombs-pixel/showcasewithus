@@ -161,21 +161,29 @@ const Thread = () => {
     e.preventDefault();
     if (!newMessage.trim() || !currentUserId || !threadId || sending) return;
 
+    const messageText = newMessage.trim();
     setSending(true);
+    setNewMessage(""); // Optimistic clear
+
     try {
       const { error } = await supabase.from("messages").insert({
         thread_id: threadId,
         sender_user_id: currentUserId,
-        text: newMessage.trim(),
-        match_id: threadId, // Temporary compatibility
-      } as any);
+        text: messageText,
+      });
 
       if (error) throw error;
-
-      setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
-      toast.error("Failed to send message");
+      setNewMessage(messageText); // Restore on error
+      toast.error("Couldn't send. Tap to retry.", {
+        action: {
+          label: "Retry",
+          onClick: () => {
+            setNewMessage(messageText);
+          },
+        },
+      });
     } finally {
       setSending(false);
     }
@@ -210,8 +218,7 @@ const Thread = () => {
         sender_user_id: currentUserId,
         text: "📷 Sent an image",
         media_url: publicUrl,
-        match_id: threadId, // Temporary compatibility
-      } as any);
+      });
 
       if (messageError) throw messageError;
 
