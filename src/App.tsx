@@ -12,6 +12,7 @@ import CreatorDashboard from "./pages/creator/Dashboard";
 import ClientBriefSetup from "./pages/client/BriefSetup";
 import ClientDiscover from "./pages/client/Discover";
 import ClientProfileEdit from "./pages/client/ProfileEdit";
+import ClientShowcase from "./pages/client/Showcase";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
 import Thread from "./pages/Thread";
@@ -35,11 +36,13 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/creator/profile-setup" element={<CreatorProfileSetup />} />
-          <Route path="/creator/:userId" element={<CreatorProfile />} />
+          <Route path="/creator/:username" element={<CreatorProfile />} />
+          <Route path="/creator/id/:userId" element={<CreatorProfile />} />
           <Route path="/creator/dashboard" element={<CreatorDashboard />} />
           <Route path="/client/brief-setup" element={<ClientBriefSetup />} />
           <Route path="/client/profile/edit" element={<ClientProfileEdit />} />
           <Route path="/client/discover" element={<ClientDiscover />} />
+          <Route path="/client/showcase" element={<ClientShowcase />} />
           <Route path="/matches" element={<Matches />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/messages/:threadId" element={<Thread />} />

@@ -3,7 +3,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Search, MessageSquare, LayoutDashboard, Briefcase } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Camera, Search, MessageSquare, LayoutDashboard, Briefcase, Award, ChevronDown } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 
 const Navigation = () => {
@@ -12,11 +18,35 @@ const Navigation = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+
+  const availableStyles = [
+    "All",
+    "Wedding",
+    "Portrait",
+    "Product",
+    "Event",
+    "Lifestyle",
+    "Editorial",
+    "Real Estate",
+    "Food",
+    "Sports",
+  ];
 
   useEffect(() => {
     checkAuth();
     subscribeToMessages();
-  }, []);
+    
+    // Load style from URL or localStorage
+    const params = new URLSearchParams(location.search);
+    const styleParam = params.get("style");
+    if (styleParam) {
+      setSelectedStyle(styleParam);
+    } else {
+      const savedStyle = localStorage.getItem("showcase_style");
+      if (savedStyle) setSelectedStyle(savedStyle);
+    }
+  }, [location.search]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -69,6 +99,19 @@ const Navigation = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleStyleSelect = (style: string) => {
+    const lowerStyle = style === "All" ? null : style.toLowerCase();
+    setSelectedStyle(lowerStyle);
+    
+    if (lowerStyle) {
+      localStorage.setItem("showcase_style", lowerStyle);
+      navigate(`${location.pathname}?style=${lowerStyle}`);
+    } else {
+      localStorage.removeItem("showcase_style");
+      navigate(location.pathname);
+    }
+  };
+
   if (!userId) return null;
 
   return (
@@ -82,13 +125,38 @@ const Navigation = () => {
         <nav className="hidden md:flex items-center gap-1">
           {userRole === "client" && (
             <>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant={isActive("/client/discover") ? "default" : "ghost"}
+                    className="gap-2"
+                  >
+                    <Search className="h-4 w-4" />
+                    Discover
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {availableStyles.map((style) => (
+                    <DropdownMenuItem
+                      key={style}
+                      onClick={() => {
+                        handleStyleSelect(style);
+                        navigate("/client/discover");
+                      }}
+                    >
+                      {style}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
-                variant={isActive("/client/discover") ? "default" : "ghost"}
-                onClick={() => navigate("/client/discover")}
+                variant={isActive("/client/showcase") ? "default" : "ghost"}
+                onClick={() => navigate("/client/showcase")}
                 className="gap-2"
               >
-                <Search className="h-4 w-4" />
-                Discover
+                <Award className="h-4 w-4" />
+                Showcase
               </Button>
               <Button
                 variant={isActive("/client/brief-setup") ? "default" : "ghost"}

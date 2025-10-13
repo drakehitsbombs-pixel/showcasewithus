@@ -44,7 +44,7 @@ interface Project {
 }
 
 const CreatorProfile = () => {
-  const { userId } = useParams();
+  const { userId, username } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
@@ -54,11 +54,12 @@ const CreatorProfile = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
 
   useEffect(() => {
     loadProfile();
     checkCurrentUser();
-  }, [userId]);
+  }, [userId, username]);
 
   const checkCurrentUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -74,25 +75,72 @@ const CreatorProfile = () => {
   };
 
   const loadProfile = async () => {
-    if (!userId) return;
+    if (!userId && !username) return;
 
     try {
-      const [profileRes, userRes, projectsRes] = await Promise.all([
-        supabase.from("creator_profiles").select("*").eq("user_id", userId).single(),
-        supabase.from("users_extended").select("name, bio, city").eq("id", userId).single(),
+      let finalUserId = userId;
+
+      // If username provided, resolve to userId first
+      if (username && !userId) {
+        const { data: userByUsername } = await supabase
+          .from("users_extended")
+          .select("id")
+          .ilike("name", username)
+          .single();
+        
+        if (userByUsername) {
+          finalUserId = userByUsername.id;
+        }
+      }
+
+      if (!finalUserId) {
+        setLoading(false);
+        return;
+      }
+
+      setResolvedUserId(finalUserId);
+
+      const [profileRes, userRes, projectsRes, portfolioRes] = await Promise.all([
+        supabase.from("creator_profiles").select("*").eq("user_id", finalUserId).single(),
+        supabase.from("users_extended").select("name, bio, city").eq("id", finalUserId).single(),
         supabase
           .from("projects")
           .select(`
             *,
             media:project_media(id, url, is_cover, sort_order)
           `)
-          .eq("creator_user_id", userId)
-          .order("created_at", { ascending: false })
+          .eq("creator_user_id", finalUserId)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("portfolio_images")
+          .select("*")
+          .eq("creator_user_id", finalUserId)
+          .limit(12)
       ]);
 
       if (profileRes.data) setProfile(profileRes.data);
       if (userRes.data) setUserData(userRes.data);
       if (projectsRes.data) setProjects(projectsRes.data as any);
+      
+      // Fallback to portfolio images if no projects
+      if (projectsRes.data?.length === 0 && portfolioRes.data) {
+        // Convert portfolio images to project format for display
+        const portfolioProject = {
+          id: 'portfolio',
+          title: 'Portfolio',
+          description: null,
+          location_text: null,
+          project_type: 'portfolio',
+          tags: [],
+          media: portfolioRes.data.map((img, idx) => ({
+            id: img.id,
+            url: img.url,
+            is_cover: idx === 0,
+            sort_order: idx,
+          }))
+        };
+        setProjects([portfolioProject] as any);
+      }
     } catch (error) {
       console.error("Error loading profile:", error);
       toast.error("Failed to load profile");
@@ -103,7 +151,7 @@ const CreatorProfile = () => {
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !userId) return;
+    if (!file || !resolvedUserId) return;
 
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image must be under 5MB");
@@ -113,7 +161,7 @@ const CreatorProfile = () => {
     setIsUploadingAvatar(true);
     try {
       const fileExt = file.name.split(".").pop();
-      const filePath = `${userId}/avatar-${Date.now()}.${fileExt}`;
+      const filePath = `${resolvedUserId}/avatar-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
@@ -128,7 +176,7 @@ const CreatorProfile = () => {
       const { error: updateError } = await supabase
         .from("creator_profiles")
         .update({ avatar_url: publicUrl })
-        .eq("user_id", userId);
+        .eq("user_id", resolvedUserId);
 
       if (updateError) throw updateError;
 
@@ -143,14 +191,14 @@ const CreatorProfile = () => {
   };
 
   const handleMessageCreator = async () => {
-    if (!currentUser || !userId) return;
+    if (!currentUser || !resolvedUserId) return;
 
     try {
       // Find or create thread
       const { data: existingThread } = await supabase
         .from("threads")
         .select("id")
-        .eq("creator_user_id", userId)
+        .eq("creator_user_id", resolvedUserId)
         .eq("client_user_id", currentUser.id)
         .single();
 
@@ -160,7 +208,7 @@ const CreatorProfile = () => {
         const { data: newThread, error } = await supabase
           .from("threads")
           .insert({
-            creator_user_id: userId,
+            creator_user_id: resolvedUserId,
             client_user_id: currentUser.id,
           })
           .select()
@@ -175,7 +223,7 @@ const CreatorProfile = () => {
     }
   };
 
-  const isOwnProfile = currentUser?.id === userId;
+  const isOwnProfile = currentUser?.id === resolvedUserId;
 
   if (loading) {
     return (
