@@ -51,22 +51,44 @@ const Discover = () => {
         .eq("client_user_id", userId)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error && error.code !== "PGRST116") throw error;
       
       if (data) {
         setBrief(data);
         // Pre-populate filters from brief
         setFilters({
           styles: data.mood_tags || [],
-          budget_min: data.budget_low || 0,
+          budget_min: data.budget_low || 100,
           budget_max: data.budget_high || 5000,
           distance_km: 50,
           date_start: data.date_window_start || "",
           date_end: data.date_window_end || "",
         });
+      } else {
+        // No brief exists, create one with defaults
+        const { data: newBrief, error: createError } = await supabase
+          .from("client_briefs")
+          .insert({
+            client_user_id: userId,
+            project_type: "wedding",
+            budget_low: 100,
+            budget_high: 5000,
+          })
+          .select()
+          .single();
+        
+        if (createError) {
+          console.error("Error creating brief:", createError);
+          toast.error("Please set up your profile first");
+          navigate("/client/profile/edit");
+        } else {
+          setBrief(newBrief);
+        }
       }
     } catch (error: any) {
       console.error("Error loading brief:", error);
+      toast.error("Please set up your profile");
+      navigate("/client/profile/edit");
     }
   };
 
@@ -168,9 +190,14 @@ const Discover = () => {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Discover Photographers</h1>
-          <Button variant="outline" onClick={() => navigate("/matches")}>
-            My Matches
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate("/client/profile/edit")}>
+              Edit Profile
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/matches")}>
+              My Matches
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="swipe" className="w-full">

@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
 
     const { filters } = await req.json() as { filters: MatchFilters };
 
-    // Fetch all creators with their profiles and portfolios
+    // Fetch all creators with their profiles
     const { data: creators, error: creatorsError } = await supabase
       .from('creator_profiles')
       .select(`
@@ -71,10 +71,6 @@ Deno.serve(async (req) => {
           bio,
           geo_lat,
           geo_lng
-        ),
-        portfolio_images (
-          url,
-          tags
         )
       `);
 
@@ -86,9 +82,65 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (!creators || creators.length === 0) {
+      return new Response(JSON.stringify({ creators: [] }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Fetch portfolio images for all creators
+    const creatorIds = creators.map((c: any) => c.user_id);
+    const { data: portfolioImages } = await supabase
+      .from('portfolio_images')
+      .select('*')
+      .in('creator_user_id', creatorIds);
+
+    // Fetch projects and media for all creators
+    const { data: projects } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        project_media (
+          url,
+          sort_order,
+          is_cover
+        )
+      `)
+      .in('creator_user_id', creatorIds);
+
+    // Map images to creators
+    const portfolioMap = new Map<string, any[]>();
+    portfolioImages?.forEach((img: any) => {
+      const existing = portfolioMap.get(img.creator_user_id) || [];
+      portfolioMap.set(img.creator_user_id, [...existing, img]);
+    });
+
+    const projectsMap = new Map<string, any[]>();
+    projects?.forEach((proj: any) => {
+      const existing = projectsMap.get(proj.creator_user_id) || [];
+      projectsMap.set(proj.creator_user_id, [...existing, proj]);
+    });
+
     // Score and filter creators
     const scoredCreators = creators
       .map((creator: any) => {
+        // Attach portfolio and project images
+        const creatorPortfolioImages = portfolioMap.get(creator.user_id) || [];
+        const creatorProjects = projectsMap.get(creator.user_id) || [];
+        
+        // Get cover images from projects first, then portfolio
+        const projectCoverImages = creatorProjects
+          .flatMap((proj: any) => proj.project_media?.filter((m: any) => m.is_cover) || [])
+          .slice(0, 6);
+        
+        const projectAllImages = creatorProjects
+          .flatMap((proj: any) => proj.project_media || [])
+          .slice(0, 6);
+        
+        const allImages = projectCoverImages.length > 0 
+          ? projectCoverImages 
+          : (projectAllImages.length > 0 ? projectAllImages : creatorPortfolioImages);
+
         const creatorLat = creator.users_extended?.geo_lat;
         const creatorLng = creator.users_extended?.geo_lng;
         
@@ -164,9 +216,10 @@ Deno.serve(async (req) => {
         const creatorStyles = creator.styles || [];
         const filterStyles = filters.styles || [];
         
-        // Aggregate all tags from portfolio images
-        const creatorTags = creator.portfolio_images?.flatMap((img: any) => img.tags || []) || [];
-        const allCreatorTags = [...new Set([...creatorStyles, ...creatorTags])];
+        // Aggregate all tags from portfolio and projects
+        const portfolioTags = creatorPortfolioImages.flatMap((img: any) => img.tags || []);
+        const projectTags = creatorProjects.flatMap((proj: any) => proj.tags || []);
+        const allCreatorTags = [...new Set([...creatorStyles, ...portfolioTags, ...projectTags])];
         
         if (filterStyles.length > 0 && allCreatorTags.length > 0) {
           const tagOverlap = jaccardSimilarity(filterStyles, allCreatorTags);
@@ -177,6 +230,8 @@ Deno.serve(async (req) => {
 
         return {
           ...creator,
+          portfolio_images: allImages,
+          projects: creatorProjects,
           match_score: Math.round(score),
           distance,
           passes_hard_filters: passesHardFilters,
