@@ -13,13 +13,13 @@ import { Badge } from "@/components/ui/badge";
 import { briefSchema } from "@/lib/validation";
 import { z } from "zod";
 
-const PROJECT_TYPES = ["wedding", "portrait", "product", "event", "commercial", "real_estate", "other"];
+const PROJECT_TYPES = ["Wedding", "Portrait", "Product", "Event", "Commercial", "Real Estate", "Other"];
 const MOOD_TAGS = ["bright", "moody", "candid", "studio", "outdoor", "indoor", "vintage", "modern"];
 
 const BriefSetup = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  
+
   const [projectType, setProjectType] = useState<string>("");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
@@ -29,7 +29,7 @@ const BriefSetup = () => {
   const [selectedMoodTags, setSelectedMoodTags] = useState<string[]>([]);
   const [lifestyle, setLifestyle] = useState("");
   const [notes, setNotes] = useState("");
-  
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -44,9 +44,7 @@ const BriefSetup = () => {
   }, []);
 
   const toggleMoodTag = (tag: string) => {
-    setSelectedMoodTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+    setSelectedMoodTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
   };
 
   const handleSubmit = async () => {
@@ -141,32 +139,17 @@ const BriefSetup = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="date-start">Start Date</Label>
-                <Input
-                  id="date-start"
-                  type="date"
-                  value={dateStart}
-                  onChange={(e) => setDateStart(e.target.value)}
-                />
+                <Input id="date-start" type="date" value={dateStart} onChange={(e) => setDateStart(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="date-end">End Date</Label>
-                <Input
-                  id="date-end"
-                  type="date"
-                  value={dateEnd}
-                  onChange={(e) => setDateEnd(e.target.value)}
-                />
+                <Input id="date-end" type="date" value={dateEnd} onChange={(e) => setDateEnd(e.target.value)} />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="city">Location</Label>
-              <Input
-                id="city"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Los Angeles, CA"
-              />
+              <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Los Angeles, CA" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -230,11 +213,7 @@ const BriefSetup = () => {
               />
             </div>
 
-            <Button
-              onClick={handleSubmit}
-              className="w-full gradient-accent"
-              disabled={loading || !projectType}
-            >
+            <Button onClick={handleSubmit} className="w-full gradient-accent" disabled={loading || !projectType}>
               {loading ? "Creating Brief..." : "Find Photographers"}
             </Button>
           </CardContent>
