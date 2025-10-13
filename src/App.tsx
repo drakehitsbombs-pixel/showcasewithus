@@ -16,6 +16,9 @@ import Messages from "./pages/Messages";
 import Thread from "./pages/Thread";
 import Chat from "./pages/Chat";
 import Admin from "./pages/Admin";
+import Settings from "./pages/Settings";
+import Notifications from "./pages/Notifications";
+import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +43,9 @@ const App = () => (
           <Route path="/messages/:threadId" element={<Thread />} />
           <Route path="/chat/:matchId" element={<Chat />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/subscription" element={<Subscription />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

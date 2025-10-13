@@ -7,9 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { LogOut, Heart, X, Filter, MapPin } from "lucide-react";
+import { Heart, X, Filter, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import Navigation from "@/components/Navigation";
 
 const Discover = () => {
   const [user, setUser] = useState<any>(null);
@@ -157,29 +158,19 @@ const Discover = () => {
     setCurrentIndex((prev) => prev + 1);
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
-
   const currentCreator = creators[currentIndex];
-
   const availableStyles = ["wedding", "portrait", "product", "event", "lifestyle", "editorial"];
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold">Discover Photographers</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate("/matches")}>
-              My Matches
-            </Button>
-            <Button variant="outline" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
+          <h1 className="text-3xl font-bold">Discover Photographers</h1>
+          <Button variant="outline" onClick={() => navigate("/matches")}>
+            My Matches
+          </Button>
         </div>
 
         <Tabs defaultValue="swipe" className="w-full">
