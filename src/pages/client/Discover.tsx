@@ -143,92 +143,20 @@ const Discover = () => {
     const creator = creators[currentIndex];
 
     try {
-      // Check if match already exists
-      const { data: existingMatch } = await supabase
-        .from("matches")
-        .select("*")
-        .eq("creator_user_id", creator.user_id)
-        .eq("client_user_id", user.id)
-        .eq("brief_id", brief?.id)
-        .maybeSingle();
+      // Call atomic like handler edge function
+      const { data, error } = await supabase.functions.invoke('handle-like', {
+        body: { target_user_id: creator.user_id }
+      });
 
-      let matchData = existingMatch;
+      if (error) throw error;
 
-      if (!existingMatch) {
-        // Create new match
-        const { data, error: matchError } = await supabase
-          .from("matches")
-          .insert({
-            creator_user_id: creator.user_id,
-            client_user_id: user.id,
-            client_liked: true,
-            match_score: creator.match_score || 85,
-            brief_id: brief?.id,
-          })
-          .select()
-          .single();
-
-        if (matchError) throw matchError;
-        matchData = data;
-      } else {
-        // Update existing match
-        const { data, error: updateError } = await supabase
-          .from("matches")
-          .update({ client_liked: true })
-          .eq("id", existingMatch.id)
-          .select()
-          .single();
-
-        if (updateError) throw updateError;
-        matchData = data;
-      }
-
-      // Check for mutual match (both liked)
-      const isMutualMatch = matchData.client_liked && matchData.creator_liked;
-
-      if (isMutualMatch) {
-        // Find or create thread
-        const { data: existingThread } = await supabase
-          .from("threads")
-          .select("id")
-          .eq("creator_user_id", creator.user_id)
-          .eq("client_user_id", user.id)
-          .eq("status", "open")
-          .maybeSingle();
-
-        let threadId = existingThread?.id;
-
-        if (!existingThread) {
-          const { data: newThread, error: threadError } = await supabase
-            .from("threads")
-            .insert({
-              creator_user_id: creator.user_id,
-              client_user_id: user.id,
-              status: "open",
-            })
-            .select("id")
-            .single();
-
-          if (threadError) throw threadError;
-          threadId = newThread.id;
-        }
-
-        // Send initial message
-        const { error: messageError } = await supabase
-          .from("messages")
-          .insert({
-            thread_id: threadId,
-            sender_user_id: user.id,
-            text: `Hi! I viewed your profile and I'm interested in your work. I'd love to discuss my project with you!`,
-          });
-
-        if (messageError) throw messageError;
-
+      if (data.matched && data.thread_id) {
+        // It's a match!
         toast.success("🎉 It's a Match!", {
           description: `You and ${creator.users_extended?.name} like each other!`,
           action: {
             label: "Message Now",
-            onClick: () => navigate(`/messages/${threadId}`),
+            onClick: () => navigate(`/messages/${data.thread_id}`),
           },
         });
       } else {

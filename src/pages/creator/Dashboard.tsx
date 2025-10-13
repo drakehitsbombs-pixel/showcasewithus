@@ -72,18 +72,19 @@ const Dashboard = () => {
         .eq('status', 'matched')
         .gte('created_at', sevenDaysAgo.toISOString());
 
-      // Messages received
-      const { data: matchIds } = await supabase
-        .from('matches')
+      // Messages received via threads
+      const { data: threadIds } = await supabase
+        .from('threads')
         .select('id')
-        .eq('creator_user_id', userId);
+        .eq('creator_user_id', userId)
+        .eq('status', 'open');
 
       let messagesCount = 0;
-      if (matchIds && matchIds.length > 0) {
+      if (threadIds && threadIds.length > 0) {
         const { count } = await supabase
           .from('messages')
           .select('*', { count: 'exact', head: true })
-          .in('match_id', matchIds.map(m => m.id))
+          .in('thread_id', threadIds.map(t => t.id))
           .neq('sender_user_id', userId)
           .gte('created_at', sevenDaysAgo.toISOString());
         messagesCount = count || 0;

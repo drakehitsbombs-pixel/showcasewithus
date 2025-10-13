@@ -71,33 +71,16 @@ const Thread = () => {
 
       if (threadError) throw threadError;
 
-      // Determine other user
-      const otherUserId = threadData.creator_user_id === userId 
-        ? threadData.client_user_id 
-        : threadData.creator_user_id;
-
-      // Get other user data
-      const { data: userData } = await supabase
-        .from("users_extended")
-        .select("name")
-        .eq("id", otherUserId)
-        .single();
-
-      // Get avatar if creator
-      let avatarUrl = null;
-      if (threadData.creator_user_id === otherUserId) {
-        const { data: profileData } = await supabase
-          .from("creator_profiles")
-          .select("avatar_url")
-          .eq("user_id", otherUserId)
-          .single();
-        avatarUrl = profileData?.avatar_url;
-      }
+      // Use denormalized data for fast identity resolution
+      const isCreator = threadData.creator_user_id === userId;
+      const otherUserId = isCreator ? threadData.client_user_id : threadData.creator_user_id;
+      const otherUserName = isCreator ? threadData.client_name : threadData.creator_name;
+      const otherUserAvatar = isCreator ? threadData.client_avatar_url : threadData.creator_avatar_url;
 
       setOtherUser({
         id: otherUserId,
-        name: userData?.name || "Unknown",
-        avatar_url: avatarUrl,
+        name: otherUserName || "User",
+        avatar_url: otherUserAvatar,
       });
 
       // Load messages

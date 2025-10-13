@@ -63,30 +63,13 @@ const Messages = () => {
         return;
       }
 
-      // Get other user details and last messages
+      // Use denormalized data for fast identity resolution
       const enrichedThreads = await Promise.all(
         threadsData.map(async (thread) => {
-          const otherUserId = thread.creator_user_id === userId 
-            ? thread.client_user_id 
-            : thread.creator_user_id;
-
-          // Get other user data
-          const { data: userData } = await supabase
-            .from("users_extended")
-            .select("name")
-            .eq("id", otherUserId)
-            .single();
-
-          // Get avatar from creator_profiles if other user is creator
-          let avatarUrl = null;
-          if (thread.creator_user_id === otherUserId) {
-            const { data: profileData } = await supabase
-              .from("creator_profiles")
-              .select("avatar_url")
-              .eq("user_id", otherUserId)
-              .single();
-            avatarUrl = profileData?.avatar_url;
-          }
+          const isCreator = thread.creator_user_id === userId;
+          const otherUserId = isCreator ? thread.client_user_id : thread.creator_user_id;
+          const otherUserName = isCreator ? thread.client_name : thread.creator_name;
+          const otherUserAvatar = isCreator ? thread.client_avatar_url : thread.creator_avatar_url;
 
           // Get last message
           const { data: lastMessage } = await supabase
@@ -109,8 +92,8 @@ const Messages = () => {
             ...thread,
             other_user: {
               id: otherUserId,
-              name: userData?.name || "Unknown",
-              avatar_url: avatarUrl,
+              name: otherUserName || "User",
+              avatar_url: otherUserAvatar,
             },
             last_message: lastMessage,
             unread_count: unreadCount || 0,

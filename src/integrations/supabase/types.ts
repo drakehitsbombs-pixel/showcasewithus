@@ -548,24 +548,36 @@ export type Database = {
       }
       threads: {
         Row: {
+          client_avatar_url: string | null
+          client_name: string | null
           client_user_id: string
           created_at: string
+          creator_avatar_url: string | null
+          creator_name: string | null
           creator_user_id: string
           id: string
           last_message_at: string | null
           status: string | null
         }
         Insert: {
+          client_avatar_url?: string | null
+          client_name?: string | null
           client_user_id: string
           created_at?: string
+          creator_avatar_url?: string | null
+          creator_name?: string | null
           creator_user_id: string
           id?: string
           last_message_at?: string | null
           status?: string | null
         }
         Update: {
+          client_avatar_url?: string | null
+          client_name?: string | null
           client_user_id?: string
           created_at?: string
+          creator_avatar_url?: string | null
+          creator_name?: string | null
           creator_user_id?: string
           id?: string
           last_message_at?: string | null
