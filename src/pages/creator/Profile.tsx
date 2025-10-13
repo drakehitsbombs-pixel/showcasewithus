@@ -1,0 +1,431 @@
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ArrowLeft, MapPin, DollarSign, Star, CheckCircle, MessageSquare, FileText, Upload } from "lucide-react";
+import { toast } from "sonner";
+
+interface CreatorProfile {
+  id: string;
+  user_id: string;
+  price_band_low: number | null;
+  price_band_high: number | null;
+  travel_radius_km: number | null;
+  styles: string[];
+  rating_avg: number | null;
+  review_count: number | null;
+  verification_status: string;
+  avatar_url: string | null;
+}
+
+interface UserData {
+  name: string;
+  bio: string | null;
+  city: string | null;
+}
+
+interface Project {
+  id: string;
+  title: string;
+  description: string | null;
+  location_text: string | null;
+  project_type: string;
+  tags: string[];
+  media: Array<{
+    id: string;
+    url: string;
+    is_cover: boolean;
+    sort_order: number;
+  }>;
+}
+
+const CreatorProfile = () => {
+  const { userId } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<CreatorProfile | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  useEffect(() => {
+    loadProfile();
+    checkCurrentUser();
+  }, [userId]);
+
+  const checkCurrentUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setCurrentUser(session.user);
+      const { data } = await supabase
+        .from("users_extended")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+      setCurrentUserRole(data?.role || null);
+    }
+  };
+
+  const loadProfile = async () => {
+    if (!userId) return;
+
+    try {
+      const [profileRes, userRes, projectsRes] = await Promise.all([
+        supabase.from("creator_profiles").select("*").eq("user_id", userId).single(),
+        supabase.from("users_extended").select("name, bio, city").eq("id", userId).single(),
+        supabase
+          .from("projects")
+          .select(`
+            *,
+            media:project_media(id, url, is_cover, sort_order)
+          `)
+          .eq("creator_user_id", userId)
+          .order("created_at", { ascending: false })
+      ]);
+
+      if (profileRes.data) setProfile(profileRes.data);
+      if (userRes.data) setUserData(userRes.data);
+      if (projectsRes.data) setProjects(projectsRes.data as any);
+    } catch (error) {
+      console.error("Error loading profile:", error);
+      toast.error("Failed to load profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !userId) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${userId}/avatar-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("creator_profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("user_id", userId);
+
+      if (updateError) throw updateError;
+
+      toast.success("Avatar updated!");
+      loadProfile();
+    } catch (error) {
+      console.error("Avatar upload error:", error);
+      toast.error("Failed to upload avatar");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  const handleMessageCreator = async () => {
+    if (!currentUser || !userId) return;
+
+    try {
+      // Find or create thread
+      const { data: existingThread } = await supabase
+        .from("threads")
+        .select("id")
+        .eq("creator_user_id", userId)
+        .eq("client_user_id", currentUser.id)
+        .single();
+
+      if (existingThread) {
+        navigate(`/messages/${existingThread.id}`);
+      } else {
+        const { data: newThread, error } = await supabase
+          .from("threads")
+          .insert({
+            creator_user_id: userId,
+            client_user_id: currentUser.id,
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        navigate(`/messages/${newThread.id}`);
+      }
+    } catch (error) {
+      console.error("Error creating thread:", error);
+      toast.error("Failed to start conversation");
+    }
+  };
+
+  const isOwnProfile = currentUser?.id === userId;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!profile || !userData) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground mb-4">Profile not found</p>
+          <Button onClick={() => navigate(-1)}>Go Back</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b bg-card">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-xl font-semibold">Profile</h1>
+          <div className="w-10" />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Profile Header */}
+        <Card className="p-6 mb-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="relative">
+              <Avatar className="w-32 h-32">
+                <AvatarImage src={profile.avatar_url || undefined} />
+                <AvatarFallback className="text-3xl">
+                  {userData.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {isOwnProfile && (
+                <label className="absolute bottom-0 right-0 cursor-pointer">
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                    <Upload className="w-5 h-5 text-primary-foreground" />
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                    disabled={isUploadingAvatar}
+                  />
+                </label>
+              )}
+            </div>
+
+            <div className="flex-1">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    {userData.name}
+                    {profile.verification_status === "verified" && (
+                      <CheckCircle className="w-5 h-5 text-primary" />
+                    )}
+                  </h2>
+                  {userData.city && (
+                    <p className="text-muted-foreground flex items-center gap-1 mt-1">
+                      <MapPin className="w-4 h-4" />
+                      {userData.city}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Styles */}
+              <div className="flex flex-wrap gap-2 mb-3">
+                {profile.styles.map((style) => (
+                  <Badge key={style} variant="secondary">
+                    {style}
+                  </Badge>
+                ))}
+              </div>
+
+              {/* Stats */}
+              <div className="flex gap-4 mb-4">
+                {profile.price_band_low && profile.price_band_high && (
+                  <div className="flex items-center gap-1 text-sm">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span>${profile.price_band_low} - ${profile.price_band_high}</span>
+                  </div>
+                )}
+                {profile.rating_avg !== null && (
+                  <div className="flex items-center gap-1 text-sm">
+                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                    <span>{profile.rating_avg.toFixed(1)}</span>
+                    <span className="text-muted-foreground">({profile.review_count} reviews)</span>
+                  </div>
+                )}
+                {profile.travel_radius_km && (
+                  <div className="text-sm text-muted-foreground">
+                    Travels {profile.travel_radius_km}km
+                  </div>
+                )}
+              </div>
+
+              {/* Bio */}
+              {userData.bio && (
+                <p className="text-sm text-muted-foreground mb-4">{userData.bio}</p>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-2">
+                {!isOwnProfile && currentUserRole === "client" && (
+                  <>
+                    <Button onClick={handleMessageCreator} className="gap-2">
+                      <MessageSquare className="w-4 h-4" />
+                      Message
+                    </Button>
+                    <Button variant="outline" className="gap-2">
+                      <FileText className="w-4 h-4" />
+                      Request Quote
+                    </Button>
+                  </>
+                )}
+                {isOwnProfile && (
+                  <Button onClick={() => navigate("/creator/profile-setup")} variant="outline">
+                    Edit Profile
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Portfolio/Projects */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold">Portfolio</h3>
+            {isOwnProfile && (
+              <Button variant="outline" size="sm">
+                Add Project
+              </Button>
+            )}
+          </div>
+
+          {projects.length === 0 ? (
+            <Card className="p-12 text-center">
+              <p className="text-muted-foreground mb-4">No projects yet</p>
+              {isOwnProfile && (
+                <Button>Add Your First Project</Button>
+              )}
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {projects.map((project) => {
+                const coverImage = project.media.find((m) => m.is_cover) || project.media[0];
+                return (
+                  <Card
+                    key={project.id}
+                    className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                    onClick={() => setSelectedProject(project)}
+                  >
+                    {coverImage && (
+                      <div className="aspect-square bg-muted">
+                        <img
+                          src={coverImage.url}
+                          alt={project.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <h4 className="font-semibold mb-1">{project.title}</h4>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                        <Badge variant="outline" className="text-xs">
+                          {project.project_type}
+                        </Badge>
+                        {project.location_text && (
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {project.location_text}
+                          </span>
+                        )}
+                      </div>
+                      {project.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {project.tags.slice(0, 3).map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Project Modal */}
+      <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{selectedProject?.title}</DialogTitle>
+          </DialogHeader>
+          {selectedProject && (
+            <div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                {selectedProject.media
+                  .sort((a, b) => a.sort_order - b.sort_order)
+                  .map((media) => (
+                    <div key={media.id} className="aspect-square bg-muted rounded-lg overflow-hidden">
+                      <img src={media.url} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+              </div>
+              {selectedProject.description && (
+                <p className="text-sm text-muted-foreground mb-4">{selectedProject.description}</p>
+              )}
+              <div className="flex gap-2">
+                <Badge>{selectedProject.project_type}</Badge>
+                {selectedProject.location_text && (
+                  <Badge variant="outline" className="gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {selectedProject.location_text}
+                  </Badge>
+                )}
+              </div>
+              {selectedProject.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {selectedProject.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default CreatorProfile;

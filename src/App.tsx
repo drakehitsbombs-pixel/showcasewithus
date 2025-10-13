@@ -7,10 +7,13 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import CreatorProfileSetup from "./pages/creator/ProfileSetup";
+import CreatorProfile from "./pages/creator/Profile";
 import CreatorDashboard from "./pages/creator/Dashboard";
 import ClientBriefSetup from "./pages/client/BriefSetup";
 import ClientDiscover from "./pages/client/Discover";
 import Matches from "./pages/Matches";
+import Messages from "./pages/Messages";
+import Thread from "./pages/Thread";
 import Chat from "./pages/Chat";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
@@ -28,10 +31,13 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/creator/profile-setup" element={<CreatorProfileSetup />} />
+          <Route path="/creator/:userId" element={<CreatorProfile />} />
           <Route path="/creator/dashboard" element={<CreatorDashboard />} />
           <Route path="/client/brief-setup" element={<ClientBriefSetup />} />
           <Route path="/client/discover" element={<ClientDiscover />} />
           <Route path="/matches" element={<Matches />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:threadId" element={<Thread />} />
           <Route path="/chat/:matchId" element={<Chat />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

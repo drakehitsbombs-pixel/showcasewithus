@@ -41,7 +41,7 @@ const Index = () => {
             <Camera className="w-10 h-10 text-primary-foreground" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            ShowCase
+            Show Case
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Connect with perfect photographers or discover your next client—powered by AI matching
@@ -155,7 +155,7 @@ const Index = () => {
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-xl text-muted-foreground mb-8">Join ShowCase today and find your perfect match</p>
+          <p className="text-xl text-muted-foreground mb-8">Join Show Case today and find your perfect match</p>
           <Button size="lg" className="gradient-primary shadow-glow" onClick={() => navigate("/auth")}>
             Create Your Account
           </Button>

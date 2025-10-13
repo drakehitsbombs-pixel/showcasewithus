@@ -127,6 +127,7 @@ export type Database = {
       creator_profiles: {
         Row: {
           availability_blocks: Json | null
+          avatar_url: string | null
           created_at: string
           id: string
           price_band_high: number | null
@@ -141,6 +142,7 @@ export type Database = {
         }
         Insert: {
           availability_blocks?: Json | null
+          avatar_url?: string | null
           created_at?: string
           id?: string
           price_band_high?: number | null
@@ -155,6 +157,7 @@ export type Database = {
         }
         Update: {
           availability_blocks?: Json | null
+          avatar_url?: string | null
           created_at?: string
           id?: string
           price_band_high?: number | null
@@ -240,22 +243,31 @@ export type Database = {
           created_at: string
           id: string
           match_id: string
+          media_url: string | null
+          read_at: string | null
           sender_user_id: string
           text: string
+          thread_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           match_id: string
+          media_url?: string | null
+          read_at?: string | null
           sender_user_id: string
           text: string
+          thread_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           match_id?: string
+          media_url?: string | null
+          read_at?: string | null
           sender_user_id?: string
           text?: string
+          thread_id?: string | null
         }
         Relationships: [
           {
@@ -270,6 +282,13 @@ export type Database = {
             columns: ["sender_user_id"]
             isOneToOne: false
             referencedRelation: "users_extended"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
             referencedColumns: ["id"]
           },
         ]
@@ -334,6 +353,77 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      project_media: {
+        Row: {
+          created_at: string
+          id: string
+          is_cover: boolean | null
+          project_id: string
+          sort_order: number | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_cover?: boolean | null
+          project_id: string
+          sort_order?: number | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_cover?: boolean | null
+          project_id?: string
+          sort_order?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_media_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          created_at: string
+          creator_user_id: string
+          description: string | null
+          id: string
+          location_text: string | null
+          project_type: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creator_user_id: string
+          description?: string | null
+          id?: string
+          location_text?: string | null
+          project_type?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creator_user_id?: string
+          description?: string | null
+          id?: string
+          location_text?: string | null
+          project_type?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       quotes: {
         Row: {
@@ -462,6 +552,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      threads: {
+        Row: {
+          client_user_id: string
+          created_at: string
+          creator_user_id: string
+          id: string
+          last_message_at: string | null
+          status: string | null
+        }
+        Insert: {
+          client_user_id: string
+          created_at?: string
+          creator_user_id: string
+          id?: string
+          last_message_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          client_user_id?: string
+          created_at?: string
+          creator_user_id?: string
+          id?: string
+          last_message_at?: string | null
+          status?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

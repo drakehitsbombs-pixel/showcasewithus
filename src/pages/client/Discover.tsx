@@ -195,7 +195,10 @@ const Discover = () => {
               </div>
             ) : currentCreator ? (
               <div className="max-w-lg mx-auto">
-                <Card className="swipe-card shadow-elevated">
+                <Card 
+                  className="swipe-card shadow-elevated cursor-pointer"
+                  onClick={() => navigate(`/creator/${currentCreator.user_id}`)}
+                >
                   <div className="relative aspect-[3/4] bg-muted">
                     {currentCreator.portfolio_images?.[0] && (
                       <img
@@ -237,7 +240,7 @@ const Discover = () => {
                       {currentCreator.users_extended?.bio}
                     </p>
                     {currentCreator.price_band_low && (
-                      <p className="text-sm font-semibold">
+                      <p className="text-sm font-semibold mb-3">
                         ${currentCreator.price_band_low} - ${currentCreator.price_band_high}/hr
                       </p>
                     )}
@@ -248,11 +251,25 @@ const Discover = () => {
                             key={idx}
                             src={img.url}
                             alt={`Portfolio ${idx + 2}`}
-                            className="w-full aspect-square object-cover rounded"
+                            className="w-full aspect-square object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/creator/${currentCreator.user_id}`);
+                            }}
                           />
                         ))}
                       </div>
                     )}
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-4"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/creator/${currentCreator.user_id}`);
+                      }}
+                    >
+                      View Full Profile
+                    </Button>
                   </CardContent>
                 </Card>
 
@@ -398,7 +415,11 @@ const Discover = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {creators.map((creator) => (
-                    <Card key={creator.user_id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <Card 
+                      key={creator.user_id} 
+                      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => navigate(`/creator/${creator.user_id}`)}
+                    >
                       <div className="relative aspect-square bg-muted">
                         {creator.portfolio_images?.[0] && (
                           <img
@@ -446,10 +467,9 @@ const Discover = () => {
                             variant="outline"
                             size="sm"
                             className="flex-1"
-                            onClick={() => {
-                              const idx = creators.findIndex(c => c.user_id === creator.user_id);
-                              setCurrentIndex(idx);
-                              document.querySelector('[value="swipe"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/creator/${creator.user_id}`);
                             }}
                           >
                             View
@@ -457,7 +477,8 @@ const Discover = () => {
                           <Button
                             size="sm"
                             className="flex-1"
-                            onClick={async () => {
+                            onClick={async (e) => {
+                              e.stopPropagation();
                               try {
                                 const { data: matchData, error: matchError } = await supabase
                                   .from("matches")
