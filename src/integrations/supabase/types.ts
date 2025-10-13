@@ -306,6 +306,35 @@ export type Database = {
           },
         ]
       }
+      profile_views: {
+        Row: {
+          created_at: string
+          creator_user_id: string
+          id: string
+          viewer_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          creator_user_id: string
+          id?: string
+          viewer_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          creator_user_id?: string
+          id?: string
+          viewer_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_views_creator_user_id_fkey"
+            columns: ["creator_user_id"]
+            isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       quotes: {
         Row: {
           created_at: string
