@@ -90,18 +90,31 @@ const Settings = () => {
       return;
     }
 
+    // Validate all style IDs
+    const invalidStyles = selectedStyles.filter(style => !STYLE_OPTIONS.some(s => s.id === style));
+    if (invalidStyles.length > 0) {
+      toast.error(`Invalid style(s): ${invalidStyles.join(", ")}`);
+      console.error("Invalid styles:", invalidStyles);
+      return;
+    }
+
+    // Normalize to lowercase
+    const normalizedStyles = selectedStyles.map(s => s.toLowerCase());
+
     setSaving(true);
     try {
-      // Update creator profile
-      const { error: profileError } = await supabase
+      // Update creator profile and get fresh data
+      const { data: updatedProfile, error: profileError } = await supabase
         .from("creator_profiles")
         .update({
           price_band_low: priceLow,
           price_band_high: priceHigh,
           travel_radius_km: travelRadius[0],
-          styles: selectedStyles,
+          styles: normalizedStyles,
         })
-        .eq("user_id", userId);
+        .eq("user_id", userId)
+        .select("styles")
+        .single();
 
       if (profileError) throw profileError;
 
@@ -112,6 +125,17 @@ const Settings = () => {
         .eq("id", userId);
 
       if (userError) throw userError;
+
+      // Log the save
+      console.log("Settings saved:", {
+        user_id: userId,
+        styles: normalizedStyles,
+      });
+
+      // Confirm the styles were saved
+      if (updatedProfile?.styles) {
+        setSelectedStyles(updatedProfile.styles);
+      }
 
       toast.success("Settings saved successfully!");
     } catch (error) {

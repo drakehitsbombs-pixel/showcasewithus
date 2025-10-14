@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { hasSurfing } from "@/lib/constants";
 
 const Surfing = () => {
   const [posts, setPosts] = useState<any[]>([]);
@@ -24,6 +25,7 @@ const Surfing = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [canUpload, setCanUpload] = useState(false);
   const [showSettingsPrompt, setShowSettingsPrompt] = useState(false);
+  const [addingSurfing, setAddingSurfing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,14 +38,63 @@ const Surfing = () => {
     setCurrentUser(user);
 
     if (user) {
-      // Check if user has 'surfing' style
-      const { data } = await supabase
+      // Check if user has 'surfing' style - refetch every time
+      const { data, error } = await supabase
         .from("creator_profiles")
         .select("styles")
         .eq("user_id", user.id)
         .single();
 
-      setCanUpload(data?.styles?.includes("surfing") || false);
+      if (error) {
+        console.error("Error loading creator profile:", error);
+      }
+
+      const hasStyle = hasSurfing(data?.styles);
+      setCanUpload(hasStyle);
+      console.log("Surfing gate check:", { user_id: user.id, styles: data?.styles, canUpload: hasStyle });
+    }
+  };
+
+  const handleAddSurfingNow = async () => {
+    if (!currentUser) return;
+
+    setAddingSurfing(true);
+    try {
+      // Get current styles
+      const { data: profile } = await supabase
+        .from("creator_profiles")
+        .select("styles")
+        .eq("user_id", currentUser.id)
+        .single();
+
+      const currentStyles = profile?.styles || [];
+      const newStyles = [...new Set([...currentStyles, "surfing"])]; // Add surfing if not present
+
+      // Update with new styles
+      const { data: updated, error } = await supabase
+        .from("creator_profiles")
+        .update({ styles: newStyles })
+        .eq("user_id", currentUser.id)
+        .select("styles")
+        .single();
+
+      if (error) throw error;
+
+      console.log("Added surfing style:", { user_id: currentUser.id, styles: updated.styles });
+
+      // Update local state
+      setCanUpload(true);
+      setShowSettingsPrompt(false);
+      
+      // Open upload modal
+      setTimeout(() => setShowUpload(true), 100);
+      
+      toast.success("Surfing style added! You can now post clips.");
+    } catch (error) {
+      console.error("Error adding surfing style:", error);
+      toast.error("Failed to add surfing style");
+    } finally {
+      setAddingSurfing(false);
     }
   };
 
@@ -146,15 +197,24 @@ const Surfing = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Add Surfing to Your Styles</AlertDialogTitle>
             <AlertDialogDescription>
-              To post surf clips, you need to add 'surfing' to your photography styles in Settings.
+              To post surf clips, you need to add 'surfing' to your photography styles.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <Button variant="outline" onClick={() => setShowSettingsPrompt(false)}>
               Cancel
             </Button>
-            <Button onClick={() => navigate("/settings")}>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowSettingsPrompt(false);
+                navigate("/settings");
+              }}
+            >
               Go to Settings
+            </Button>
+            <Button onClick={handleAddSurfingNow} disabled={addingSurfing}>
+              {addingSurfing ? "Adding..." : "Add Surfing Now"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

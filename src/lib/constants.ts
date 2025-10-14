@@ -13,6 +13,9 @@ export const STYLE_OPTIONS = [
   { id: "commercial", label: "Commercial" },
 ] as const;
 
+// Valid style IDs for validation
+export const STYLE_IDS = STYLE_OPTIONS.map(s => s.id);
+
 // Helper to get label from id
 export const getStyleLabel = (id: string): string => {
   const style = STYLE_OPTIONS.find(s => s.id === id);
@@ -27,4 +30,9 @@ export const getAllStyleIds = (): string[] => {
 // Helper to validate style ID
 export const isValidStyleId = (id: string): boolean => {
   return STYLE_OPTIONS.some(s => s.id === id);
+};
+
+// Helper to check if profile has surfing style
+export const hasSurfing = (styles: string[] | null | undefined): boolean => {
+  return styles?.includes("surfing") || false;
 };
