@@ -11,11 +11,7 @@ import { Camera, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { profileSchema, creatorProfileSchema } from "@/lib/validation";
 import { z } from "zod";
-
-const STYLE_OPTIONS = [
-  "wedding", "portrait", "product", "event", "lifestyle", 
-  "editorial", "real_estate", "food", "sports", "surfing", "commercial"
-];
+import { STYLE_OPTIONS } from "@/lib/constants";
 
 const ProfileSetup = () => {
   const [user, setUser] = useState<any>(null);
@@ -293,12 +289,12 @@ const ProfileSetup = () => {
                   <div className="flex flex-wrap gap-2">
                     {STYLE_OPTIONS.map((style) => (
                       <Badge
-                        key={style}
-                        variant={selectedStyles.includes(style) ? "default" : "outline"}
-                        className="cursor-pointer capitalize transition-smooth hover:scale-105"
-                        onClick={() => toggleStyle(style)}
+                        key={style.id}
+                        variant={selectedStyles.includes(style.id) ? "default" : "outline"}
+                        className="cursor-pointer transition-smooth hover:scale-105"
+                        onClick={() => toggleStyle(style.id)}
                       >
-                        {style.replace("_", " ")}
+                        {style.label}
                       </Badge>
                     ))}
                   </div>

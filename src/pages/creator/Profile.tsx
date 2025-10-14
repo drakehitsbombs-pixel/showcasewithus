@@ -11,6 +11,7 @@ import { ArrowLeft, MapPin, DollarSign, Star, CheckCircle, MessageSquare, FileTe
 import { toast } from "sonner";
 import { ReviewModal } from "@/components/ReviewModal";
 import { BookingModal } from "@/components/BookingModal";
+import { getStyleLabel } from "@/lib/constants";
 
 interface CreatorProfile {
   id: string;
@@ -333,7 +334,7 @@ const CreatorProfile = () => {
               <div className="flex flex-wrap gap-2 mb-3">
                 {profile.styles.map((style) => (
                   <Badge key={style} variant="secondary">
-                    {style}
+                    {getStyleLabel(style)}
                   </Badge>
                 ))}
               </div>

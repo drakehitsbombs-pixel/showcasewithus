@@ -10,11 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-
-const STYLE_OPTIONS = [
-  "wedding", "portrait", "product", "event", "lifestyle",
-  "editorial", "real_estate", "food", "sports", "surfing", "commercial"
-];
+import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
 
 const Discover = () => {
   const [user, setUser] = useState<any>(null);
@@ -305,7 +301,7 @@ const Discover = () => {
                         key={style}
                         className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
                       >
-                        {style}
+                        {getStyleLabel(style)}
                       </span>
                     ))}
                   </div>
@@ -396,12 +392,12 @@ const Discover = () => {
                       <div className="flex flex-wrap gap-2">
                         {STYLE_OPTIONS.map((style) => (
                           <Badge
-                            key={style}
-                            variant={searchFilters.styles.includes(style) ? "default" : "outline"}
-                            className="cursor-pointer capitalize"
-                            onClick={() => toggleSearchStyle(style)}
+                            key={style.id}
+                            variant={searchFilters.styles.includes(style.id) ? "default" : "outline"}
+                            className="cursor-pointer"
+                            onClick={() => toggleSearchStyle(style.id)}
                           >
-                            {style}
+                            {style.label}
                           </Badge>
                         ))}
                       </div>
@@ -492,8 +488,8 @@ const Discover = () => {
                             </div>
                             <div className="flex flex-wrap gap-2 mb-3">
                               {creator.styles?.slice(0, 4).map((style: string) => (
-                                <Badge key={style} variant="secondary" className="text-xs capitalize">
-                                  {style}
+                                <Badge key={style} variant="secondary" className="text-xs">
+                                  {getStyleLabel(style)}
                                 </Badge>
                               ))}
                             </div>

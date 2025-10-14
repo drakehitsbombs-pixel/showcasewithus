@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { getStyleLabel } from "@/lib/constants";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -215,7 +216,7 @@ const Admin = () => {
                               <div className="flex flex-wrap gap-2 mb-3">
                                 {creator.styles.map((style: string) => (
                                   <Badge key={style} variant="outline">
-                                    {style}
+                                    {getStyleLabel(style)}
                                   </Badge>
                                 ))}
                               </div>

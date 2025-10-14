@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Star, DollarSign, Zap } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { getStyleLabel } from "@/lib/constants";
 
 const Showcase = () => {
   const [creators, setCreators] = useState<any[]>([]);
@@ -148,7 +149,7 @@ const Showcase = () => {
                   <div className="flex flex-wrap gap-1 mb-3">
                     {creator.styles?.slice(0, 2).map((style: string) => (
                       <Badge key={style} variant="outline" className="text-xs">
-                        {style}
+                        {getStyleLabel(style)}
                       </Badge>
                     ))}
                   </div>

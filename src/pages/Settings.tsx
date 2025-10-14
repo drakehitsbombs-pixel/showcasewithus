@@ -10,11 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, DollarSign, MapPin, Camera, Navigation as NavigationIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
-
-const STYLE_OPTIONS = [
-  "Wedding", "Portrait", "Product", "Event", "Fashion", 
-  "Landscape", "Architecture", "Food", "Nature", "Street"
-];
+import { STYLE_OPTIONS } from "@/lib/constants";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -255,13 +251,13 @@ const Settings = () => {
               <div className="flex flex-wrap gap-2">
                 {STYLE_OPTIONS.map((style) => (
                   <Badge
-                    key={style}
-                    variant={selectedStyles.includes(style) ? "default" : "outline"}
+                    key={style.id}
+                    variant={selectedStyles.includes(style.id) ? "default" : "outline"}
                     className="cursor-pointer select-none"
-                    onClick={() => toggleStyle(style)}
+                    onClick={() => toggleStyle(style.id)}
                   >
-                    {style}
-                    {selectedStyles.includes(style) && (
+                    {style.label}
+                    {selectedStyles.includes(style.id) && (
                       <X className="ml-1 h-3 w-3" />
                     )}
                   </Badge>
