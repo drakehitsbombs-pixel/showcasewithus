@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { ArrowLeft } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ArrowLeft, Camera } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
@@ -23,7 +24,9 @@ const MeEdit = () => {
     name: "",
     city: "",
     bio: "",
+    avatar_url: "",
   });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -58,6 +61,7 @@ const MeEdit = () => {
           name: userData.name || "",
           city: userData.city || "",
           bio: userData.bio || "",
+          avatar_url: userData.avatar_url || "",
           price_band_low: creatorProfile?.price_band_low || 500,
           price_band_high: creatorProfile?.price_band_high || 5000,
           travel_radius_km: creatorProfile?.travel_radius_km || 50,
@@ -74,6 +78,7 @@ const MeEdit = () => {
           name: userData.name || "",
           city: userData.city || "",
           bio: userData.bio || "",
+          avatar_url: userData.avatar_url || "",
           budget_low: clientBrief?.budget_low || 500,
           budget_high: clientBrief?.budget_high || 3000,
           preferred_styles: clientBrief?.mood_tags || [],
@@ -84,6 +89,37 @@ const MeEdit = () => {
       toast.error("Failed to load profile");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !userId) return;
+
+    const file = e.target.files[0];
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      setFormData((prev: any) => ({ ...prev, avatar_url: publicUrl }));
+      toast.success("Avatar uploaded!");
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload avatar");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -99,6 +135,7 @@ const MeEdit = () => {
           name: formData.name,
           city: formData.city,
           bio: formData.bio,
+          avatar_url: formData.avatar_url,
         })
         .eq("id", userId);
 
@@ -186,6 +223,32 @@ const MeEdit = () => {
             <CardTitle>Profile Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative">
+                <Avatar className="h-32 w-32">
+                  <AvatarImage src={formData.avatar_url} alt={formData.name} />
+                  <AvatarFallback className="text-3xl">
+                    {formData.name?.[0]?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <Label
+                  htmlFor="avatar-upload"
+                  className="absolute bottom-0 right-0 h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors"
+                >
+                  <Camera className="h-5 w-5" />
+                </Label>
+                <Input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                  disabled={uploading}
+                />
+              </div>
+              {uploading && <p className="text-sm text-muted-foreground">Uploading...</p>}
+            </div>
+
             <div>
               <Label htmlFor="name">Name</Label>
               <Input

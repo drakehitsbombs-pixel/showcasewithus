@@ -128,6 +128,14 @@ const Navigation = () => {
                 Dashboard
               </Button>
               <Button
+                variant={isActive("/client/showcase") ? "default" : "ghost"}
+                onClick={() => navigate("/client/showcase")}
+                className="gap-2"
+              >
+                <Award className="h-4 w-4" />
+                Showcase
+              </Button>
+              <Button
                 variant={isActive("/surfing") ? "default" : "ghost"}
                 onClick={() => navigate("/surfing")}
                 className="gap-2"

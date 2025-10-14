@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, MapPin, DollarSign, Briefcase } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { getStyleLabel } from "@/lib/constants";
@@ -100,9 +101,12 @@ const Me = () => {
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="flex items-start gap-6">
-              <div className="h-24 w-24 rounded-full bg-muted flex items-center justify-center text-3xl font-bold">
-                {userData?.name?.[0]?.toUpperCase() || "U"}
-              </div>
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={userData?.avatar_url} alt={userData?.name} />
+                <AvatarFallback className="text-3xl">
+                  {userData?.name?.[0]?.toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold mb-1">{userData?.name}</h2>
                 <Badge variant="secondary" className="mb-3 capitalize">{userData?.role}</Badge>
