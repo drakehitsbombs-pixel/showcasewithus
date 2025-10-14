@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Users } from "lucide-react";
+import { Users, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { briefSchema } from "@/lib/validation";
 import { z } from "zod";
@@ -106,6 +106,14 @@ const BriefSetup = () => {
   return (
     <div className="min-h-screen p-4 gradient-card">
       <div className="max-w-2xl mx-auto py-8">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-4"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-accent mb-4">
             <Users className="w-8 h-8 text-accent-foreground" />

@@ -9,6 +9,7 @@ import Onboarding from "./pages/Onboarding";
 import CreatorProfileSetup from "./pages/creator/ProfileSetup";
 import CreatorProfile from "./pages/creator/Profile";
 import CreatorDashboard from "./pages/creator/Dashboard";
+import CreatorCalendar from "./pages/creator/Calendar";
 import ClientBriefSetup from "./pages/client/BriefSetup";
 import ClientDiscover from "./pages/client/Discover";
 import ClientProfileEdit from "./pages/client/ProfileEdit";
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/creator/:username" element={<CreatorProfile />} />
           <Route path="/creator/id/:userId" element={<CreatorProfile />} />
           <Route path="/creator/dashboard" element={<CreatorDashboard />} />
+          <Route path="/creator/calendar" element={<CreatorCalendar />} />
           <Route path="/client/brief-setup" element={<ClientBriefSetup />} />
           <Route path="/client/profile/edit" element={<ClientProfileEdit />} />
           <Route path="/client/profile" element={<ClientProfile />} />

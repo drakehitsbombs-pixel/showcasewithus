@@ -4,11 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, MapPin, DollarSign, Star, CheckCircle, MessageSquare, FileText, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { ReviewModal } from "@/components/ReviewModal";
+import { BookingModal } from "@/components/BookingModal";
 
 interface CreatorProfile {
   id: string;
@@ -69,6 +71,7 @@ const CreatorProfile = () => {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -370,9 +373,9 @@ const CreatorProfile = () => {
                       <MessageSquare className="w-4 h-4" />
                       Message
                     </Button>
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2" onClick={() => setShowBookingModal(true)}>
                       <FileText className="w-4 h-4" />
-                      Request Quote
+                      Book
                     </Button>
                     <Button variant="outline" className="gap-2" onClick={() => setShowReviewModal(true)}>
                       <Star className="w-4 h-4" />
@@ -549,6 +552,21 @@ const CreatorProfile = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <ReviewModal
+        open={showReviewModal}
+        onOpenChange={setShowReviewModal}
+        creatorUserId={resolvedUserId || ""}
+      />
+
+      <BookingModal
+        open={showBookingModal}
+        onOpenChange={setShowBookingModal}
+        creatorId={resolvedUserId || ""}
+        creatorName={userData?.name || ""}
+        priceLow={profile?.price_band_low || undefined}
+        priceHigh={profile?.price_band_high || undefined}
+      />
     </div>
   );
 };
