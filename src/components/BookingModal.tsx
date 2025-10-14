@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { bookingSchema } from "@/lib/validation";
 import { Calendar } from "lucide-react";
 
 interface BookingModalProps {
@@ -41,6 +42,24 @@ export const BookingModal = ({
   const handleSubmit = async () => {
     if (!slotDate || !slotStart || !slotEnd) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // Validate input data
+    try {
+      bookingSchema.parse({
+        slotDate,
+        slotStart,
+        slotEnd,
+        locationText: locationText || undefined,
+        notes: notes || undefined,
+      });
+    } catch (error: any) {
+      if (error.errors && error.errors[0]) {
+        toast.error(error.errors[0].message);
+      } else {
+        toast.error("Invalid input data");
+      }
       return;
     }
 

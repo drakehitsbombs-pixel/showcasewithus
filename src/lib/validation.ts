@@ -50,3 +50,11 @@ export const creatorProfileSchema = z.object({
   travelRadius: z.number().int().positive().max(500).optional(),
   styles: z.array(z.string()).max(10),
 });
+
+export const bookingSchema = z.object({
+  slotDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Invalid date format" }),
+  slotStart: z.string().regex(/^\d{2}:\d{2}$/, { message: "Invalid start time format" }),
+  slotEnd: z.string().regex(/^\d{2}:\d{2}$/, { message: "Invalid end time format" }),
+  locationText: z.string().max(200, { message: "Location must be less than 200 characters" }).trim().optional(),
+  notes: z.string().max(500, { message: "Notes must be less than 500 characters" }).trim().optional(),
+});
