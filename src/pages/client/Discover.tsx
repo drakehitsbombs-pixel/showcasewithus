@@ -22,7 +22,15 @@ const Discover = () => {
   const [filters, setFilters] = useState({
     styles: [] as string[],
   });
-  const [activeTab, setActiveTab] = useState("swipe");
+  const activeTab = searchParams.get("tab") || "swipe";
+  
+  const setActiveTab = (tab: string) => {
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("tab", tab);
+      return newParams;
+    });
+  };
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchFilters, setSearchFilters] = useState({
     styles: [] as string[],
@@ -238,7 +246,7 @@ const Discover = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <main className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Discover Photographers</h1>
           <div className="flex gap-2">
@@ -545,7 +553,7 @@ const Discover = () => {
             </div>
           </TabsContent>
         </Tabs>
-      </div>
+      </main>
     </div>
   );
 };

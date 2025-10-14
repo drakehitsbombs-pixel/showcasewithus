@@ -63,7 +63,8 @@ const Surfing = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white py-12">
+      <main>
+        <div className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -119,6 +120,7 @@ const Surfing = () => {
         onOpenChange={setShowUpload}
         onSuccess={loadSurfPosts}
       />
+      </main>
     </div>
   );
 };

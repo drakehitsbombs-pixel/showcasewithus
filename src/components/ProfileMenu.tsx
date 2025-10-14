@@ -10,13 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Settings, LogOut, UserCircle, Bell, CreditCard } from "lucide-react";
+import { User, Settings, LogOut, UserCircle, Bell, CreditCard, RefreshCw } from "lucide-react";
 
 interface ProfileMenuProps {
   userId: string;
+  userRole?: string | null;
 }
 
-const ProfileMenu = ({ userId }: ProfileMenuProps) => {
+const ProfileMenu = ({ userId, userRole }: ProfileMenuProps) => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState<any>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -55,6 +56,12 @@ const ProfileMenu = ({ userId }: ProfileMenuProps) => {
     navigate("/");
   };
 
+  const handleSwitchRole = async () => {
+    // Future implementation: Switch between client/creator roles
+    // For now, show a helpful message
+    alert("Role switching coming soon! You'll be able to switch between client and creator modes.");
+  };
+
   if (!userData) return null;
 
   const initials = userData.name
@@ -73,7 +80,7 @@ const ProfileMenu = ({ userId }: ProfileMenuProps) => {
           </Avatar>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-card">
+      <DropdownMenuContent align="end" className="w-56 bg-card z-[1100]">
         <DropdownMenuLabel>
           <div className="flex flex-col">
             <span className="font-medium">{userData.name}</span>
@@ -100,6 +107,10 @@ const ProfileMenu = ({ userId }: ProfileMenuProps) => {
         <DropdownMenuItem onClick={() => navigate("/subscription")}>
           <CreditCard className="mr-2 h-4 w-4" />
           Subscription
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSwitchRole}>
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Switch Role
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>

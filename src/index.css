@@ -159,4 +159,77 @@
     color: hsl(var(--primary-foreground));
     box-shadow: var(--shadow-glow);
   }
+
+  /* Mobile Sticky Navigation */
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    background: hsl(var(--card));
+    border-bottom: 1px solid hsl(var(--border));
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .top-tabs {
+    position: sticky;
+    top: calc(56px + env(safe-area-inset-top));
+    z-index: 999;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border));
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 9999px;
+    white-space: nowrap;
+    font-size: 14px;
+    line-height: 1;
+    min-height: 44px; /* Accessibility: Touch target size */
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Scroll padding for sticky headers */
+  main,
+  .page-root {
+    scroll-padding-top: calc(56px + 48px + env(safe-area-inset-top) + 12px);
+  }
+
+  /* Desktop: Remove sticky behavior, inline layout */
+  @media (min-width: 768px) {
+    .app-header {
+      position: relative;
+      padding-top: 0;
+    }
+
+    .top-tabs {
+      position: relative;
+      top: 0;
+      border: none;
+      background: transparent;
+      padding: 0;
+      height: auto;
+    }
+  }
 }

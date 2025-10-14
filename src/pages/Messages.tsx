@@ -161,7 +161,7 @@ const Messages = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+      <main className="container mx-auto px-4 py-6 max-w-4xl">
         {threads.length === 0 ? (
           <Card className="p-12 text-center">
             <p className="text-muted-foreground mb-4">No messages yet</p>
@@ -208,7 +208,7 @@ const Messages = () => {
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };

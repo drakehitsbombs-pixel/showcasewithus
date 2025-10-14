@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Camera, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Camera, Search, MessageSquare, LayoutDashboard, Briefcase, Award, Waves } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
+import TopTabs from "./TopTabs";
 
 const Navigation = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [userId, setUserId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -67,103 +66,43 @@ const Navigation = () => {
     };
   };
 
-  const isActive = (path: string) => location.pathname === path;
-
   if (!userId) return null;
 
   return (
-    <div className="border-b bg-card sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Camera className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold">Show Case</span>
-        </div>
+    <>
+      <header className="app-header">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="p-0 hover:bg-transparent"
+          onClick={() => navigate("/")}
+          aria-label="Home"
+        >
+          <div className="flex items-center gap-2">
+            <Camera className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold hidden sm:inline">Show Case</span>
+          </div>
+        </Button>
 
-        <nav className="hidden md:flex items-center gap-1">
-          {userRole === "client" && (
-            <>
-              <Button
-                variant={isActive("/client/discover") ? "default" : "ghost"}
-                onClick={() => navigate("/client/discover")}
-                className="gap-2"
-              >
-                <Search className="h-4 w-4" />
-                Discover
-              </Button>
-              <Button
-                variant={isActive("/client/showcase") ? "default" : "ghost"}
-                onClick={() => navigate("/client/showcase")}
-                className="gap-2"
-              >
-                <Award className="h-4 w-4" />
-                Showcase
-              </Button>
-              <Button
-                variant={isActive("/surfing") ? "default" : "ghost"}
-                onClick={() => navigate("/surfing")}
-                className="gap-2"
-              >
-                <Waves className="h-4 w-4" />
-                Surfing
-              </Button>
-              <Button
-                variant={isActive("/client/brief-setup") ? "default" : "ghost"}
-                onClick={() => navigate("/client/brief-setup")}
-                className="gap-2"
-              >
-                <Briefcase className="h-4 w-4" />
-                My Brief
-              </Button>
-            </>
-          )}
+        <div className="flex-1" />
 
-          {userRole === "creator" && (
-            <>
-              <Button
-                variant={isActive("/creator/dashboard") ? "default" : "ghost"}
-                onClick={() => navigate("/creator/dashboard")}
-                className="gap-2"
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </Button>
-              <Button
-                variant={isActive("/client/showcase") ? "default" : "ghost"}
-                onClick={() => navigate("/client/showcase")}
-                className="gap-2"
-              >
-                <Award className="h-4 w-4" />
-                Showcase
-              </Button>
-              <Button
-                variant={isActive("/surfing") ? "default" : "ghost"}
-                onClick={() => navigate("/surfing")}
-                className="gap-2"
-              >
-                <Waves className="h-4 w-4" />
-                Surfing
-              </Button>
-            </>
-          )}
-
+        {userRole === "creator" && (
           <Button
-            variant={isActive("/messages") ? "default" : "ghost"}
-            onClick={() => navigate("/messages")}
-            className="gap-2 relative"
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/creator/calendar")}
+            aria-label="View Calendar"
+            className="mr-2"
           >
-            <MessageSquare className="h-4 w-4" />
-            Messages
-            {unreadCount > 0 && (
-              <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </Badge>
-            )}
+            <CalendarIcon className="h-5 w-5" />
           </Button>
-        </nav>
+        )}
 
-        <ProfileMenu userId={userId} />
-      </div>
-    </div>
+        <ProfileMenu userId={userId} userRole={userRole} />
+      </header>
+
+      <TopTabs userRole={userRole} unreadCount={unreadCount} />
+    </>
   );
 };
 

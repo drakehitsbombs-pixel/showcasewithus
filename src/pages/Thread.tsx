@@ -224,8 +224,10 @@ const Thread = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <div className="border-b bg-card sticky top-0 z-10">
+      <Navigation />
+      
+      {/* Thread Header */}
+      <div className="border-b bg-card sticky top-[calc(56px+48px+env(safe-area-inset-top))] md:top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate("/messages")}>
             <ArrowLeft className="h-5 w-5" />
