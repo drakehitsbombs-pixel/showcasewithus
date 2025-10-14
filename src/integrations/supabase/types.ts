@@ -561,6 +561,121 @@ export type Database = {
           },
         ]
       }
+      surf_comments: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          post_id: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          post_id: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          post_id?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "surf_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "surf_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      surf_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "surf_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "surf_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      surf_posts: {
+        Row: {
+          comment_count: number | null
+          created_at: string
+          creator_user_id: string
+          duration_sec: number | null
+          id: string
+          like_count: number | null
+          media_url: string
+          session_at: string | null
+          spot_text: string | null
+          status: string | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          comment_count?: number | null
+          created_at?: string
+          creator_user_id: string
+          duration_sec?: number | null
+          id?: string
+          like_count?: number | null
+          media_url: string
+          session_at?: string | null
+          spot_text?: string | null
+          status?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          comment_count?: number | null
+          created_at?: string
+          creator_user_id?: string
+          duration_sec?: number | null
+          id?: string
+          like_count?: number | null
+          media_url?: string
+          session_at?: string | null
+          spot_text?: string | null
+          status?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       threads: {
         Row: {
           client_avatar_url: string | null
