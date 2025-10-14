@@ -85,13 +85,25 @@ const Surfing = () => {
                 </p>
               </div>
             </div>
-            {canUpload && (
+            {canUpload ? (
               <Button
                 onClick={() => setShowUpload(true)}
-                className="bg-white text-primary hover:bg-white/90"
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-white/90 font-semibold shadow-lg"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Upload Clip
+                <Plus className="w-5 h-5 mr-2" />
+                Post a Clip
+              </Button>
+            ) : (
+              <Button
+                disabled
+                size="lg"
+                variant="outline"
+                className="bg-white/10 text-white border-white/20"
+                title="Add 'surfing' to your styles in Settings to post here"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Post a Clip
               </Button>
             )}
           </div>

@@ -16,8 +16,16 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
+          client_avatar_url: string | null
+          client_city: string | null
+          client_email: string | null
+          client_name: string | null
           created_at: string
+          creator_avatar_url: string | null
+          creator_email: string | null
+          creator_name: string | null
           id: string
+          location_text: string | null
           match_id: string
           quote_id: string | null
           slot_end: string
@@ -26,8 +34,16 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          client_avatar_url?: string | null
+          client_city?: string | null
+          client_email?: string | null
+          client_name?: string | null
           created_at?: string
+          creator_avatar_url?: string | null
+          creator_email?: string | null
+          creator_name?: string | null
           id?: string
+          location_text?: string | null
           match_id: string
           quote_id?: string | null
           slot_end: string
@@ -36,8 +52,16 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          client_avatar_url?: string | null
+          client_city?: string | null
+          client_email?: string | null
+          client_name?: string | null
           created_at?: string
+          creator_avatar_url?: string | null
+          creator_email?: string | null
+          creator_name?: string | null
           id?: string
+          location_text?: string | null
           match_id?: string
           quote_id?: string | null
           slot_end?: string

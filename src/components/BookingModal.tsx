@@ -76,7 +76,21 @@ export const BookingModal = ({
         matchId = newMatch.id;
       }
 
-      // Create booking
+      // Get client details
+      const { data: clientData } = await supabase
+        .from("users_extended")
+        .select("name, avatar_url, city, email")
+        .eq("id", user.id)
+        .single();
+
+      // Get creator details
+      const { data: creatorData } = await supabase
+        .from("users_extended")
+        .select("name, avatar_url, email")
+        .eq("id", creatorId)
+        .single();
+
+      // Create booking with denormalized data
       const startDateTime = new Date(`${slotDate}T${slotStart}`);
       const endDateTime = new Date(`${slotDate}T${slotEnd}`);
 
@@ -85,6 +99,14 @@ export const BookingModal = ({
         slot_start: startDateTime.toISOString(),
         slot_end: endDateTime.toISOString(),
         status: "pending",
+        location_text: locationText || null,
+        client_name: clientData?.name || null,
+        client_avatar_url: clientData?.avatar_url || null,
+        client_city: clientData?.city || null,
+        client_email: clientData?.email || null,
+        creator_name: creatorName,
+        creator_avatar_url: creatorData?.avatar_url || null,
+        creator_email: creatorData?.email || null,
       });
 
       if (bookingError) throw bookingError;

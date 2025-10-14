@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { toast } from "sonner";
 import {
@@ -13,6 +13,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { generateGoogleCalendarUrl, generateICSFile, downloadICSFile } from "@/lib/calendar-utils";
 
 interface Booking {
   id: string;
@@ -20,14 +27,11 @@ interface Booking {
   slot_end: string;
   status: string;
   match_id: string;
-  matches?: {
-    client_user_id: string;
-    brief_id: string;
-    users_extended?: {
-      name: string;
-      city: string;
-    };
-  };
+  location_text?: string;
+  client_name?: string;
+  client_avatar_url?: string;
+  client_city?: string;
+  client_email?: string;
 }
 
 const Calendar = () => {
@@ -59,15 +63,34 @@ const Calendar = () => {
           matches!inner(
             client_user_id,
             creator_user_id,
-            brief_id,
-            users_extended:users_extended!matches_client_user_id_fkey(name, city)
+            brief_id
           )
         `)
         .eq("matches.creator_user_id", userId)
         .order("slot_start", { ascending: true });
 
       if (error) throw error;
-      setBookings(data || []);
+
+      // Fetch client details for each booking
+      const bookingsWithDetails = await Promise.all(
+        (data || []).map(async (booking: any) => {
+          const { data: clientData } = await supabase
+            .from("users_extended")
+            .select("name, city, avatar_url, email")
+            .eq("id", booking.matches.client_user_id)
+            .single();
+
+          return {
+            ...booking,
+            client_name: clientData?.name,
+            client_city: clientData?.city,
+            client_avatar_url: clientData?.avatar_url,
+            client_email: clientData?.email,
+          };
+        })
+      );
+
+      setBookings(bookingsWithDetails);
     } catch (error: any) {
       console.error("Error loading bookings:", error);
       toast.error("Failed to load calendar");
@@ -160,6 +183,38 @@ const Calendar = () => {
       default:
         return "bg-muted border-border";
     }
+  };
+
+  const handleExportToGoogle = (booking: Booking) => {
+    const title = `Photo session with ${booking.client_name || "Client"}`;
+    const url = generateGoogleCalendarUrl(
+      title,
+      booking.slot_start,
+      booking.slot_end,
+      booking.location_text,
+      `Booking with ${booking.client_name || "Client"}`
+    );
+    window.open(url, "_blank");
+    toast.success("Opening Google Calendar...");
+  };
+
+  const handleExportToICS = async (booking: Booking) => {
+    const title = `Photo session with ${booking.client_name || "Client"}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    const icsContent = generateICSFile(
+      booking.id,
+      title,
+      booking.slot_start,
+      booking.slot_end,
+      booking.location_text,
+      `Booking with ${booking.client_name || "Client"}`,
+      user?.email,
+      booking.client_email
+    );
+    
+    downloadICSFile(icsContent, `booking-${booking.id}`);
+    toast.success("ICS file ready—import to your calendar.");
   };
 
   return (
@@ -276,12 +331,25 @@ const Calendar = () => {
             <div className="space-y-4 mt-6">
               <div>
                 <p className="text-sm text-muted-foreground">Client</p>
-                <p className="font-semibold">
-                  {selectedBooking.matches?.users_extended?.name || "Unknown Client"}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {selectedBooking.matches?.users_extended?.city}
-                </p>
+                <div className="flex items-center gap-3 mt-1">
+                  {selectedBooking.client_avatar_url && (
+                    <img
+                      src={selectedBooking.client_avatar_url}
+                      alt={selectedBooking.client_name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  )}
+                  <div>
+                    <p className="font-semibold">
+                      {selectedBooking.client_name || "Client"}
+                    </p>
+                    {selectedBooking.client_city && (
+                      <p className="text-sm text-muted-foreground">
+                        {selectedBooking.client_city}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -307,10 +375,38 @@ const Calendar = () => {
                 </p>
               </div>
 
+              {selectedBooking.location_text && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Location</p>
+                  <p className="text-sm">{selectedBooking.location_text}</p>
+                </div>
+              )}
+
               <div>
                 <p className="text-sm text-muted-foreground">Status</p>
                 <p className="font-semibold capitalize">{selectedBooking.status.replace("_", " ")}</p>
               </div>
+
+              {selectedBooking.status === "confirmed" && (
+                <div className="space-y-2 pt-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-full">
+                        <Download className="w-4 h-4 mr-2" />
+                        Export to Calendar
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleExportToGoogle(selectedBooking)}>
+                        Add to Google Calendar
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExportToICS(selectedBooking)}>
+                        Download ICS (Apple/Outlook)
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
 
               {(selectedBooking.status === "pending" || selectedBooking.status === "soft_confirmed") && (
                 <div className="space-y-2 pt-4">
@@ -333,11 +429,7 @@ const Calendar = () => {
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => {
-                  if (selectedBooking.matches?.client_user_id) {
-                    navigate(`/messages`);
-                  }
-                }}
+                onClick={() => navigate(`/messages`)}
               >
                 Message Client
               </Button>
