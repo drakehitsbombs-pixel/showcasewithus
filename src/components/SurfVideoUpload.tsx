@@ -29,14 +29,52 @@ export const SurfVideoUpload = ({ open, onOpenChange, onSuccess }: SurfVideoUplo
     );
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const validateVideo = async (file: File): Promise<string | null> => {
+    // Check MIME type
+    if (!['video/mp4', 'video/quicktime'].includes(file.type)) {
+      return 'Invalid file type. Please use MP4 or MOV format.';
+    }
+    
+    // Check size
+    if (file.size > 250 * 1024 * 1024) {
+      return 'File too large. Maximum size is 250MB.';
+    }
+    
+    // Check duration using video element
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+        if (video.duration > 120) {
+          resolve('Video too long. Maximum duration is 120 seconds (2 minutes).');
+        } else {
+          resolve(null);
+        }
+      };
+      
+      video.onerror = () => {
+        resolve('Invalid video file. Please try a different file.');
+      };
+      
+      video.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (file.size > 262144000) { // 250MB
-        toast.error("Video must be under 250MB");
+      
+      const validationError = await validateVideo(file);
+      if (validationError) {
+        toast.error(validationError);
+        e.target.value = ''; // Reset file input
         return;
       }
+      
       setVideoFile(file);
+      toast.success('Video validated successfully');
     }
   };
 
