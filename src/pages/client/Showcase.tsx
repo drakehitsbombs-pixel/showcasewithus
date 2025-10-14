@@ -90,7 +90,10 @@ const Showcase = () => {
               <Card 
                 key={creator.id} 
                 className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => navigate(`/creator/id/${creator.user_id}`)}
+                onClick={() => {
+                  const username = userData?.username || creator.user_id;
+                  navigate(`/creator/${username}`, { state: { userId: creator.user_id } });
+                }}
               >
                 <div className="relative aspect-square bg-muted">
                   {portfolioImages[0] ? (
@@ -191,7 +194,8 @@ const Showcase = () => {
                     className="w-full"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/creator/id/${creator.user_id}`);
+                      const username = userData?.username || creator.user_id;
+                      navigate(`/creator/${username}`, { state: { userId: creator.user_id } });
                     }}
                   >
                     View Profile

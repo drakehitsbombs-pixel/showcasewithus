@@ -813,6 +813,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_creator_profile_by_username_or_id: {
+        Args: { p_user_id?: string; p_username?: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          city: string
+          is_discoverable: boolean
+          name: string
+          price_band_high: number
+          price_band_low: number
+          profile_avatar_url: string
+          rating_avg: number
+          review_count: number
+          styles: string[]
+          travel_radius_km: number
+          user_id: string
+          username: string
+          verification_status: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -61,6 +61,7 @@ interface Review {
 const CreatorProfile = () => {
   const { userId, username } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -73,6 +74,7 @@ const CreatorProfile = () => {
   const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [isLimitedProfile, setIsLimitedProfile] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -96,78 +98,99 @@ const CreatorProfile = () => {
     if (!userId && !username) return;
 
     try {
-      let finalUserId = userId;
+      // Get userId from location state if available (passed from card click)
+      const stateUserId = (location.state as any)?.userId;
+      let finalUserId = userId || stateUserId;
+      const lookupUsername = username && username !== finalUserId ? username : null;
 
-      // If username provided, resolve to userId first
-      if (username && !userId) {
-        const { data: userByUsername } = await supabase
-          .from("users_extended")
-          .select("id")
-          .ilike("name", username)
-          .maybeSingle();
+      // Try using the database function for optimized lookup
+      const { data: profileData, error: profileError } = await supabase
+        .rpc('get_creator_profile_by_username_or_id', {
+          p_username: lookupUsername,
+          p_user_id: finalUserId
+        });
+
+      if (profileError) {
+        console.error("Profile lookup error:", profileError);
+      }
+
+      if (profileData && profileData.length > 0) {
+        const data = profileData[0];
+        finalUserId = data.user_id;
+        setResolvedUserId(finalUserId);
+
+        // Set profile data
+        setProfile({
+          id: data.user_id,
+          user_id: data.user_id,
+          price_band_low: data.price_band_low,
+          price_band_high: data.price_band_high,
+          travel_radius_km: data.travel_radius_km,
+          styles: data.styles || [],
+          rating_avg: data.rating_avg,
+          review_count: data.review_count,
+          verification_status: data.verification_status || 'unverified',
+          avatar_url: data.profile_avatar_url || data.avatar_url,
+        } as CreatorProfile);
+
+        setUserData({
+          name: data.name,
+          bio: data.bio,
+          city: data.city,
+        });
+
+        // Check if profile is limited (not fully set up)
+        const hasAvatar = data.avatar_url || data.profile_avatar_url;
+        const hasPricing = data.price_band_low && data.price_band_high;
+        setIsLimitedProfile(!hasAvatar || !hasPricing || !data.is_discoverable);
+
+        // Load additional data
+        const [projectsRes, portfolioRes, reviewsRes] = await Promise.all([
+          supabase
+            .from("projects")
+            .select(`
+              *,
+              media:project_media(id, url, is_cover, sort_order)
+            `)
+            .eq("creator_user_id", finalUserId)
+            .order("created_at", { ascending: false }),
+          supabase
+            .from("portfolio_images")
+            .select("*")
+            .eq("creator_user_id", finalUserId)
+            .limit(12),
+          supabase
+            .from("reviews")
+            .select(`
+              *,
+              client:users_extended!reviews_client_user_id_fkey(name)
+            `)
+            .eq("creator_user_id", finalUserId)
+            .order("created_at", { ascending: false })
+            .limit(10)
+        ]);
+
+        if (projectsRes.data) setProjects(projectsRes.data as any);
+        if (reviewsRes.data) setReviews(reviewsRes.data as any);
         
-        if (userByUsername) {
-          finalUserId = userByUsername.id;
+        // Fallback to portfolio images if no projects
+        if (projectsRes.data?.length === 0 && portfolioRes.data) {
+          const portfolioProject = {
+            id: 'portfolio',
+            title: 'Portfolio',
+            description: null,
+            location_text: null,
+            project_type: 'portfolio',
+            tags: [],
+            media: portfolioRes.data.map((img, idx) => ({
+              id: img.id,
+              url: img.url,
+              is_cover: idx === 0,
+              sort_order: idx,
+            }))
+          };
+          setProjects([portfolioProject] as any);
         }
-      }
-
-      if (!finalUserId) {
-        setLoading(false);
-        return;
-      }
-
-      setResolvedUserId(finalUserId);
-
-      const [profileRes, userRes, projectsRes, portfolioRes, reviewsRes] = await Promise.all([
-        supabase.from("creator_profiles").select("*").eq("user_id", finalUserId).maybeSingle(),
-        supabase.from("users_extended").select("name, bio, city").eq("id", finalUserId).maybeSingle(),
-        supabase
-          .from("projects")
-          .select(`
-            *,
-            media:project_media(id, url, is_cover, sort_order)
-          `)
-          .eq("creator_user_id", finalUserId)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("portfolio_images")
-          .select("*")
-          .eq("creator_user_id", finalUserId)
-          .limit(12),
-        supabase
-          .from("reviews")
-          .select(`
-            *,
-            client:users_extended!reviews_client_user_id_fkey(name)
-          `)
-          .eq("creator_user_id", finalUserId)
-          .order("created_at", { ascending: false })
-          .limit(10)
-      ]);
-
-      if (profileRes.data) setProfile(profileRes.data);
-      if (userRes.data) setUserData(userRes.data);
-      if (projectsRes.data) setProjects(projectsRes.data as any);
-      if (reviewsRes.data) setReviews(reviewsRes.data as any);
-      
-      // Fallback to portfolio images if no projects
-      if (projectsRes.data?.length === 0 && portfolioRes.data) {
-        // Convert portfolio images to project format for display
-        const portfolioProject = {
-          id: 'portfolio',
-          title: 'Portfolio',
-          description: null,
-          location_text: null,
-          project_type: 'portfolio',
-          tags: [],
-          media: portfolioRes.data.map((img, idx) => ({
-            id: img.id,
-            url: img.url,
-            is_cover: idx === 0,
-            sort_order: idx,
-          }))
-        };
-        setProjects([portfolioProject] as any);
       }
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -255,8 +278,37 @@ const CreatorProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">Loading...</div>
+      <div className="min-h-screen bg-background">
+        <div className="border-b bg-card">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-xl font-semibold">Profile</h1>
+            <div className="w-10" />
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+          <Card className="p-6 mb-6">
+            <div className="flex gap-6 animate-pulse">
+              <div className="w-32 h-32 rounded-full bg-muted" />
+              <div className="flex-1 space-y-3">
+                <div className="h-8 bg-muted rounded w-48" />
+                <div className="h-4 bg-muted rounded w-32" />
+                <div className="flex gap-2">
+                  <div className="h-6 bg-muted rounded w-20" />
+                  <div className="h-6 bg-muted rounded w-20" />
+                </div>
+                <div className="h-4 bg-muted rounded w-full" />
+              </div>
+            </div>
+          </Card>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="aspect-square bg-muted rounded-lg animate-pulse" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -265,7 +317,10 @@ const CreatorProfile = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-muted-foreground mb-4">Profile not found</p>
+          <p className="text-muted-foreground mb-4">Creator profile not found</p>
+          <p className="text-sm text-muted-foreground mb-6">
+            This creator may not exist or their profile is not available.
+          </p>
           <Button onClick={() => navigate(-1)}>Go Back</Button>
         </div>
       </div>
@@ -286,6 +341,25 @@ const CreatorProfile = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Limited Profile Banner */}
+        {isLimitedProfile && !isOwnProfile && (
+          <Card className="p-4 mb-6 bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
+            <div className="flex items-start gap-3">
+              <div className="text-amber-600 dark:text-amber-400 mt-0.5">
+                ℹ️
+              </div>
+              <div>
+                <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                  Profile Updating
+                </h3>
+                <p className="text-sm text-amber-800 dark:text-amber-200">
+                  This creator is still setting up their profile. Some information may be incomplete or unavailable.
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Profile Header */}
         <Card className="p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-6">

@@ -266,7 +266,10 @@ const Discover = () => {
             <div className="max-w-lg mx-auto">
               <Card 
                 className="swipe-card shadow-elevated cursor-pointer"
-                onClick={() => navigate(`/creator/${currentCreator.user_id}`)}
+                onClick={() => {
+                  const username = currentCreator.users_extended?.username || currentCreator.user_id;
+                  navigate(`/creator/${username}`, { state: { userId: currentCreator.user_id } });
+                }}
               >
                 <div className="relative aspect-[3/4] bg-muted">
                   {currentCreator.portfolio_images?.[0] && (
@@ -323,7 +326,8 @@ const Discover = () => {
                           className="w-full aspect-square object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/creator/${currentCreator.user_id}`);
+                            const username = currentCreator.users_extended?.username || currentCreator.user_id;
+                            navigate(`/creator/${username}`, { state: { userId: currentCreator.user_id } });
                           }}
                         />
                       ))}
@@ -334,7 +338,8 @@ const Discover = () => {
                     className="w-full mt-4"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/creator/${currentCreator.user_id}`);
+                      const username = currentCreator.users_extended?.username || currentCreator.user_id;
+                      navigate(`/creator/${username}`, { state: { userId: currentCreator.user_id } });
                     }}
                   >
                     View Full Profile
@@ -460,7 +465,10 @@ const Discover = () => {
                       <Card 
                         key={creator.user_id}
                         className="p-4 hover:shadow-lg transition-shadow cursor-pointer"
-                        onClick={() => navigate(`/creator/${creator.user_id}`)}
+                        onClick={() => {
+                          const username = creator.users_extended?.username || creator.user_id;
+                          navigate(`/creator/${username}`, { state: { userId: creator.user_id } });
+                        }}
                       >
                         <div className="flex gap-4">
                           <div className="relative w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
