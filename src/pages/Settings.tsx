@@ -35,19 +35,60 @@ const Settings = () => {
       navigate("/auth");
       return;
     }
+
+    // Check if user is a creator
+    const { data: userRole } = await supabase
+      .from("users_extended")
+      .select("role")
+      .eq("id", session.user.id)
+      .single();
+
+    if (userRole?.role !== "creator") {
+      toast.error("Settings are only available for creators");
+      navigate("/");
+      return;
+    }
+
     setUserId(session.user.id);
     loadSettings(session.user.id);
   };
 
   const loadSettings = async (uid: string) => {
     try {
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("creator_profiles")
         .select("*")
         .eq("user_id", uid)
-        .single();
+        .maybeSingle();
 
-      if (profile) {
+      if (profileError) {
+        console.error("Error loading profile:", profileError);
+        toast.error("Failed to load creator profile");
+        setLoading(false);
+        return;
+      }
+
+      if (!profile) {
+        // Create a new creator profile if it doesn't exist
+        const { data: newProfile, error: createError } = await supabase
+          .from("creator_profiles")
+          .insert({ user_id: uid })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error("Error creating profile:", createError);
+          toast.error("Failed to create creator profile");
+          setLoading(false);
+          return;
+        }
+
+        // Set defaults
+        setPriceLow(100);
+        setPriceHigh(500);
+        setTravelRadius([50]);
+        setSelectedStyles([]);
+      } else {
         setPriceLow(profile.price_band_low || 100);
         setPriceHigh(profile.price_band_high || 500);
         setTravelRadius([profile.travel_radius_km || 50]);

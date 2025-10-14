@@ -38,15 +38,36 @@ const Surfing = () => {
     setCurrentUser(user);
 
     if (user) {
-      // Check if user has 'surfing' style - refetch every time
+      // Check user role first
+      const { data: userRole } = await supabase
+        .from("users_extended")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (userRole?.role !== "creator") {
+        console.log("User is not a creator, cannot upload surf clips");
+        setCanUpload(false);
+        return;
+      }
+
+      // Check if user has 'surfing' style
       const { data, error } = await supabase
         .from("creator_profiles")
         .select("styles")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error loading creator profile:", error);
+        setCanUpload(false);
+        return;
+      }
+
+      if (!data) {
+        console.log("No creator profile found for user");
+        setCanUpload(false);
+        return;
       }
 
       const hasStyle = hasSurfing(data?.styles);
@@ -60,31 +81,82 @@ const Surfing = () => {
 
     setAddingSurfing(true);
     try {
-      // Get current styles
-      const { data: profile } = await supabase
+      // Check if user is a creator first
+      const { data: userRole } = await supabase
+        .from("users_extended")
+        .select("role")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (userRole?.role !== "creator") {
+        toast.error("Only creators can post surf clips. Please create a creator account.");
+        setAddingSurfing(false);
+        return;
+      }
+
+      // Get or create creator profile
+      const { data: profile, error: fetchError } = await supabase
         .from("creator_profiles")
         .select("styles")
         .eq("user_id", currentUser.id)
-        .single();
+        .maybeSingle();
 
-      const currentStyles = profile?.styles || [];
-      const newStyles = [...new Set([...currentStyles, "surfing"])]; // Add surfing if not present
+      if (fetchError) {
+        console.error("Error fetching profile:", fetchError);
+        toast.error("Failed to load creator profile");
+        setAddingSurfing(false);
+        return;
+      }
 
-      // Update with new styles
-      const { data: updated, error } = await supabase
-        .from("creator_profiles")
-        .update({ styles: newStyles })
-        .eq("user_id", currentUser.id)
-        .select("styles")
-        .single();
+      let currentStyles: string[] = [];
+      let profileExists = !!profile;
 
-      if (error) throw error;
+      if (!profile) {
+        // Create new creator profile with surfing style
+        const { data: newProfile, error: createError } = await supabase
+          .from("creator_profiles")
+          .insert({ user_id: currentUser.id, styles: ["surfing"] })
+          .select("styles")
+          .single();
 
-      console.log("Added surfing style:", { user_id: currentUser.id, styles: updated.styles });
+        if (createError) {
+          console.error("Error creating profile:", createError);
+          toast.error("Failed to create creator profile");
+          setAddingSurfing(false);
+          return;
+        }
+
+        currentStyles = newProfile.styles || ["surfing"];
+      } else {
+        currentStyles = profile.styles || [];
+        const newStyles = [...new Set([...currentStyles, "surfing"])];
+
+        // Update existing profile
+        const { data: updated, error: updateError } = await supabase
+          .from("creator_profiles")
+          .update({ styles: newStyles })
+          .eq("user_id", currentUser.id)
+          .select("styles")
+          .single();
+
+        if (updateError) {
+          console.error("Error updating profile:", updateError);
+          toast.error("Failed to update creator profile");
+          setAddingSurfing(false);
+          return;
+        }
+
+        currentStyles = updated.styles || [];
+      }
+
+      console.log("Added surfing style:", { user_id: currentUser.id, styles: currentStyles });
 
       // Update local state
       setCanUpload(true);
       setShowSettingsPrompt(false);
+      
+      // Reload user to refresh gate check
+      await loadCurrentUser();
       
       // Open upload modal
       setTimeout(() => setShowUpload(true), 100);
@@ -197,7 +269,7 @@ const Surfing = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Add Surfing to Your Styles</AlertDialogTitle>
             <AlertDialogDescription>
-              To post surf clips, you need to add 'surfing' to your photography styles.
+              To post surf clips, you need to be a creator and add 'surfing' to your photography styles.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
