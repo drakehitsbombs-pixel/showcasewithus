@@ -115,7 +115,7 @@ const Auth = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-primary mb-4">
             <Camera className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold mb-2">Shutter Match</h1>
+          <h1 className="text-3xl font-bold mb-2">Show Case</h1>
           <p className="text-muted-foreground">Connect photographers with perfect clients</p>
         </div>
 
