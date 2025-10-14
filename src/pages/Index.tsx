@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Camera, Sparkles, Heart, Zap } from "lucide-react";
+import { HeroSlideshow } from "@/components/HeroSlideshow";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -34,23 +35,23 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 gradient-card opacity-50" />
-        <div className="relative container mx-auto px-4 py-20 text-center">
+      <section className="relative overflow-hidden min-h-[600px] flex items-center">
+        <HeroSlideshow />
+        <div className="relative z-20 container mx-auto px-4 py-20 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full gradient-primary mb-6 shadow-glow">
             <Camera className="w-10 h-10 text-primary-foreground" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            Show Case
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
+            Book photographers you'll actually love
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Connect with perfect photographers or discover your next client—powered by AI matching
+          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-md">
+            Swipe, match, and book—weddings, surf, portraits and more.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="gradient-primary shadow-glow" onClick={() => navigate("/auth")}>
               Get Started
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/auth")}>
+            <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20" onClick={() => navigate("/auth")}>
               Sign In
             </Button>
           </div>
@@ -62,31 +63,31 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
+            <div className="text-center animate-fade-in" style={{ animationDelay: "0ms" }}>
               <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="w-8 h-8 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">AI-Powered Matching</h3>
+              <h3 className="text-xl font-semibold mb-2">Find your style</h3>
               <p className="text-muted-foreground">
-                Our smart algorithm analyzes style, budget, location, and availability to find perfect matches
+                Browse local photographers by style, budget, and date.
               </p>
             </div>
-            <div className="text-center">
+            <div className="text-center animate-fade-in" style={{ animationDelay: "100ms" }}>
               <div className="w-16 h-16 rounded-full gradient-accent flex items-center justify-center mx-auto mb-4">
                 <Heart className="w-8 h-8 text-accent-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Swipe to Connect</h3>
+              <h3 className="text-xl font-semibold mb-2">Match & chat</h3>
               <p className="text-muted-foreground">
-                Browse portfolios and briefs with a familiar, intuitive swipe interface
+                Like a profile to match, then message right away.
               </p>
             </div>
-            <div className="text-center">
+            <div className="text-center animate-fade-in" style={{ animationDelay: "200ms" }}>
               <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Book with Ease</h3>
+              <h3 className="text-xl font-semibold mb-2">Book with confidence</h3>
               <p className="text-muted-foreground">
-                Chat, get quotes, and confirm bookings—all in one seamless platform
+                Lock a time, share details, and keep everything in one place.
               </p>
             </div>
           </div>
@@ -103,12 +104,10 @@ const Index = () => {
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                "Build a stunning portfolio",
-                "Set your own pricing and availability",
-                "Get matched with ideal clients",
-                "Receive booking requests automatically",
-                "Grow your client base organically",
-                "Upgrade for premium features",
+                "Build a clean portfolio",
+                "Set your pricing and availability",
+                "Get matched with real clients",
+                "Manage messages and bookings",
               ].map((feature, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -132,12 +131,10 @@ const Index = () => {
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                "Browse verified photographers",
-                "Create detailed project briefs",
-                "See AI match scores for each photographer",
-                "Filter by style, budget, and location",
-                "Read reviews from real clients",
-                "Book with confidence",
+                "See real work, not ads",
+                "Shortlist your favorites with a swipe",
+                "Message and compare in one place",
+                "Book and get calendar reminders",
               ].map((feature, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -154,13 +151,22 @@ const Index = () => {
       {/* CTA */}
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+          <h2 className="text-3xl font-bold mb-4">Ready to start?</h2>
           <p className="text-xl text-muted-foreground mb-8">Join Show Case today and find your perfect match</p>
           <Button size="lg" className="gradient-primary shadow-glow" onClick={() => navigate("/auth")}>
-            Create Your Account
+            Create an account
           </Button>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="py-8 bg-muted/50 border-t border-border">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            Show Case helps people find and book photographers for weddings, events, surf, portraits, product shoots, and more.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
