@@ -87,7 +87,7 @@ const CreatorProfile = () => {
         .from("users_extended")
         .select("role")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
       setCurrentUserRole(data?.role || null);
     }
   };
@@ -104,7 +104,7 @@ const CreatorProfile = () => {
           .from("users_extended")
           .select("id")
           .ilike("name", username)
-          .single();
+          .maybeSingle();
         
         if (userByUsername) {
           finalUserId = userByUsername.id;
@@ -119,8 +119,8 @@ const CreatorProfile = () => {
       setResolvedUserId(finalUserId);
 
       const [profileRes, userRes, projectsRes, portfolioRes, reviewsRes] = await Promise.all([
-        supabase.from("creator_profiles").select("*").eq("user_id", finalUserId).single(),
-        supabase.from("users_extended").select("name, bio, city").eq("id", finalUserId).single(),
+        supabase.from("creator_profiles").select("*").eq("user_id", finalUserId).maybeSingle(),
+        supabase.from("users_extended").select("name, bio, city").eq("id", finalUserId).maybeSingle(),
         supabase
           .from("projects")
           .select(`
