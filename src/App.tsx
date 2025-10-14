@@ -24,6 +24,8 @@ import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
 import Subscription from "./pages/Subscription";
+import Me from "./pages/Me";
+import MeEdit from "./pages/MeEdit";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +59,8 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/subscription" element={<Subscription />} />
+          <Route path="/me" element={<Me />} />
+          <Route path="/me/edit" element={<MeEdit />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
