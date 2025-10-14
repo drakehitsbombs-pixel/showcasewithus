@@ -77,7 +77,7 @@ export const SurfVideoUpload = ({ open, onOpenChange, onSuccess }: SurfVideoUplo
 
       if (insertError) throw insertError;
 
-      toast.success("Video uploaded successfully!");
+      toast.success("Uploading… We'll publish when it's ready.");
       onSuccess();
       onOpenChange(false);
       
@@ -88,7 +88,7 @@ export const SurfVideoUpload = ({ open, onOpenChange, onSuccess }: SurfVideoUplo
       setVideoFile(null);
     } catch (error: any) {
       console.error("Upload error:", error);
-      toast.error(error.message || "Failed to upload video");
+      toast.error("Upload failed. Try a smaller file or a different format.");
     } finally {
       setUploading(false);
     }

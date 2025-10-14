@@ -3,9 +3,18 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, X, MapPin } from "lucide-react";
+import { Heart, X, MapPin, Search as SearchIcon, Sliders } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+
+const STYLE_OPTIONS = [
+  "wedding", "portrait", "product", "event", "lifestyle",
+  "editorial", "real_estate", "food", "sports", "surfing", "commercial"
+];
 
 const Discover = () => {
   const [user, setUser] = useState<any>(null);
@@ -13,10 +22,19 @@ const Discover = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [brief, setBrief] = useState<any>(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState({
     styles: [] as string[],
   });
+  const [activeTab, setActiveTab] = useState("swipe");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchFilters, setSearchFilters] = useState({
+    styles: [] as string[],
+    distance: 100,
+    budgetMin: 0,
+    budgetMax: 5000,
+  });
+  const [searchLoading, setSearchLoading] = useState(false);
   
   const navigate = useNavigate();
 
@@ -165,6 +183,59 @@ const Discover = () => {
     setCurrentIndex((prev) => prev + 1);
   };
 
+  const loadSearchResults = async () => {
+    setSearchLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('match-creators', {
+        body: { 
+          filters: {
+            styles: searchFilters.styles,
+            distance: searchFilters.distance,
+            budget_min: searchFilters.budgetMin,
+            budget_max: searchFilters.budgetMax,
+            client_lat: brief?.geo_lat,
+            client_lng: brief?.geo_lng,
+          }
+        }
+      });
+
+      if (error) throw error;
+      setSearchResults(data?.creators || []);
+    } catch (error: any) {
+      console.error("Error loading search results:", error);
+      toast.error("Failed to load search results");
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const toggleSearchStyle = (style: string) => {
+    setSearchFilters(prev => ({
+      ...prev,
+      styles: prev.styles.includes(style)
+        ? prev.styles.filter(s => s !== style)
+        : [...prev.styles, style]
+    }));
+  };
+
+  const clearSearchFilters = () => {
+    setSearchFilters({
+      styles: [],
+      distance: 100,
+      budgetMin: 0,
+      budgetMax: 5000,
+    });
+  };
+
+  useEffect(() => {
+    if (activeTab === "search" && user && brief) {
+      const timeoutId = setTimeout(() => {
+        loadSearchResults();
+      }, 350);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [activeTab, searchFilters, user, brief]);
+
   const currentCreator = creators[currentIndex];
 
   return (
@@ -184,12 +255,18 @@ const Discover = () => {
           </div>
         </div>
 
-        <div className="mt-8">
-          {loading ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground">Loading photographers...</p>
-            </div>
-          ) : currentCreator ? (
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
+          <TabsList className="mb-6">
+            <TabsTrigger value="swipe">Swipe</TabsTrigger>
+            <TabsTrigger value="search">Search</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="swipe">
+            {loading ? (
+              <div className="text-center py-20">
+                <p className="text-muted-foreground">Loading photographers...</p>
+              </div>
+            ) : currentCreator ? (
             <div className="max-w-lg mx-auto">
               <Card 
                 className="swipe-card shadow-elevated cursor-pointer"
@@ -286,23 +363,184 @@ const Discover = () => {
                   <Heart className="w-6 h-6" />
                 </Button>
               </div>
+              </div>
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-muted-foreground mb-4">
+                  {creators.length === 0 
+                    ? "No photographers match your current filters."
+                    : "You've seen all available photographers!"}
+                </p>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Try widening your search by increasing distance, expanding your budget range, or adjusting your dates.
+                </p>
+                <Button onClick={() => loadCreators()}>
+                  Refresh Results
+                </Button>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="search">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-1 space-y-6">
+                <Card className="p-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sliders className="w-4 h-4" />
+                    <h3 className="font-semibold">Filters</h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">Styles</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {STYLE_OPTIONS.map((style) => (
+                          <Badge
+                            key={style}
+                            variant={searchFilters.styles.includes(style) ? "default" : "outline"}
+                            className="cursor-pointer capitalize"
+                            onClick={() => toggleSearchStyle(style)}
+                          >
+                            {style}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">
+                        Distance: {searchFilters.distance}km
+                      </Label>
+                      <Slider
+                        value={[searchFilters.distance]}
+                        onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, distance: value }))}
+                        min={5}
+                        max={200}
+                        step={5}
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">Budget Range</Label>
+                      <div className="space-y-2">
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Min: ${searchFilters.budgetMin}</Label>
+                          <Slider
+                            value={[searchFilters.budgetMin]}
+                            onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, budgetMin: value }))}
+                            min={0}
+                            max={5000}
+                            step={50}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Max: ${searchFilters.budgetMax}</Label>
+                          <Slider
+                            value={[searchFilters.budgetMax]}
+                            onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, budgetMax: value }))}
+                            min={0}
+                            max={5000}
+                            step={50}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button variant="outline" className="w-full" onClick={clearSearchFilters}>
+                      Clear Filters
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+
+              <div className="lg:col-span-3">
+                {searchLoading ? (
+                  <div className="text-center py-20">
+                    <p className="text-muted-foreground">Loading results...</p>
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  <div className="space-y-4">
+                    {searchResults.map((creator) => (
+                      <Card 
+                        key={creator.user_id}
+                        className="p-4 hover:shadow-lg transition-shadow cursor-pointer"
+                        onClick={() => navigate(`/creator/${creator.user_id}`)}
+                      >
+                        <div className="flex gap-4">
+                          <div className="relative w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                            {creator.portfolio_images?.[0] && (
+                              <img
+                                src={creator.portfolio_images[0].url}
+                                alt="Portfolio"
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <h3 className="text-xl font-bold">{creator.users_extended?.name}</h3>
+                                <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {creator.users_extended?.city}
+                                  {creator.distance && ` • ${Math.round(creator.distance)}km away`}
+                                </p>
+                              </div>
+                              <div className="match-score-badge text-sm">
+                                {creator.match_score}
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {creator.styles?.slice(0, 4).map((style: string) => (
+                                <Badge key={style} variant="secondary" className="text-xs capitalize">
+                                  {style}
+                                </Badge>
+                              ))}
+                            </div>
+                            {creator.price_band_low && (
+                              <p className="text-sm font-semibold mb-2">
+                                ${creator.price_band_low} - ${creator.price_band_high}/hr
+                              </p>
+                            )}
+                            {creator.portfolio_images && creator.portfolio_images.length > 1 && (
+                              <div className="flex gap-2 mt-2">
+                                {creator.portfolio_images.slice(1, 4).map((img: any, idx: number) => (
+                                  <div key={idx} className="w-16 h-16 rounded overflow-hidden bg-muted">
+                                    <img
+                                      src={img.url}
+                                      alt={`Portfolio ${idx + 2}`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-20">
+                    <SearchIcon className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-lg text-muted-foreground mb-4">No results found</p>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Try widening distance or budget, or clear style filters.
+                    </p>
+                    <div className="flex gap-2 justify-center">
+                      <Button variant="outline" onClick={clearSearchFilters}>
+                        Clear Filters
+                      </Button>
+                      <Button onClick={() => setSearchFilters(prev => ({ ...prev, distance: prev.distance + 50 }))}>
+                        Widen Distance
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4">
-                {creators.length === 0 
-                  ? "No photographers match your current filters."
-                  : "You've seen all available photographers!"}
-              </p>
-              <p className="text-sm text-muted-foreground mb-6">
-                Try widening your search by increasing distance, expanding your budget range, or adjusting your dates.
-              </p>
-              <Button onClick={() => loadCreators()}>
-                Refresh Results
-              </Button>
-            </div>
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

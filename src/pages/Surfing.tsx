@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,6 +7,14 @@ import { Waves, Plus } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { SurfPostCard } from "@/components/SurfPostCard";
 import { SurfVideoUpload } from "@/components/SurfVideoUpload";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
 const Surfing = () => {
@@ -14,6 +23,8 @@ const Surfing = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [showUpload, setShowUpload] = useState(false);
   const [canUpload, setCanUpload] = useState(false);
+  const [showSettingsPrompt, setShowSettingsPrompt] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadCurrentUser();
@@ -85,27 +96,14 @@ const Surfing = () => {
                 </p>
               </div>
             </div>
-            {canUpload ? (
-              <Button
-                onClick={() => setShowUpload(true)}
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-white/90 font-semibold shadow-lg"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Post a Clip
-              </Button>
-            ) : (
-              <Button
-                disabled
-                size="lg"
-                variant="outline"
-                className="bg-white/10 text-white border-white/20"
-                title="Add 'surfing' to your styles in Settings to post here"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Post a Clip
-              </Button>
-            )}
+            <Button
+              onClick={() => canUpload ? setShowUpload(true) : setShowSettingsPrompt(true)}
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-white/90 font-semibold shadow-lg"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Post a Clip
+            </Button>
           </div>
         </div>
       </div>
@@ -142,6 +140,25 @@ const Surfing = () => {
         onOpenChange={setShowUpload}
         onSuccess={loadSurfPosts}
       />
+
+      <AlertDialog open={showSettingsPrompt} onOpenChange={setShowSettingsPrompt}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Add Surfing to Your Styles</AlertDialogTitle>
+            <AlertDialogDescription>
+              To post surf clips, you need to add 'surfing' to your photography styles in Settings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={() => setShowSettingsPrompt(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => navigate("/settings")}>
+              Go to Settings
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
