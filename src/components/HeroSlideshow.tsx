@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import heroSurf1 from "@/assets/hero-surf-1.jpg";
-import heroBeach1 from "@/assets/hero-beach-1.jpg";
+import heroSurf2 from "@/assets/hero-surf-2.jpg";
 import heroWedding1 from "@/assets/hero-wedding-1.jpg";
-import heroWedding2 from "@/assets/hero-wedding-2.jpg";
-import heroPortrait1 from "@/assets/hero-portrait-1.jpg";
-import heroLifestyle1 from "@/assets/hero-lifestyle-1.jpg";
 
 const slides = [
   heroSurf1,
-  heroBeach1,
+  heroSurf2,
   heroWedding1,
-  heroWedding2,
-  heroPortrait1,
-  heroLifestyle1,
 ];
 
 export const HeroSlideshow = () => {
