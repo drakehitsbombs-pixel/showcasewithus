@@ -162,12 +162,9 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Creator Dashboard</h1>
-            <Button variant="outline" onClick={() => navigate("/creator/dashboard")}>
-              Back to Dashboard
-            </Button>
-            <Button onClick={() => navigate("/creator/calendar")}>
-              View Calendar
-            </Button>
+          <Button onClick={() => navigate("/creator/calendar")}>
+            View Calendar
+          </Button>
         </div>
 
         {loading ? (
