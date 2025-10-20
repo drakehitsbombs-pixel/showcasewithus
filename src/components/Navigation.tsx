@@ -5,6 +5,7 @@ import { Camera, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProfileMenu from "./ProfileMenu";
 import TopTabs from "./TopTabs";
+import { ThemeToggle } from "./ThemeToggle";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -97,6 +98,8 @@ const Navigation = () => {
             <CalendarIcon className="h-5 w-5" />
           </Button>
         )}
+
+        <ThemeToggle />
 
         <ProfileMenu userId={userId} userRole={userRole} />
       </header>
