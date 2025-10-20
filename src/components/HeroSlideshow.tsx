@@ -1,5 +1,3 @@
-import heroBg from "@/assets/hero-bg-optimized.webp";
-
 export const HeroSlideshow = () => {
   return (
     <div 
@@ -9,7 +7,7 @@ export const HeroSlideshow = () => {
       {/* Hero background image */}
       <div className="absolute inset-0">
         <img
-          src={heroBg}
+          src="/hero-bg-optimized.webp"
           alt=""
           className="w-full h-full object-cover"
           loading="eager"
