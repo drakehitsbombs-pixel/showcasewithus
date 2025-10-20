@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, Heart, MessageSquare, Calendar } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { InsightsDrawer } from "@/components/InsightsDrawer";
 
 interface DashboardMetrics {
   profile_views: number;
@@ -32,6 +33,10 @@ const Dashboard = () => {
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewsDrawerOpen, setViewsDrawerOpen] = useState(false);
+  const [likesDrawerOpen, setLikesDrawerOpen] = useState(false);
+  const [recentViews, setRecentViews] = useState<any[]>([]);
+  const [recentLikes, setRecentLikes] = useState<any[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -105,6 +110,35 @@ const Dashboard = () => {
         bookings: bookingsCount || 0,
       });
 
+      // Load detailed views data
+      const { data: viewsData } = await supabase
+        .from('profile_views')
+        .select('id, created_at, viewer_user_id, users_extended!profile_views_viewer_user_id_fkey(name, city, avatar_url)')
+        .eq('creator_user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(30);
+      
+      setRecentViews(viewsData?.map(v => ({
+        id: v.id,
+        user: v.users_extended,
+        created_at: v.created_at,
+      })) || []);
+
+      // Load detailed likes data
+      const { data: likesData } = await supabase
+        .from('matches')
+        .select('id, created_at, client_user_id, users_extended!matches_client_user_id_fkey(name, city, avatar_url)')
+        .eq('creator_user_id', userId)
+        .eq('client_liked', true)
+        .order('created_at', { ascending: false })
+        .limit(30);
+      
+      setRecentLikes(likesData?.map(l => ({
+        id: l.id,
+        user: l.users_extended,
+        created_at: l.created_at,
+      })) || []);
+
       // Load recent activity
       const activity: RecentActivity[] = [];
 
@@ -174,25 +208,25 @@ const Dashboard = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-              <Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setViewsDrawerOpen(true)}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
                   <Eye className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{metrics.profile_views}</div>
-                  <p className="text-xs text-muted-foreground">Last 7 days</p>
+                  <p className="text-xs text-muted-foreground">Last 7 days · Click to view</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLikesDrawerOpen(true)}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Likes</CardTitle>
                   <Heart className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{metrics.likes}</div>
-                  <p className="text-xs text-muted-foreground">Last 7 days</p>
+                  <p className="text-xs text-muted-foreground">Last 7 days · Click to view</p>
                 </CardContent>
               </Card>
 
@@ -297,6 +331,24 @@ const Dashboard = () => {
           </>
         )}
       </div>
+
+      <InsightsDrawer
+        open={viewsDrawerOpen}
+        onOpenChange={setViewsDrawerOpen}
+        title="Profile Views"
+        description="Recent visitors to your profile (last 30)"
+        items={recentViews}
+        emptyMessage="No one has viewed your profile yet"
+      />
+
+      <InsightsDrawer
+        open={likesDrawerOpen}
+        onOpenChange={setLikesDrawerOpen}
+        title="Likes"
+        description="Clients who liked your profile (last 30)"
+        items={recentLikes}
+        emptyMessage="No likes yet"
+      />
     </div>
   );
 };

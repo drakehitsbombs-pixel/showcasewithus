@@ -75,7 +75,8 @@ export const SurfPostCard = ({ post, creator, currentUserId, onLike, onComment }
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-smooth cursor-pointer group">
       <div 
-        className="relative aspect-[9/16] bg-muted"
+        className="relative bg-muted"
+        style={{ aspectRatio: "9/16" }}
         onClick={() => setIsPlaying(!isPlaying)}
       >
         {post.thumbnail_url && !isPlaying && (

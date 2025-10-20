@@ -103,19 +103,29 @@ export const SurfVideoUpload = ({ open, onOpenChange, onSuccess }: SurfVideoUplo
         .from("surf-videos")
         .getPublicUrl(fileName);
 
-      // Create surf post
+      // Create surf post with processing status
       const { error: insertError } = await supabase.from("surf_posts").insert({
         creator_user_id: user.id,
         title: title.trim(),
         spot_text: spot.trim() || null,
         tags: selectedTags,
         media_url: publicUrl,
-        status: "ready",
+        status: "processing",
       });
 
       if (insertError) throw insertError;
 
-      toast.success("Uploading… We'll publish when it's ready.");
+      toast.success("Video uploaded! Processing...");
+      
+      // Simulate processing (in production, this would be a background job)
+      setTimeout(async () => {
+        await supabase
+          .from("surf_posts")
+          .update({ status: "ready" })
+          .eq("creator_user_id", user.id)
+          .eq("media_url", publicUrl);
+      }, 2000);
+      
       onSuccess();
       onOpenChange(false);
       

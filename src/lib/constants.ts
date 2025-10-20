@@ -6,10 +6,11 @@ export const STYLE_OPTIONS = [
   { id: "event", label: "Event" },
   { id: "lifestyle", label: "Lifestyle" },
   { id: "editorial", label: "Editorial" },
-  { id: "real_estate", label: "Real Estate" }, // DB value stays real_estate for backwards compatibility
+  { id: "real_estate", label: "Real Estate" },
   { id: "food", label: "Food" },
   { id: "sports", label: "Sports" },
   { id: "surfing", label: "Surfing" },
+  { id: "graduation", label: "Graduation" },
   { id: "commercial", label: "Commercial" },
 ] as const;
 

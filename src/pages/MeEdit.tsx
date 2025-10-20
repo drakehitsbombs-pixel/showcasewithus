@@ -13,6 +13,7 @@ import { ArrowLeft, Camera } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
+import { PortfolioManager } from "@/components/PortfolioManager";
 
 const MeEdit = () => {
   const navigate = useNavigate();
@@ -27,10 +28,23 @@ const MeEdit = () => {
     avatar_url: "",
   });
   const [uploading, setUploading] = useState(false);
+  const [portfolioImages, setPortfolioImages] = useState<any[]>([]);
 
   useEffect(() => {
     loadProfile();
   }, []);
+
+  const loadPortfolioImages = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("portfolio_images")
+      .select("*")
+      .eq("creator_user_id", userId)
+      .order("created_at", { ascending: false });
+    
+    if (!error && data) {
+      setPortfolioImages(data);
+    }
+  };
 
   const loadProfile = async () => {
     try {
@@ -51,6 +65,8 @@ const MeEdit = () => {
       setUserRole(userData?.role);
 
       if (userData?.role === "creator") {
+        loadPortfolioImages(session.user.id);
+        
         const { data: creatorProfile } = await supabase
           .from("creator_profiles")
           .select("*")
@@ -128,8 +144,8 @@ const MeEdit = () => {
     
     setSaving(true);
     try {
-      // Update users_extended
-      const { error: userError } = await supabase
+      // Update users_extended and get fresh data
+      const { data: updatedUser, error: userError } = await supabase
         .from("users_extended")
         .update({
           name: formData.name,
@@ -137,13 +153,15 @@ const MeEdit = () => {
           bio: formData.bio,
           avatar_url: formData.avatar_url,
         })
-        .eq("id", userId);
+        .eq("id", userId)
+        .select()
+        .single();
 
       if (userError) throw userError;
 
       if (userRole === "creator") {
-        // Update or create creator profile
-        const { error: profileError } = await supabase
+        // Update or create creator profile and get fresh data
+        const { data: updatedProfile, error: profileError } = await supabase
           .from("creator_profiles")
           .upsert({
             user_id: userId,
@@ -151,26 +169,44 @@ const MeEdit = () => {
             price_band_high: formData.price_band_high,
             travel_radius_km: formData.travel_radius_km,
             styles: formData.styles,
-          });
+          })
+          .select()
+          .single();
 
         if (profileError) throw profileError;
+        
+        // Update local state with fresh data
+        setFormData({
+          ...updatedUser,
+          ...updatedProfile,
+        });
       } else {
-        // Update or create client brief
-        const { error: briefError } = await supabase
+        // Update or create client brief and get fresh data
+        const { data: updatedBrief, error: briefError } = await supabase
           .from("client_briefs")
           .upsert({
             client_user_id: userId,
             budget_low: formData.budget_low,
             budget_high: formData.budget_high,
             mood_tags: formData.preferred_styles,
-            project_type: "wedding", // default
-          });
+            project_type: "wedding",
+          })
+          .select()
+          .single();
 
         if (briefError) throw briefError;
+        
+        // Update local state with fresh data
+        setFormData({
+          ...updatedUser,
+          budget_low: updatedBrief.budget_low,
+          budget_high: updatedBrief.budget_high,
+          preferred_styles: updatedBrief.mood_tags,
+        });
       }
 
-      toast.success("Profile updated!");
-      navigate("/me");
+      toast.success("Saved!");
+      setTimeout(() => navigate("/me"), 500);
     } catch (error: any) {
       console.error("Save error:", error);
       toast.error("Failed to save profile");
@@ -349,6 +385,16 @@ const MeEdit = () => {
                 ))}
               </div>
             </div>
+
+            {isCreator && (
+              <div className="mt-6">
+                <PortfolioManager
+                  userId={userId}
+                  images={portfolioImages}
+                  onUpdate={() => loadPortfolioImages(userId)}
+                />
+              </div>
+            )}
 
             <div className="flex gap-2 justify-end pt-4">
               <Button variant="outline" onClick={() => navigate("/me")}>

@@ -51,6 +51,16 @@ const Discover = () => {
         loadBrief(session.user.id);
       }
     });
+
+    // Check for style filter from URL
+    const stylesParam = searchParams.get("styles");
+    if (stylesParam) {
+      setSearchFilters(prev => ({
+        ...prev,
+        styles: stylesParam.split(","),
+      }));
+      setActiveTab("search");
+    }
   }, []);
 
   const loadBrief = async (userId: string) => {

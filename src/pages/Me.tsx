@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, MapPin, DollarSign, Briefcase } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { getStyleLabel } from "@/lib/constants";
+import { ClickableStyleChip } from "@/components/ClickableStyleChip";
 
 const Me = () => {
   const navigate = useNavigate();
@@ -169,9 +170,12 @@ const Me = () => {
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {profileData.styles.map((style: string) => (
-                      <Badge key={style} variant="outline">
-                        {getStyleLabel(style)}
-                      </Badge>
+                      <ClickableStyleChip
+                        key={style}
+                        styleId={style}
+                        label={getStyleLabel(style)}
+                        variant="outline"
+                      />
                     ))}
                   </div>
                 </CardContent>
@@ -223,9 +227,12 @@ const Me = () => {
                   <p className="text-sm font-medium mb-2">Preferred Styles:</p>
                   <div className="flex flex-wrap gap-2">
                     {profileData.mood_tags.map((style: string) => (
-                      <Badge key={style} variant="outline">
-                        {getStyleLabel(style)}
-                      </Badge>
+                      <ClickableStyleChip
+                        key={style}
+                        styleId={style}
+                        label={getStyleLabel(style)}
+                        variant="outline"
+                      />
                     ))}
                   </div>
                 </div>
