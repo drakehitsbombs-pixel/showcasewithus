@@ -7,6 +7,8 @@ export const HeroSlideshow = () => {
       {/* Hero background image */}
       <div className="absolute inset-0">
         <img
+          srcSet="/hero-bg-mobile.webp 828w, /hero-bg-optimized.webp 1920w"
+          sizes="(max-width: 768px) 828px, 1920px"
           src="/hero-bg-optimized.webp"
           alt=""
           className="w-full h-full object-cover"
