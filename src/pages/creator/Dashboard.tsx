@@ -7,6 +7,7 @@ import { Eye, Heart, MessageSquare, Calendar, Upload, Share2, Clock, Camera, Bad
 import Navigation from "@/components/Navigation";
 import { InsightsDrawer } from "@/components/InsightsDrawer";
 import { Sparkline } from "@/components/Sparkline";
+import { toast } from "sonner";
 
 interface DashboardMetrics {
   profile_views: number;
@@ -501,16 +502,28 @@ const Dashboard = () => {
                 <Button onClick={async () => {
                   const { data: profile } = await supabase
                     .from('users_extended')
-                    .select('username')
+                    .select('slug')
                     .eq('id', user?.id)
                     .single();
                   
-                  const username = profile?.username;
-                  if (username) {
-                    navigator.clipboard.writeText(`${window.location.origin}/creator/${username}`);
-                    alert('Profile link copied!');
-                  } else {
-                    alert('Please set a username in your profile first');
+                  const slug = profile?.slug;
+                  if (slug) {
+                    const publicUrl = `${window.location.origin}/p/${slug}`;
+                    await navigator.clipboard.writeText(publicUrl);
+                    
+                    // Try native share if available
+                    if (navigator.share) {
+                      try {
+                        await navigator.share({
+                          title: 'My Photography Profile',
+                          url: publicUrl,
+                        });
+                      } catch (err) {
+                        // User cancelled or share failed, clipboard already has URL
+                      }
+                    }
+                    
+                    toast.success('Public link copied! Anyone can view your profile.');
                   }
                 }} variant="secondary" size="lg">
                   <Share2 className="w-4 h-4 mr-2" />

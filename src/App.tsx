@@ -16,6 +16,7 @@ import ClientDiscover from "./pages/client/Discover";
 import ClientProfileEdit from "./pages/client/ProfileEdit";
 import ClientProfile from "./pages/client/Profile";
 import ClientShowcase from "./pages/client/Showcase";
+import PublicProfile from "./pages/PublicProfile";
 import Surfing from "./pages/Surfing";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/client/profile" element={<ClientProfile />} />
           <Route path="/client/discover" element={<ClientDiscover />} />
           <Route path="/client/showcase" element={<ClientShowcase />} />
+          <Route path="/p/:slug" element={<PublicProfile />} />
           <Route path="/surfing" element={<Navigate to="/client/discover?tab=search&styles=surfing" replace />} />
           <Route path="/matches" element={<Matches />} />
           <Route path="/messages" element={<Messages />} />

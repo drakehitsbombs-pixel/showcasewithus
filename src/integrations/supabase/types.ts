@@ -157,8 +157,10 @@ export type Database = {
           is_discoverable: boolean | null
           price_band_high: number | null
           price_band_low: number | null
+          public_profile: boolean | null
           rating_avg: number | null
           review_count: number | null
+          show_price_range: boolean | null
           showcase_rank: number | null
           showcase_score: number | null
           styles: string[] | null
@@ -175,8 +177,10 @@ export type Database = {
           is_discoverable?: boolean | null
           price_band_high?: number | null
           price_band_low?: number | null
+          public_profile?: boolean | null
           rating_avg?: number | null
           review_count?: number | null
+          show_price_range?: boolean | null
           showcase_rank?: number | null
           showcase_score?: number | null
           styles?: string[] | null
@@ -193,8 +197,10 @@ export type Database = {
           is_discoverable?: boolean | null
           price_band_high?: number | null
           price_band_low?: number | null
+          public_profile?: boolean | null
           rating_avg?: number | null
           review_count?: number | null
+          show_price_range?: boolean | null
           showcase_rank?: number | null
           showcase_score?: number | null
           styles?: string[] | null
@@ -212,6 +218,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      creator_views_daily: {
+        Row: {
+          created_at: string | null
+          creator_user_id: string
+          date: string
+          id: string
+          unique_views: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_user_id: string
+          date: string
+          id?: string
+          unique_views?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_user_id?: string
+          date?: string
+          id?: string
+          unique_views?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       matches: {
         Row: {
@@ -773,6 +806,7 @@ export type Database = {
           name: string
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
+          slug: string | null
           updated_at: string
           username: string | null
         }
@@ -788,6 +822,7 @@ export type Database = {
           name: string
           phone?: string | null
           role: Database["public"]["Enums"]["user_role"]
+          slug?: string | null
           updated_at?: string
           username?: string | null
         }
@@ -803,6 +838,7 @@ export type Database = {
           name?: string
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          slug?: string | null
           updated_at?: string
           username?: string | null
         }
@@ -813,6 +849,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      aggregate_daily_views: {
+        Args: { target_date?: string }
+        Returns: undefined
+      }
+      generate_slug: {
+        Args: { display_name: string }
+        Returns: string
+      }
       get_creator_profile_by_username_or_id: {
         Args: { p_user_id?: string; p_username?: string }
         Returns: {

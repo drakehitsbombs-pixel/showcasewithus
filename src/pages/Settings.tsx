@@ -28,6 +28,8 @@ const Settings = () => {
   const [city, setCity] = useState("");
   const [travelRadius, setTravelRadius] = useState(50);
   const [styles, setStyles] = useState<string[]>([]);
+  const [publicProfile, setPublicProfile] = useState(true);
+  const [showPriceRange, setShowPriceRange] = useState(true);
 
   useEffect(() => {
     checkAuth();
@@ -94,6 +96,8 @@ const Settings = () => {
           setPriceHigh(profile.price_band_high || 5000);
           setTravelRadius(profile.travel_radius_km || 50);
           setStyles(profile.styles || []);
+          setPublicProfile(profile.public_profile ?? true);
+          setShowPriceRange(profile.show_price_range ?? true);
         }
       } else {
         // Load client preferences
@@ -177,6 +181,8 @@ const Settings = () => {
             price_band_high: priceHigh,
             travel_radius_km: travelRadius,
             styles: normalizedStyles,
+            public_profile: publicProfile,
+            show_price_range: showPriceRange,
           });
 
         if (profileError) throw profileError;
@@ -230,11 +236,12 @@ const Settings = () => {
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Tabs defaultValue="account" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="account">Account</TabsTrigger>
             <TabsTrigger value="location">Location</TabsTrigger>
             <TabsTrigger value="styles">Styles</TabsTrigger>
             {isCreator && <TabsTrigger value="pricing">Pricing</TabsTrigger>}
+            {isCreator && <TabsTrigger value="privacy">Privacy</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="account">
@@ -359,6 +366,57 @@ const Settings = () => {
                       </div>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+
+          {isCreator && (
+            <TabsContent value="privacy">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Visibility</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label htmlFor="public-profile">Public Profile</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Allow anyone to view your profile without signing in
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      id="public-profile"
+                      checked={publicProfile}
+                      onChange={(e) => setPublicProfile(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label htmlFor="show-price">Show Price Range</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Display your pricing on your public profile
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      id="show-price"
+                      checked={showPriceRange}
+                      onChange={(e) => setShowPriceRange(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                  </div>
+
+                  {!publicProfile && (
+                    <div className="p-3 bg-muted rounded-md">
+                      <p className="text-sm text-muted-foreground">
+                        Your profile is private. Turn on 'Public profile' in Settings to share your work.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
