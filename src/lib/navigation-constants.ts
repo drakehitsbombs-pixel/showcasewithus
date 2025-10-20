@@ -25,13 +25,6 @@ export const PRIMARY_TABS: NavTab[] = [
     roles: ['client', 'creator']
   },
   { 
-    id: 'surfing', 
-    label: 'Surfing', 
-    href: '/surfing', 
-    icon: Waves,
-    roles: ['client', 'creator']
-  },
-  { 
     id: 'brief', 
     label: 'My Brief', 
     href: '/client/brief-setup', 

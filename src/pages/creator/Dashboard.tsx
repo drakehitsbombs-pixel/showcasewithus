@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, Heart, MessageSquare, Calendar } from "lucide-react";
+import { Eye, Heart, MessageSquare, Calendar, Upload, Share2, Clock, Camera, Badge } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { InsightsDrawer } from "@/components/InsightsDrawer";
+import { Sparkline } from "@/components/Sparkline";
 
 interface DashboardMetrics {
   profile_views: number;
@@ -13,6 +14,11 @@ interface DashboardMetrics {
   matches: number;
   messages: number;
   bookings: number;
+  profile_views_trend: number[];
+  likes_trend: number[];
+  matches_trend: number[];
+  messages_trend: number[];
+  bookings_trend: number[];
 }
 
 interface RecentActivity {
@@ -30,7 +36,16 @@ const Dashboard = () => {
     matches: 0,
     messages: 0,
     bookings: 0,
+    profile_views_trend: [],
+    likes_trend: [],
+    matches_trend: [],
+    messages_trend: [],
+    bookings_trend: [],
   });
+  const [upcomingBookings, setUpcomingBookings] = useState(0);
+  const [portfolioCount, setPortfolioCount] = useState(0);
+  const [stylesCount, setStylesCount] = useState(0);
+  const [hasPrice, setHasPrice] = useState(false);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewsDrawerOpen, setViewsDrawerOpen] = useState(false);
@@ -54,14 +69,56 @@ const Dashboard = () => {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-      // Profile views (last 7 days)
+      // Helper to generate 7-day trend (simplified)
+      const viewsTrend: number[] = [];
+      const likesTrend: number[] = [];
+      const matchesTrend: number[] = [];
+      
+      for (let i = 6; i >= 0; i--) {
+        const dayStart = new Date();
+        dayStart.setDate(dayStart.getDate() - i);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(dayStart);
+        dayEnd.setHours(23, 59, 59, 999);
+
+        // Views for this day
+        const { count: viewsDay } = await supabase
+          .from('profile_views')
+          .select('*', { count: 'exact', head: true })
+          .eq('creator_user_id', userId)
+          .gte('created_at', dayStart.toISOString())
+          .lte('created_at', dayEnd.toISOString());
+        viewsTrend.push(viewsDay || 0);
+
+        // Likes for this day
+        const { count: likesDay } = await supabase
+          .from('matches')
+          .select('*', { count: 'exact', head: true })
+          .eq('creator_user_id', userId)
+          .eq('client_liked', true)
+          .gte('created_at', dayStart.toISOString())
+          .lte('created_at', dayEnd.toISOString());
+        likesTrend.push(likesDay || 0);
+
+        // Matches for this day
+        const { count: matchesDay } = await supabase
+          .from('matches')
+          .select('*', { count: 'exact', head: true })
+          .eq('creator_user_id', userId)
+          .eq('status', 'matched')
+          .gte('created_at', dayStart.toISOString())
+          .lte('created_at', dayEnd.toISOString());
+        matchesTrend.push(matchesDay || 0);
+      }
+
+      // Profile views (last 7 days total)
       const { count: viewsCount } = await supabase
         .from('profile_views')
         .select('*', { count: 'exact', head: true })
         .eq('creator_user_id', userId)
         .gte('created_at', sevenDaysAgo.toISOString());
 
-      // Matches where client liked
+      // Likes (last 7 days total)
       const { count: likesCount } = await supabase
         .from('matches')
         .select('*', { count: 'exact', head: true })
@@ -69,7 +126,7 @@ const Dashboard = () => {
         .eq('client_liked', true)
         .gte('created_at', sevenDaysAgo.toISOString());
 
-      // Mutual matches
+      // Matches (last 7 days total)
       const { count: matchesCount } = await supabase
         .from('matches')
         .select('*', { count: 'exact', head: true })
@@ -77,7 +134,7 @@ const Dashboard = () => {
         .eq('status', 'matched')
         .gte('created_at', sevenDaysAgo.toISOString());
 
-      // Messages received via threads
+      // Messages
       const { data: threadIds } = await supabase
         .from('threads')
         .select('id')
@@ -85,6 +142,8 @@ const Dashboard = () => {
         .eq('status', 'open');
 
       let messagesCount = 0;
+      const messagesTrend: number[] = [];
+      
       if (threadIds && threadIds.length > 0) {
         const { count } = await supabase
           .from('messages')
@@ -93,6 +152,26 @@ const Dashboard = () => {
           .neq('sender_user_id', userId)
           .gte('created_at', sevenDaysAgo.toISOString());
         messagesCount = count || 0;
+
+        for (let i = 6; i >= 0; i--) {
+          const dayStart = new Date();
+          dayStart.setDate(dayStart.getDate() - i);
+          dayStart.setHours(0, 0, 0, 0);
+          const dayEnd = new Date(dayStart);
+          dayEnd.setHours(23, 59, 59, 999);
+
+          const { count: dayCount } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .in('thread_id', threadIds.map(t => t.id))
+            .neq('sender_user_id', userId)
+            .gte('created_at', dayStart.toISOString())
+            .lte('created_at', dayEnd.toISOString());
+          
+          messagesTrend.push(dayCount || 0);
+        }
+      } else {
+        messagesTrend.push(0, 0, 0, 0, 0, 0, 0);
       }
 
       // Bookings
@@ -102,12 +181,55 @@ const Dashboard = () => {
         .eq('matches.creator_user_id', userId)
         .gte('created_at', sevenDaysAgo.toISOString());
 
+      const bookingsTrend: number[] = [];
+      for (let i = 6; i >= 0; i--) {
+        const dayStart = new Date();
+        dayStart.setDate(dayStart.getDate() - i);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(dayStart);
+        dayEnd.setHours(23, 59, 59, 999);
+
+        const { count: dayCount } = await supabase
+          .from('bookings')
+          .select('*, matches!inner(creator_user_id)', { count: 'exact', head: true })
+          .eq('matches.creator_user_id', userId)
+          .gte('created_at', dayStart.toISOString())
+          .lte('created_at', dayEnd.toISOString());
+        
+        bookingsTrend.push(dayCount || 0);
+      }
+
+      // Upcoming bookings
+      const { count: upcomingCount } = await supabase
+        .from('bookings')
+        .select('*, matches!inner(creator_user_id)', { count: 'exact', head: true })
+        .eq('matches.creator_user_id', userId)
+        .gte('date', new Date().toISOString());
+
+      setUpcomingBookings(upcomingCount || 0);
+
+      // Profile completion data
+      const { data: profile } = await supabase
+        .from('creator_profiles')
+        .select('styles, price_band_low, portfolios(id)')
+        .eq('user_id', userId)
+        .single();
+
+      setPortfolioCount(profile?.portfolios?.length || 0);
+      setStylesCount(profile?.styles?.length || 0);
+      setHasPrice(!!profile?.price_band_low);
+
       setMetrics({
         profile_views: viewsCount || 0,
         likes: likesCount || 0,
         matches: matchesCount || 0,
         messages: messagesCount,
         bookings: bookingsCount || 0,
+        profile_views_trend: viewsTrend,
+        likes_trend: likesTrend,
+        matches_trend: matchesTrend,
+        messages_trend: messagesTrend,
+        bookings_trend: bookingsTrend,
       });
 
       // Load detailed views data
@@ -196,8 +318,14 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Creator Dashboard</h1>
-          <Button onClick={() => navigate("/creator/calendar")}>
+          <Button onClick={() => navigate("/creator/calendar")} className="relative">
+            <Calendar className="w-4 h-4 mr-2" />
             View Calendar
+            {upcomingBookings > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center p-1 text-xs bg-primary text-primary-foreground rounded-full">
+                {upcomingBookings}
+              </Badge>
+            )}
           </Button>
         </div>
 
@@ -208,30 +336,32 @@ const Dashboard = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setViewsDrawerOpen(true)}>
+              <Card className="cursor-pointer hover:shadow-md transition-all border" onClick={() => setViewsDrawerOpen(true)}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
                   <Eye className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{metrics.profile_views}</div>
-                  <p className="text-xs text-muted-foreground">Last 7 days · Click to view</p>
+                  <div className="text-2xl font-bold mb-2">{metrics.profile_views}</div>
+                  <Sparkline data={metrics.profile_views_trend} className="text-primary mb-1" />
+                  <p className="text-xs text-muted-foreground">Last 7 days</p>
                 </CardContent>
               </Card>
 
-              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLikesDrawerOpen(true)}>
+              <Card className="cursor-pointer hover:shadow-md transition-all border" onClick={() => setLikesDrawerOpen(true)}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Likes</CardTitle>
                   <Heart className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{metrics.likes}</div>
-                  <p className="text-xs text-muted-foreground">Last 7 days · Click to view</p>
+                  <div className="text-2xl font-bold mb-2">{metrics.likes}</div>
+                  <Sparkline data={metrics.likes_trend} className="text-accent mb-1" />
+                  <p className="text-xs text-muted-foreground">Last 7 days</p>
                 </CardContent>
               </Card>
 
               <Card 
-                className="cursor-pointer hover:shadow-md transition-shadow"
+                className="cursor-pointer hover:shadow-md transition-all border"
                 onClick={() => navigate("/matches")}
               >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -239,13 +369,14 @@ const Dashboard = () => {
                   <Heart className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{metrics.matches}</div>
-                  <p className="text-xs text-muted-foreground">Last 7 days · Click to view</p>
+                  <div className="text-2xl font-bold mb-2">{metrics.matches}</div>
+                  <Sparkline data={metrics.matches_trend} className="text-primary mb-1" />
+                  <p className="text-xs text-muted-foreground">Last 7 days</p>
                 </CardContent>
               </Card>
 
               <Card 
-                className="cursor-pointer hover:shadow-md transition-shadow"
+                className="cursor-pointer hover:shadow-md transition-all border"
                 onClick={() => navigate("/messages")}
               >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -253,13 +384,14 @@ const Dashboard = () => {
                   <MessageSquare className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{metrics.messages}</div>
-                  <p className="text-xs text-muted-foreground">Last 7 days · Click to view</p>
+                  <div className="text-2xl font-bold mb-2">{metrics.messages}</div>
+                  <Sparkline data={metrics.messages_trend} className="text-blue-500 mb-1" />
+                  <p className="text-xs text-muted-foreground">Last 7 days</p>
                 </CardContent>
               </Card>
 
               <Card 
-                className="cursor-pointer hover:shadow-md transition-shadow"
+                className="cursor-pointer hover:shadow-md transition-all border"
                 onClick={() => navigate("/creator/calendar")}
               >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -267,27 +399,57 @@ const Dashboard = () => {
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{metrics.bookings}</div>
-                  <p className="text-xs text-muted-foreground">Last 7 days · Click to view</p>
+                  <div className="text-2xl font-bold mb-2">{metrics.bookings}</div>
+                  <Sparkline data={metrics.bookings_trend} className="text-green-500 mb-1" />
+                  <p className="text-xs text-muted-foreground">Last 7 days</p>
                 </CardContent>
               </Card>
             </div>
 
-            {metrics.profile_views === 0 && metrics.likes === 0 && metrics.matches === 0 ? (
+            {portfolioCount < 8 || stylesCount < 3 || !hasPrice ? (
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>Complete Your Profile</CardTitle>
+                  <CardDescription>
+                    Boost your visibility by completing these steps
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm">
+                    {portfolioCount < 8 && (
+                      <li className="flex items-center gap-2">
+                        <Camera className="w-4 h-4 text-muted-foreground" />
+                        <span>Add 8+ photos so clients see your style</span>
+                      </li>
+                    )}
+                    {stylesCount < 3 && (
+                      <li className="flex items-center gap-2">
+                        <Badge className="w-4 h-4 text-muted-foreground" />
+                        <span>Pick 3+ styles to improve matches</span>
+                      </li>
+                    )}
+                    {!hasPrice && (
+                      <li className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-muted-foreground" />
+                        <span>Set price and availability to get booking requests</span>
+                      </li>
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+            ) : metrics.profile_views === 0 && metrics.likes === 0 && metrics.matches === 0 ? (
               <Card className="mb-8">
                 <CardHeader>
                   <CardTitle>Get Started</CardTitle>
                   <CardDescription>
-                    You haven't received any views yet. Here's how to increase your visibility:
+                    Your profile is ready! Here's how to get discovered:
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                    <li>Upload at least 5-10 high-quality portfolio images</li>
-                    <li>Complete your profile with a detailed bio</li>
-                    <li>Set your price range and availability</li>
-                    <li>Add multiple photography styles to your profile</li>
+                    <li>Share your profile on social media</li>
                     <li>Respond quickly to messages from potential clients</li>
+                    <li>Keep your availability calendar up to date</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -329,8 +491,23 @@ const Dashboard = () => {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-3">
-                <Button onClick={() => navigate("/creator/profile-setup")}>
-                  Edit Profile
+                <Button onClick={() => navigate("/creator/profile-setup")} size="lg">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Add Photos/Projects
+                </Button>
+                <Button onClick={() => {
+                  const username = user?.user_metadata?.username;
+                  if (username) {
+                    navigator.clipboard.writeText(`${window.location.origin}/creator/${username}`);
+                    alert('Profile link copied!');
+                  }
+                }} variant="secondary" size="lg">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share Profile
+                </Button>
+                <Button onClick={() => navigate("/creator/calendar")} variant="secondary" size="lg">
+                  <Clock className="w-4 h-4 mr-2" />
+                  Manage Availability
                 </Button>
                 <Button variant="outline" onClick={() => navigate("/matches")}>
                   View All Matches
