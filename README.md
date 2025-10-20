@@ -1,73 +1,91 @@
-# Welcome to your Lovable project
+### 👤 Author
 
-## Project info
+**Drake Phillips**  
+Electrical Engineering student @ Cal Poly SLO  
+Exploring how AI and engineering design principles intersect to create faster, smarter app development workflows.
 
-**URL**: https://lovable.dev/projects/ba19f4f0-46f2-4ef2-be61-5809ed262a98
+# ShowCase — AI-Enhanced App Creation Platform
 
-## How can I edit this code?
+## 🚀 Overview
 
-There are several ways of editing your application.
+**ShowCase** is a web application originally built with **Lovable**, then expanded into a cross-platform app using modern web technologies.  
+The goal of this project is to streamline how creatives and clients connect, while exploring how **AI-assisted development** can accelerate real product creation.
 
-**Use Lovable**
+This project demonstrates how I’m combining my **Electrical Engineering background** with **software design and AI tools** to:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ba19f4f0-46f2-4ef2-be61-5809ed262a98) and start prompting.
+- Rapidly prototype and deploy production-ready web apps.
+- Automate repetitive UI, deployment, and configuration tasks using AI generation workflows.
+- Integrate human design insight with AI-generated components for faster iteration and more consistent code.
 
-Changes made via Lovable will be committed automatically to this repo.
+ShowCase serves as both a **portfolio project** and a **proof of concept** for leveraging AI to reduce the barrier to app development.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🧠 Key Objectives
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **AI-Assisted Development:** Build, iterate, and deploy complete web experiences using natural-language prompts in Lovable and refine them in code.
+- **Cross-Platform Integration:** Prepare the web app for use as a **PWA** and wrap it in **Capacitor** to publish to iOS and Android.
+- **Design Consistency:** Use component libraries (shadcn-ui, TailwindCSS) and AI-generated assets to maintain a polished, responsive UI across devices.
+- **Automation:** Sync all updates through GitHub for continuous deployment and version control.
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## ⚙️ Tech Stack
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- **Framework:** Vite + React + TypeScript
+- **UI Components:** shadcn-ui
+- **Styling:** Tailwind CSS
+- **Deployment / Hosting:** Lovable + GitHub
+- **Native Wrapper (planned):** Capacitor for iOS / Android
+- **AI Integration:** Lovable’s AI builder for scaffolding pages, UI, and logic
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 💡 How to Edit and Run Locally
 
-**Edit a file directly in GitHub**
+You can modify the project either directly in Lovable or locally using your IDE.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Option 1 — Edit in Lovable
 
-**Use GitHub Codespaces**
+Visit the [Lovable Project](https://lovable.dev/projects/ba19f4f0-46f2-4ef2-be61-5809ed262a98).  
+All changes made there automatically sync with this repository.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Option 2 — Edit Locally
 
-## What technologies are used for this project?
+1. Clone the repository
+   ```bash
+   git clone <YOUR_GIT_URL>
+   cd <YOUR_PROJECT_NAME>
+   ```
+2. Install dependencies
+   ```bash
+   npm i
+   ```
+3. Start the development server
+   ```bash
+   npm run dev
+   ```
 
-This project is built with:
+### Option 3 — GitHub Codespaces
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Open your repo on GitHub.
+- Click **Code → Codespaces → New Codespace**.
+- Edit files directly in your browser IDE.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/ba19f4f0-46f2-4ef2-be61-5809ed262a98) and click on Share -> Publish.
+## 🌍 Deployment
 
-## Can I connect a custom domain to my Lovable project?
+Publish directly through [Lovable](https://lovable.dev/projects/ba19f4f0-46f2-4ef2-be61-5809ed262a98)  
+→ **Share → Publish**  
+or connect a custom domain via **Project → Settings → Domains**.
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📈 Future Plans
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- Integrate AI-powered recommendation and matching for clients and creators.
+- Implement analytics to measure engagement and optimize design.
+- Extend the build pipeline for direct mobile app store deployment.
+
+---
