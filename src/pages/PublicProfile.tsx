@@ -135,7 +135,6 @@ const PublicProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Cover Image */}
         {/* Cover Image */}
         <div className="relative h-64 md:h-96 bg-muted">
           {coverImage && (
