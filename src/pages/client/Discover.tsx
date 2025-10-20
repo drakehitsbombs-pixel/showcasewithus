@@ -126,13 +126,24 @@ const Discover = () => {
         setCreators(data.creators);
         setCurrentIndex(0);
         
-        // Track profile views
-        data.creators.forEach((creator: any) => {
-          supabase.from('profile_views').insert({
-            creator_user_id: creator.user_id,
-            viewer_user_id: user?.id,
-          }).then(() => {});
-        });
+        // Track profile views (unique per viewer per creator)
+        if (user?.id) {
+          data.creators.forEach(async (creator: any) => {
+            const { data: existingView } = await supabase
+              .from('profile_views')
+              .select('id')
+              .eq('creator_user_id', creator.user_id)
+              .eq('viewer_user_id', user.id)
+              .maybeSingle();
+            
+            if (!existingView) {
+              await supabase.from('profile_views').insert({
+                creator_user_id: creator.user_id,
+                viewer_user_id: user.id,
+              });
+            }
+          });
+        }
       }
     } catch (error: any) {
       console.error("Error loading creators:", error);

@@ -81,14 +81,15 @@ const Dashboard = () => {
         const dayEnd = new Date(dayStart);
         dayEnd.setHours(23, 59, 59, 999);
 
-        // Views for this day
-        const { count: viewsDay } = await supabase
+        // Views for this day (unique viewers)
+        const { data: viewsDay } = await supabase
           .from('profile_views')
-          .select('*', { count: 'exact', head: true })
+          .select('viewer_user_id')
           .eq('creator_user_id', userId)
           .gte('created_at', dayStart.toISOString())
           .lte('created_at', dayEnd.toISOString());
-        viewsTrend.push(viewsDay || 0);
+        const uniqueViewers = new Set(viewsDay?.map(v => v.viewer_user_id).filter(Boolean));
+        viewsTrend.push(uniqueViewers.size);
 
         // Likes for this day
         const { count: likesDay } = await supabase
@@ -111,12 +112,14 @@ const Dashboard = () => {
         matchesTrend.push(matchesDay || 0);
       }
 
-      // Profile views (last 7 days total)
-      const { count: viewsCount } = await supabase
+      // Profile views (last 7 days total - unique viewers)
+      const { data: viewsData7d } = await supabase
         .from('profile_views')
-        .select('*', { count: 'exact', head: true })
+        .select('viewer_user_id')
         .eq('creator_user_id', userId)
         .gte('created_at', sevenDaysAgo.toISOString());
+      const uniqueViewers7d = new Set(viewsData7d?.map(v => v.viewer_user_id).filter(Boolean));
+      const viewsCount = uniqueViewers7d.size;
 
       // Likes (last 7 days total)
       const { count: likesCount } = await supabase
@@ -220,7 +223,7 @@ const Dashboard = () => {
       setHasPrice(!!profile?.price_band_low);
 
       setMetrics({
-        profile_views: viewsCount || 0,
+        profile_views: viewsCount,
         likes: likesCount || 0,
         matches: matchesCount || 0,
         messages: messagesCount,
@@ -495,11 +498,19 @@ const Dashboard = () => {
                   <Upload className="w-4 h-4 mr-2" />
                   Add Photos/Projects
                 </Button>
-                <Button onClick={() => {
-                  const username = user?.user_metadata?.username;
+                <Button onClick={async () => {
+                  const { data: profile } = await supabase
+                    .from('users_extended')
+                    .select('username')
+                    .eq('id', user?.id)
+                    .single();
+                  
+                  const username = profile?.username;
                   if (username) {
                     navigator.clipboard.writeText(`${window.location.origin}/creator/${username}`);
                     alert('Profile link copied!');
+                  } else {
+                    alert('Please set a username in your profile first');
                   }
                 }} variant="secondary" size="lg">
                   <Share2 className="w-4 h-4 mr-2" />
