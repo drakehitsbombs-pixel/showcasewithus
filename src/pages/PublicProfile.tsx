@@ -283,7 +283,6 @@ const PublicProfile = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
