@@ -10,6 +10,24 @@
     <!-- Preload critical hero image for faster LCP -->
     <link rel="preload" href="/hero-bg-optimized.webp" as="image" type="image/webp" fetchpriority="high">
     
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossorigin>
+    
+    <!-- Font preload (non-blocking) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"></noscript>
+    
+    <!-- Deferred loader helper -->
+    <script>
+      window.loadDeferred = function(src, attrs={}) {
+        var s = document.createElement('script'); s.src = src; s.defer = true;
+        for (const [k,v] of Object.entries(attrs)) s.setAttribute(k,v);
+        document.head.appendChild(s);
+      };
+    </script>
+    
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8904686344566128" crossorigin="anonymous"></script>
     
@@ -29,5 +47,26 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Lazy-load iframes on scroll -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        const io = new IntersectionObserver(entries=>{
+          entries.forEach(e=>{
+            if(e.isIntersecting){
+              const el=e.target;
+              if(el.dataset.src) el.src = el.dataset.src;
+              io.unobserve(el);
+            }
+          });
+        }, {rootMargin:'200px'});
+        document.querySelectorAll('iframe[data-src]').forEach(el=>io.observe(el));
+      });
+      
+      // Register service worker for static caching
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', ()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+      }
+    </script>
   </body>
 </html>
