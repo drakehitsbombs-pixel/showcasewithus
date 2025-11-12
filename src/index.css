@@ -253,4 +253,18 @@
       height: auto;
     }
   }
+
+  /* Ad exclusion zones - prevent Auto Ads from appearing in these areas */
+  .ad-exclude ins.adsbygoogle,
+  .ad-exclude-header ins.adsbygoogle,
+  .ad-exclude-hero ins.adsbygoogle,
+  .ad-exclude-gallery ins.adsbygoogle {
+    display: none !important;
+  }
+
+  /* Manual ad placement styling */
+  .ad-manual-banner {
+    @apply my-6;
+    min-height: 90px;
+  }
 }

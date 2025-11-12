@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,7 +50,11 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <>
+      <Helmet>
+        <meta name="ads-excluded" content="true" />
+      </Helmet>
+      <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border py-4">
         <div className="container mx-auto px-4">
           <Link to="/">
@@ -163,6 +168,7 @@ const Contact = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 

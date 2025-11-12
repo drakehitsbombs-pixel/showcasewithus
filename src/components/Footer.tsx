@@ -65,9 +65,12 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-6 text-center">
+        <div className="border-t border-border mt-8 pt-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} ShowCase. All rights reserved.
+          </p>
+          <p className="text-xs opacity-70 text-muted-foreground">
+            Some pages include ads or affiliate links. Featured listings are paid and clearly labeled.
           </p>
         </div>
       </div>

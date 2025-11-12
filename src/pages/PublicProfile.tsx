@@ -137,7 +137,7 @@ const PublicProfile = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Cover Image */}
-      <div className="relative h-64 md:h-96 bg-muted">
+      <div className="relative h-64 md:h-96 bg-muted ad-exclude-hero">
           {coverImage && (
             <img
               src={coverImage}
@@ -252,7 +252,7 @@ const PublicProfile = () => {
             {portfolio.length > 0 && (
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-4">Portfolio</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 ad-exclude-gallery">
                   {portfolio.map((item) => (
                     <div
                       key={item.id}
@@ -265,6 +265,16 @@ const PublicProfile = () => {
                       />
                     </div>
                   ))}
+                </div>
+                
+                {/* Ad placement below gallery */}
+                <div className="ad-manual-banner mt-6">
+                  <ins 
+                    className="adsbygoogle"
+                    style={{ display: 'block' }}
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"
+                  />
                 </div>
               </div>
             )}

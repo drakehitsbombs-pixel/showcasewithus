@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,8 +98,14 @@ const Discover = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b border-border py-4">
+    <>
+      <Helmet>
+        <script>
+          {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+        </script>
+      </Helmet>
+      <div className="min-h-screen bg-background flex flex-col">
+      <header className="border-b border-border py-4 ad-exclude-header">
         <div className="container mx-auto px-4 flex items-center justify-between">
           <Link to="/">
             <h1 className="text-2xl font-bold">ShowCase</h1>
@@ -189,51 +196,116 @@ const Discover = () => {
                 <p className="text-muted-foreground">Loading photographers...</p>
               </div>
             ) : creators.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {creators.map((creator) => {
-                  const user = creator.users_extended;
-                  const coverImage = creator.portfolio_images?.[0]?.url || user?.avatar_url;
-                  
-                  return (
-                    <Card 
-                      key={creator.id} 
-                      className="overflow-hidden hover:shadow-elevated transition-smooth cursor-pointer"
-                      onClick={() => navigate(`/p/${user?.slug}`)}
-                    >
-                      <div className="aspect-square bg-muted relative">
-                        {coverImage && (
-                          <img
-                            src={coverImage}
-                            alt={user?.name}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold text-lg mb-1">{user?.name}</h3>
-                        {user?.city && (
-                          <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
-                            <MapPin className="w-3 h-3" />
-                            {user.city}
-                          </p>
-                        )}
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {creator.styles?.slice(0, 3).map((style: string) => (
-                            <Badge key={style} variant="secondary" className="text-xs">
-                              {getStyleLabel(style)}
-                            </Badge>
-                          ))}
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {creators.slice(0, 6).map((creator) => {
+                    const user = creator.users_extended;
+                    const coverImage = creator.portfolio_images?.[0]?.url || user?.avatar_url;
+                    
+                    return (
+                      <Card 
+                        key={creator.id} 
+                        className="overflow-hidden hover:shadow-elevated transition-smooth cursor-pointer"
+                        onClick={() => navigate(`/p/${user?.slug}`)}
+                      >
+                        <div className="aspect-square bg-muted relative">
+                          {coverImage && (
+                            <img
+                              src={coverImage}
+                              alt={user?.name}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
                         </div>
-                        {creator.price_band_low && (
-                          <p className="text-sm font-semibold text-primary">
-                            Starting at ${creator.price_band_low}/hr
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold text-lg mb-1">{user?.name}</h3>
+                          {user?.city && (
+                            <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
+                              <MapPin className="w-3 h-3" />
+                              {user.city}
+                            </p>
+                          )}
+                          <div className="flex flex-wrap gap-1 mb-3">
+                            {creator.styles?.slice(0, 3).map((style: string) => (
+                              <Badge key={style} variant="secondary" className="text-xs">
+                                {getStyleLabel(style)}
+                              </Badge>
+                            ))}
+                          </div>
+                          {creator.price_band_low && (
+                            <p className="text-sm font-semibold text-primary">
+                              Starting at ${creator.price_band_low}/hr
+                            </p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+
+                {/* Manual Ad Banner after first row */}
+                {creators.length > 6 && (
+                  <div className="ad-manual-banner">
+                    <ins 
+                      className="adsbygoogle"
+                      style={{ display: 'block', margin: '24px 0' }}
+                      data-ad-client="ca-pub-8904686344566128"
+                      data-ad-slot="0000000000"
+                      data-ad-format="auto"
+                      data-full-width-responsive="true"
+                    />
+                  </div>
+                )}
+
+                {/* Remaining photographers */}
+                {creators.length > 6 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {creators.slice(6).map((creator) => {
+                      const user = creator.users_extended;
+                      const coverImage = creator.portfolio_images?.[0]?.url || user?.avatar_url;
+                      
+                      return (
+                        <Card 
+                          key={creator.id} 
+                          className="overflow-hidden hover:shadow-elevated transition-smooth cursor-pointer"
+                          onClick={() => navigate(`/p/${user?.slug}`)}
+                        >
+                          <div className="aspect-square bg-muted relative">
+                            {coverImage && (
+                              <img
+                                src={coverImage}
+                                alt={user?.name}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <CardContent className="p-4">
+                            <h3 className="font-semibold text-lg mb-1">{user?.name}</h3>
+                            {user?.city && (
+                              <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
+                                <MapPin className="w-3 h-3" />
+                                {user.city}
+                              </p>
+                            )}
+                            <div className="flex flex-wrap gap-1 mb-3">
+                              {creator.styles?.slice(0, 3).map((style: string) => (
+                                <Badge key={style} variant="secondary" className="text-xs">
+                                  {getStyleLabel(style)}
+                                </Badge>
+                              ))}
+                            </div>
+                            {creator.price_band_low && (
+                              <p className="text-sm font-semibold text-primary">
+                                Starting at ${creator.price_band_low}/hr
+                              </p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-20">
                 <p className="text-muted-foreground mb-4">No photographers found</p>
@@ -251,6 +323,7 @@ const Discover = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 
