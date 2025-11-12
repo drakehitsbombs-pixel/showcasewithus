@@ -153,8 +153,10 @@ export type Database = {
           availability_blocks: Json | null
           avatar_url: string | null
           created_at: string
+          email_public: boolean | null
           id: string
           is_discoverable: boolean | null
+          phone_public: boolean | null
           price_band_high: number | null
           price_band_low: number | null
           public_profile: boolean | null
@@ -173,8 +175,10 @@ export type Database = {
           availability_blocks?: Json | null
           avatar_url?: string | null
           created_at?: string
+          email_public?: boolean | null
           id?: string
           is_discoverable?: boolean | null
+          phone_public?: boolean | null
           price_band_high?: number | null
           price_band_low?: number | null
           public_profile?: boolean | null
@@ -193,8 +197,10 @@ export type Database = {
           availability_blocks?: Json | null
           avatar_url?: string | null
           created_at?: string
+          email_public?: boolean | null
           id?: string
           is_discoverable?: boolean | null
+          phone_public?: boolean | null
           price_band_high?: number | null
           price_band_low?: number | null
           public_profile?: boolean | null
@@ -853,10 +859,7 @@ export type Database = {
         Args: { target_date?: string }
         Returns: undefined
       }
-      generate_slug: {
-        Args: { display_name: string }
-        Returns: string
-      }
+      generate_slug: { Args: { display_name: string }; Returns: string }
       get_creator_profile_by_username_or_id: {
         Args: { p_user_id?: string; p_username?: string }
         Returns: {

@@ -7,6 +7,9 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
+import Discover from "./pages/Discover";
+import Help from "./pages/Help";
+import Contact from "./pages/Contact";
 import CreatorProfileSetup from "./pages/creator/ProfileSetup";
 import CreatorProfile from "./pages/creator/Profile";
 import CreatorDashboard from "./pages/creator/Dashboard";
@@ -43,6 +46,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/discover" element={<Discover />} />
+          <Route path="/help" element={<Help />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/creator/profile-setup" element={<CreatorProfileSetup />} />
           <Route path="/creator/:username" element={<CreatorProfile />} />
           <Route path="/creator/id/:userId" element={<CreatorProfile />} />

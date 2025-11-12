@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, Star, DollarSign, MessageSquare, Calendar } from "lucide-react";
+import { MapPin, Star, DollarSign, MessageSquare, Calendar, Mail, Phone } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const PublicProfile = () => {
   const { slug } = useParams();
@@ -134,9 +135,9 @@ const PublicProfile = () => {
   const showPrice = profile.show_price_range && profile.price_band_low;
 
   return (
-    <div className="min-h-screen bg-background">
-        {/* Cover Image */}
-        <div className="relative h-64 md:h-96 bg-muted">
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Cover Image */}
+      <div className="relative h-64 md:h-96 bg-muted">
           {coverImage && (
             <img
               src={coverImage}
@@ -144,10 +145,10 @@ const PublicProfile = () => {
               className="w-full h-full object-cover"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+      </div>
 
-        <div className="container mx-auto px-4 -mt-20 relative z-10">
+      <div className="flex-1 container mx-auto px-4 -mt-20 relative z-10">
           <div className="max-w-4xl mx-auto">
             {/* Profile Header */}
             <Card className="mb-6">
@@ -172,14 +173,42 @@ const PublicProfile = () => {
                         )}
                       </div>
 
-                      <div className="flex gap-2">
-                        <Button onClick={handleMessage} size="lg">
+                      <div className="flex flex-wrap gap-2">
+                        {/* Email Contact */}
+                        {profile.email_public && profile.email && (
+                          <Button 
+                            size="lg" 
+                            variant="outline"
+                            asChild
+                          >
+                            <a href={`mailto:${profile.email}?subject=Inquiry from ShowCase`}>
+                              <Mail className="w-4 h-4 mr-2" />
+                              Email
+                            </a>
+                          </Button>
+                        )}
+                        
+                        {/* Phone Contact */}
+                        {profile.phone_public && profile.phone && (
+                          <Button 
+                            size="lg" 
+                            variant="outline"
+                            asChild
+                          >
+                            <a href={`tel:${profile.phone}`}>
+                              <Phone className="w-4 h-4 mr-2" />
+                              Call
+                            </a>
+                          </Button>
+                        )}
+                        
+                        <Button onClick={handleMessage} size="lg" variant="outline">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Message
                         </Button>
-                        <Button onClick={handleBooking} variant="outline" size="lg">
+                        <Button onClick={handleBooking} size="lg">
                           <Calendar className="w-4 h-4 mr-2" />
-                          Request Booking
+                          Book
                         </Button>
                       </div>
                     </div>
@@ -282,8 +311,10 @@ const PublicProfile = () => {
             )}
           </div>
         </div>
+
+        <Footer />
       </div>
-  );
-};
+    );
+  };
 
 export default PublicProfile;

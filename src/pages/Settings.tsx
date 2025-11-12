@@ -30,6 +30,8 @@ const Settings = () => {
   const [styles, setStyles] = useState<string[]>([]);
   const [publicProfile, setPublicProfile] = useState(true);
   const [showPriceRange, setShowPriceRange] = useState(true);
+  const [emailPublic, setEmailPublic] = useState(true);
+  const [phonePublic, setPhonePublic] = useState(true);
 
   useEffect(() => {
     checkAuth();
@@ -98,6 +100,8 @@ const Settings = () => {
           setStyles(profile.styles || []);
           setPublicProfile(profile.public_profile ?? true);
           setShowPriceRange(profile.show_price_range ?? true);
+          setEmailPublic(profile.email_public ?? true);
+          setPhonePublic(profile.phone_public ?? true);
         }
       } else {
         // Load client preferences
@@ -183,6 +187,8 @@ const Settings = () => {
             styles: normalizedStyles,
             public_profile: publicProfile,
             show_price_range: showPriceRange,
+            email_public: emailPublic,
+            phone_public: phonePublic,
           });
 
         if (profileError) throw profileError;
@@ -406,6 +412,38 @@ const Settings = () => {
                       id="show-price"
                       checked={showPriceRange}
                       onChange={(e) => setShowPriceRange(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label htmlFor="email-public">Show Email Publicly</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Display email contact button on your public profile
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      id="email-public"
+                      checked={emailPublic}
+                      onChange={(e) => setEmailPublic(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label htmlFor="phone-public">Show Phone Publicly</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Display phone contact button on your public profile
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      id="phone-public"
+                      checked={phonePublic}
+                      onChange={(e) => setPhonePublic(e.target.checked)}
                       className="w-4 h-4"
                     />
                   </div>
