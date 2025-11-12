@@ -66,9 +66,9 @@ const Index = () => {
             <Button 
               size="lg" 
               className="gradient-primary shadow-glow text-lg h-14 px-8" 
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/discover")}
             >
-              Get Started
+              View Photographers
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             <Button 
@@ -183,9 +183,9 @@ const Index = () => {
             size="lg" 
             variant="secondary"
             className="bg-white text-primary hover:bg-white/90 text-lg h-12 px-8"
-            onClick={() => navigate("/client/discover?tab=search")}
+            onClick={() => navigate("/discover")}
           >
-            Find Available Photographers
+            Browse Full Portfolios
           </Button>
         </div>
       </section>
@@ -210,7 +210,7 @@ const Index = () => {
                 <ul className="space-y-2">
                   <li>
                     <button 
-                      onClick={() => navigate("/client/discover")}
+                      onClick={() => navigate("/discover")}
                       className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Discover
@@ -218,7 +218,7 @@ const Index = () => {
                   </li>
                   <li>
                     <button 
-                      onClick={() => navigate("/client/showcase")}
+                      onClick={() => navigate("/showcase")}
                       className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Showcase
@@ -238,14 +238,20 @@ const Index = () => {
                 <h4 className="font-semibold mb-3">Support</h4>
                 <ul className="space-y-2">
                   <li>
-                    <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                    <button 
+                      onClick={() => navigate("/help")}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
                       Help Center
-                    </a>
+                    </button>
                   </li>
                   <li>
-                    <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                    <button 
+                      onClick={() => navigate("/contact")}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
                       Contact Us
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>
