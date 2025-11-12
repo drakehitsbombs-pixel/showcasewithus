@@ -18,7 +18,7 @@ const Discover = () => {
     styles: [] as string[],
     distance: 100,
     budgetMin: 0,
-    budgetMax: 5000,
+    budgetMax: 10000,
   });
   const navigate = useNavigate();
 
@@ -52,11 +52,12 @@ const Discover = () => {
         query = query.overlaps("styles", searchFilters.styles);
       }
 
-      // Apply budget filter
-      if (searchFilters.budgetMin > 0 || searchFilters.budgetMax < 5000) {
-        query = query
-          .gte("price_band_low", searchFilters.budgetMin)
-          .lte("price_band_high", searchFilters.budgetMax);
+      // Apply budget filter only if user has adjusted from defaults
+      if (searchFilters.budgetMin > 0 || searchFilters.budgetMax < 10000) {
+        // Show profiles within budget OR with no price set
+        query = query.or(
+          `and(price_band_low.gte.${searchFilters.budgetMin},price_band_high.lte.${searchFilters.budgetMax}),price_band_low.is.null,price_band_high.is.null`
+        );
       }
 
       const { data, error } = await query;
@@ -91,7 +92,7 @@ const Discover = () => {
       styles: [],
       distance: 100,
       budgetMin: 0,
-      budgetMax: 5000,
+      budgetMax: 10000,
     });
   };
 
@@ -158,8 +159,8 @@ const Discover = () => {
                         value={[searchFilters.budgetMin]}
                         onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, budgetMin: value }))}
                         min={0}
-                        max={5000}
-                        step={50}
+                        max={10000}
+                        step={100}
                       />
                     </div>
                     <div>
@@ -168,8 +169,8 @@ const Discover = () => {
                         value={[searchFilters.budgetMax]}
                         onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, budgetMax: value }))}
                         min={0}
-                        max={5000}
-                        step={50}
+                        max={10000}
+                        step={100}
                       />
                     </div>
                   </div>
