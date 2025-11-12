@@ -16,8 +16,7 @@ import { getStyleLabel } from "@/lib/constants";
 interface CreatorProfile {
   id: string;
   user_id: string;
-  price_band_low: number | null;
-  price_band_high: number | null;
+  min_project_budget_usd: number;
   travel_radius_km: number | null;
   styles: string[];
   rating_avg: number | null;
@@ -123,8 +122,7 @@ const CreatorProfile = () => {
         setProfile({
           id: data.user_id,
           user_id: data.user_id,
-          price_band_low: data.price_band_low,
-          price_band_high: data.price_band_high,
+          min_project_budget_usd: data.min_project_budget_usd,
           travel_radius_km: data.travel_radius_km,
           styles: data.styles || [],
           rating_avg: data.rating_avg,
@@ -141,7 +139,7 @@ const CreatorProfile = () => {
 
         // Check if profile is limited (not fully set up)
         const hasAvatar = data.avatar_url || data.profile_avatar_url;
-        const hasPricing = data.price_band_low && data.price_band_high;
+        const hasPricing = data.min_project_budget_usd > 0;
         setIsLimitedProfile(!hasAvatar || !hasPricing || !data.is_discoverable);
 
         // Load additional data
@@ -415,10 +413,10 @@ const CreatorProfile = () => {
 
               {/* Stats */}
               <div className="flex gap-4 mb-4">
-                {profile.price_band_low && profile.price_band_high && (
+                {profile.min_project_budget_usd > 0 && (
                   <div className="flex items-center gap-1 text-sm">
                     <DollarSign className="w-4 h-4 text-muted-foreground" />
-                    <span>${profile.price_band_low} - ${profile.price_band_high}</span>
+                    <span>Min project ${profile.min_project_budget_usd}</span>
                   </div>
                 )}
                 {profile.rating_avg !== null && (
@@ -639,8 +637,7 @@ const CreatorProfile = () => {
         onOpenChange={setShowBookingModal}
         creatorId={resolvedUserId || ""}
         creatorName={userData?.name || ""}
-        priceLow={profile?.price_band_low || undefined}
-        priceHigh={profile?.price_band_high || undefined}
+        minProjectBudget={profile?.min_project_budget_usd || undefined}
       />
     </div>
   );

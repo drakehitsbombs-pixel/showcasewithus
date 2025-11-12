@@ -132,7 +132,7 @@ const PublicProfile = () => {
   }
 
   const coverImage = portfolio[0]?.url || profile.avatar_url;
-  const showPrice = profile.show_price_range && profile.price_band_low;
+  const showMinBudget = profile.min_project_budget_usd > 0;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -231,10 +231,10 @@ const PublicProfile = () => {
                           <span className="text-muted-foreground">({profile.review_count} reviews)</span>
                         </div>
                       )}
-                      {showPrice && (
+                      {showMinBudget && (
                         <div className="flex items-center gap-1 text-muted-foreground">
                           <DollarSign className="w-4 h-4" />
-                          <span>${profile.price_band_low}-${profile.price_band_high}</span>
+                          <span>Min project ${profile.min_project_budget_usd}</span>
                         </div>
                       )}
                     </div>

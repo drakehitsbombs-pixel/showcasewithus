@@ -215,13 +215,13 @@ const Dashboard = () => {
       // Profile completion data
       const { data: profile } = await supabase
         .from('creator_profiles')
-        .select('styles, price_band_low, portfolios(id)')
+        .select('styles, min_project_budget_usd, portfolio_images(id)')
         .eq('user_id', userId)
         .single();
 
-      setPortfolioCount(profile?.portfolios?.length || 0);
+      setPortfolioCount(profile?.portfolio_images?.length || 0);
       setStylesCount(profile?.styles?.length || 0);
-      setHasPrice(!!profile?.price_band_low);
+      setHasPrice(!!profile?.min_project_budget_usd);
 
       setMetrics({
         profile_views: viewsCount,

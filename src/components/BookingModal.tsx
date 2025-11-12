@@ -20,8 +20,7 @@ interface BookingModalProps {
   onOpenChange: (open: boolean) => void;
   creatorId: string;
   creatorName: string;
-  priceLow?: number;
-  priceHigh?: number;
+  minProjectBudget?: number;
 }
 
 export const BookingModal = ({
@@ -29,8 +28,7 @@ export const BookingModal = ({
   onOpenChange,
   creatorId,
   creatorName,
-  priceLow,
-  priceHigh,
+  minProjectBudget,
 }: BookingModalProps) => {
   const [slotDate, setSlotDate] = useState("");
   const [slotStart, setSlotStart] = useState("");
@@ -192,9 +190,9 @@ export const BookingModal = ({
           <DialogTitle>Request Booking</DialogTitle>
           <DialogDescription>
             Send a booking request to {creatorName}
-            {priceLow && priceHigh && (
+            {minProjectBudget && minProjectBudget > 0 && (
               <span className="block mt-1 text-sm">
-                Estimated: ${priceLow} - ${priceHigh}/hr
+                Minimum project budget: ${minProjectBudget}
               </span>
             )}
           </DialogDescription>

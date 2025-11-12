@@ -109,7 +109,6 @@ const ProfileSetup = () => {
       // Validate creator profile data
       const creatorData = creatorProfileSchema.parse({
         priceBandLow: priceLow ? parseFloat(priceLow) : undefined,
-        priceBandHigh: priceHigh ? parseFloat(priceHigh) : undefined,
         travelRadius: parseInt(travelRadius),
         styles: selectedStyles,
       });
@@ -124,8 +123,7 @@ const ProfileSetup = () => {
 
       // Update creator profile
       await supabase.from("creator_profiles").update({
-        price_band_low: creatorData.priceBandLow,
-        price_band_high: creatorData.priceBandHigh,
+        min_project_budget_usd: creatorData.priceBandLow,
         travel_radius_km: creatorData.travelRadius,
         styles: creatorData.styles,
       }).eq("user_id", user.id);
@@ -300,29 +298,28 @@ const ProfileSetup = () => {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="price-low">Min Rate ($/hour) *</Label>
-                    <Input
-                      id="price-low"
-                      type="number"
-                      value={priceLow}
-                      onChange={(e) => setPriceLow(e.target.value)}
-                      placeholder="100"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="price-high">Max Rate ($/hour) *</Label>
-                    <Input
-                      id="price-high"
-                      type="number"
-                      value={priceHigh}
-                      onChange={(e) => setPriceHigh(e.target.value)}
-                      placeholder="500"
-                      required
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="min-budget">Minimum Project Budget *</Label>
+                  <Input
+                    id="min-budget"
+                    type="number"
+                    value={priceLow}
+                    onChange={(e) => setPriceLow(e.target.value)}
+                    placeholder="500"
+                    min="0"
+                    step="50"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    We book projects starting at this amount
+                  </p>
+                  {priceLow && (
+                    <div className="p-3 bg-muted/50 rounded-md">
+                      <p className="text-sm text-muted-foreground">
+                        Preview: <span className="font-semibold text-foreground">Minimum project ${priceLow}</span>
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <Button 

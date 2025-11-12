@@ -204,9 +204,9 @@ const Admin = () => {
                             
                             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                               <span>{creator.users_extended?.city || 'Location not set'}</span>
-                              {creator.price_band_low && (
+                              {creator.min_project_budget_usd > 0 && (
                                 <span>
-                                  ${creator.price_band_low} - ${creator.price_band_high}/hr
+                                  Min project ${creator.min_project_budget_usd}
                                 </span>
                               )}
                               <span>{creator.portfolio_images?.length || 0} images</span>

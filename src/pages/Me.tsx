@@ -139,11 +139,11 @@ const Me = () => {
                 <CardTitle>Professional Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {profileData.price_band_low && profileData.price_band_high && (
+                {profileData.min_project_budget_usd > 0 && (
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-5 w-5 text-muted-foreground" />
                     <span>
-                      ${profileData.price_band_low} - ${profileData.price_band_high}
+                      Min project ${profileData.min_project_budget_usd}
                     </span>
                   </div>
                 )}

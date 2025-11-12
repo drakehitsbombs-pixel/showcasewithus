@@ -18,8 +18,7 @@ const Discover = () => {
   const [searchFilters, setSearchFilters] = useState({
     styles: [] as string[],
     distance: 100,
-    budgetMin: 0,
-    budgetMax: 10000,
+    budgetMinimum: 0,
   });
   const navigate = useNavigate();
 
@@ -53,12 +52,9 @@ const Discover = () => {
         query = query.overlaps("styles", searchFilters.styles);
       }
 
-      // Apply budget filter only if user has adjusted from defaults
-      if (searchFilters.budgetMin > 0 || searchFilters.budgetMax < 10000) {
-        // Show profiles within budget OR with no price set
-        query = query.or(
-          `and(price_band_low.gte.${searchFilters.budgetMin},price_band_high.lte.${searchFilters.budgetMax}),price_band_low.is.null,price_band_high.is.null`
-        );
+      // Apply budget filter: show photographers whose minimum is at or below the selected budget
+      if (searchFilters.budgetMinimum > 0) {
+        query = query.lte("min_project_budget_usd", searchFilters.budgetMinimum);
       }
 
       const { data, error } = await query;
@@ -92,8 +88,7 @@ const Discover = () => {
     setSearchFilters({
       styles: [],
       distance: 100,
-      budgetMin: 0,
-      budgetMax: 10000,
+      budgetMinimum: 0,
     });
   };
 
@@ -158,29 +153,23 @@ const Discover = () => {
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Budget Range</Label>
-                  <div className="space-y-2">
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Min: ${searchFilters.budgetMin}</Label>
-                      <Slider
-                        value={[searchFilters.budgetMin]}
-                        onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, budgetMin: value }))}
-                        min={0}
-                        max={10000}
-                        step={100}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Max: ${searchFilters.budgetMax}</Label>
-                      <Slider
-                        value={[searchFilters.budgetMax]}
-                        onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, budgetMax: value }))}
-                        min={0}
-                        max={10000}
-                        step={100}
-                      />
-                    </div>
-                  </div>
+                  <Label className="text-sm font-medium mb-2 block">Budget ≥</Label>
+                  <select
+                    className="w-full p-2 border border-input rounded-md bg-background"
+                    value={searchFilters.budgetMinimum}
+                    onChange={(e) => setSearchFilters(prev => ({ ...prev, budgetMinimum: Number(e.target.value) }))}
+                  >
+                    <option value={0}>Any Budget</option>
+                    <option value={100}>$100+</option>
+                    <option value={250}>$250+</option>
+                    <option value={500}>$500+</option>
+                    <option value={1000}>$1,000+</option>
+                    <option value={2000}>$2,000+</option>
+                    <option value={5000}>$5,000+</option>
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Show photographers with minimum project budget at or below this amount
+                  </p>
                 </div>
 
                 <Button variant="outline" className="w-full" onClick={clearFilters}>
@@ -231,12 +220,12 @@ const Discover = () => {
                                 {getStyleLabel(style)}
                               </Badge>
                             ))}
-                          </div>
-                          {creator.price_band_low && (
-                            <p className="text-sm font-semibold text-primary">
-                              Starting at ${creator.price_band_low}/hr
-                            </p>
-                          )}
+                        </div>
+                        {creator.min_project_budget_usd > 0 && (
+                          <p className="text-sm font-semibold text-primary">
+                            Minimum project ${creator.min_project_budget_usd}
+                          </p>
+                        )}
                         </CardContent>
                       </Card>
                     );
@@ -293,12 +282,12 @@ const Discover = () => {
                                   {getStyleLabel(style)}
                                 </Badge>
                               ))}
-                            </div>
-                            {creator.price_band_low && (
-                              <p className="text-sm font-semibold text-primary">
-                                Starting at ${creator.price_band_low}/hr
-                              </p>
-                            )}
+                          </div>
+                          {creator.min_project_budget_usd > 0 && (
+                            <p className="text-sm font-semibold text-primary">
+                              Minimum project ${creator.min_project_budget_usd}
+                            </p>
+                          )}
                           </CardContent>
                         </Card>
                       );

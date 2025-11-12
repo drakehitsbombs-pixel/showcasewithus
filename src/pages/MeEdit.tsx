@@ -78,8 +78,7 @@ const MeEdit = () => {
           city: userData.city || "",
           bio: userData.bio || "",
           avatar_url: userData.avatar_url || "",
-          price_band_low: creatorProfile?.price_band_low || 500,
-          price_band_high: creatorProfile?.price_band_high || 5000,
+          min_project_budget_usd: creatorProfile?.min_project_budget_usd || 500,
           travel_radius_km: creatorProfile?.travel_radius_km || 50,
           styles: creatorProfile?.styles || [],
         });
@@ -165,8 +164,7 @@ const MeEdit = () => {
           .from("creator_profiles")
           .upsert({
             user_id: userId,
-            price_band_low: formData.price_band_low,
-            price_band_high: formData.price_band_high,
+            min_project_budget_usd: formData.min_project_budget_usd,
             travel_radius_km: formData.travel_radius_km,
             styles: formData.styles,
           })
@@ -319,21 +317,23 @@ const MeEdit = () => {
             {isCreator ? (
               <>
                 <div>
-                  <Label>Price Range</Label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      type="number"
-                      value={formData.price_band_low}
-                      onChange={(e) => setFormData((prev: any) => ({ ...prev, price_band_low: parseInt(e.target.value) || 0 }))}
-                      min={0}
-                    />
-                    <Input
-                      type="number"
-                      value={formData.price_band_high}
-                      onChange={(e) => setFormData((prev: any) => ({ ...prev, price_band_high: parseInt(e.target.value) || 0 }))}
-                      min={formData.price_band_low}
-                    />
-                  </div>
+                  <Label>Minimum Project Budget</Label>
+                  <Input
+                    type="number"
+                    value={formData.min_project_budget_usd}
+                    onChange={(e) => setFormData((prev: any) => ({ ...prev, min_project_budget_usd: parseInt(e.target.value) || 0 }))}
+                    min={0}
+                    step={50}
+                    placeholder="500"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    We book projects starting at this amount
+                  </p>
+                  {formData.min_project_budget_usd && (
+                    <div className="mt-2 p-2 bg-muted/50 rounded text-xs">
+                      Preview: <span className="font-semibold">Minimum project ${formData.min_project_budget_usd}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div>

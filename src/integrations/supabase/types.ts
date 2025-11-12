@@ -24,6 +24,7 @@ export type Database = {
           creator_avatar_url: string | null
           creator_email: string | null
           creator_name: string | null
+          estimated_budget_usd: number | null
           id: string
           location_text: string | null
           match_id: string
@@ -42,6 +43,7 @@ export type Database = {
           creator_avatar_url?: string | null
           creator_email?: string | null
           creator_name?: string | null
+          estimated_budget_usd?: number | null
           id?: string
           location_text?: string | null
           match_id: string
@@ -60,6 +62,7 @@ export type Database = {
           creator_avatar_url?: string | null
           creator_email?: string | null
           creator_name?: string | null
+          estimated_budget_usd?: number | null
           id?: string
           location_text?: string | null
           match_id?: string
@@ -156,9 +159,8 @@ export type Database = {
           email_public: boolean | null
           id: string
           is_discoverable: boolean | null
+          min_project_budget_usd: number
           phone_public: boolean | null
-          price_band_high: number | null
-          price_band_low: number | null
           public_profile: boolean | null
           rating_avg: number | null
           review_count: number | null
@@ -178,9 +180,8 @@ export type Database = {
           email_public?: boolean | null
           id?: string
           is_discoverable?: boolean | null
+          min_project_budget_usd?: number
           phone_public?: boolean | null
-          price_band_high?: number | null
-          price_band_low?: number | null
           public_profile?: boolean | null
           rating_avg?: number | null
           review_count?: number | null
@@ -200,9 +201,8 @@ export type Database = {
           email_public?: boolean | null
           id?: string
           is_discoverable?: boolean | null
+          min_project_budget_usd?: number
           phone_public?: boolean | null
-          price_band_high?: number | null
-          price_band_low?: number | null
           public_profile?: boolean | null
           rating_avg?: number | null
           review_count?: number | null
@@ -867,9 +867,8 @@ export type Database = {
           bio: string
           city: string
           is_discoverable: boolean
+          min_project_budget_usd: number
           name: string
-          price_band_high: number
-          price_band_low: number
           profile_avatar_url: string
           rating_avg: number
           review_count: number

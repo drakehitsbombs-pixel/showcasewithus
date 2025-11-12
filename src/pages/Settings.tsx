@@ -24,7 +24,6 @@ const Settings = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [priceLow, setPriceLow] = useState(500);
-  const [priceHigh, setPriceHigh] = useState(5000);
   const [city, setCity] = useState("");
   const [travelRadius, setTravelRadius] = useState(50);
   const [styles, setStyles] = useState<string[]>([]);
@@ -77,8 +76,7 @@ const Settings = () => {
             .from("creator_profiles")
             .insert({
               user_id: uid,
-              price_band_low: 500,
-              price_band_high: 5000,
+              min_project_budget_usd: 500,
               travel_radius_km: 50,
               styles: [],
             })
@@ -88,14 +86,12 @@ const Settings = () => {
           if (insertError) throw insertError;
           
           if (newProfile) {
-            setPriceLow(newProfile.price_band_low || 500);
-            setPriceHigh(newProfile.price_band_high || 5000);
+            setPriceLow(newProfile.min_project_budget_usd || 500);
             setTravelRadius(newProfile.travel_radius_km || 50);
             setStyles(newProfile.styles || []);
           }
         } else {
-          setPriceLow(profile.price_band_low || 500);
-          setPriceHigh(profile.price_band_high || 5000);
+          setPriceLow(profile.min_project_budget_usd || 500);
           setTravelRadius(profile.travel_radius_km || 50);
           setStyles(profile.styles || []);
           setPublicProfile(profile.public_profile ?? true);
@@ -169,20 +165,12 @@ const Settings = () => {
       if (userError) throw userError;
 
       if (userRole === "creator") {
-        // Validation for creators
-        if (priceLow >= priceHigh) {
-          toast.error("Minimum price must be less than maximum price");
-          setSaving(false);
-          return;
-        }
-
         // Update creator profile
         const { error: profileError } = await supabase
           .from("creator_profiles")
           .upsert({
             user_id: userId,
-            price_band_low: priceLow,
-            price_band_high: priceHigh,
+            min_project_budget_usd: priceLow,
             travel_radius_km: travelRadius,
             styles: normalizedStyles,
             public_profile: publicProfile,
@@ -345,32 +333,24 @@ const Settings = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label>Price Range</Label>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      ${priceLow} - ${priceHigh}
+                    <Label>Minimum Project Budget</Label>
+                    <Input
+                      id="min-budget"
+                      type="number"
+                      value={priceLow}
+                      onChange={(e) => setPriceLow(Number(e.target.value))}
+                      min={0}
+                      step={50}
+                      placeholder="500"
+                    />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      We book projects starting at this amount
                     </p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="price-low">Minimum ($)</Label>
-                        <Input
-                          id="price-low"
-                          type="number"
-                          value={priceLow}
-                          onChange={(e) => setPriceLow(Number(e.target.value))}
-                          min={0}
-                        />
+                    {priceLow > 0 && (
+                      <div className="mt-2 p-2 bg-muted/50 rounded text-sm">
+                        Preview: <span className="font-semibold">Minimum project ${priceLow}</span>
                       </div>
-                      <div>
-                        <Label htmlFor="price-high">Maximum ($)</Label>
-                        <Input
-                          id="price-high"
-                          type="number"
-                          value={priceHigh}
-                          onChange={(e) => setPriceHigh(Number(e.target.value))}
-                          min={priceLow}
-                        />
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
