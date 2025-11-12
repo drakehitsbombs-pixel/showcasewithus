@@ -39,8 +39,7 @@ const Discover = () => {
         .from("creator_profiles")
         .select(`
           *,
-          users_extended!creator_profiles_user_id_fkey(id, name, city, slug, bio),
-          portfolio_images(url)
+          users_extended!creator_profiles_user_id_fkey(id, name, city, slug, bio, avatar_url)
         `)
         .eq("is_discoverable", true)
         .eq("public_profile", true)
@@ -189,7 +188,7 @@ const Discover = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {creators.slice(0, 6).map((creator) => {
                     const user = creator.users_extended;
-                    const coverImage = creator.portfolio_images?.[0]?.url || user?.avatar_url;
+                    const coverImage = creator.avatar_url || user?.avatar_url;
                     
                     return (
                       <Card 
@@ -251,7 +250,7 @@ const Discover = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {creators.slice(6).map((creator) => {
                       const user = creator.users_extended;
-                      const coverImage = creator.portfolio_images?.[0]?.url || user?.avatar_url;
+                      const coverImage = creator.avatar_url || user?.avatar_url;
                       
                       return (
                         <Card 
