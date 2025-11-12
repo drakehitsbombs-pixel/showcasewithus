@@ -187,30 +187,37 @@ const Discover = () => {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {creators.slice(0, 6).map((creator) => {
-                    const user = creator.users_extended;
-                    const coverImage = creator.avatar_url || user?.avatar_url;
+                    // Handle both nested and flat structure
+                    const userExtended = Array.isArray(creator.users_extended) 
+                      ? creator.users_extended[0] 
+                      : creator.users_extended;
+                    
+                    const displayName = userExtended?.name || creator.name || 'Unknown';
+                    const displayCity = userExtended?.city || creator.city;
+                    const displaySlug = userExtended?.slug || creator.slug;
+                    const coverImage = creator.avatar_url || userExtended?.avatar_url;
                     
                     return (
                       <Card 
                         key={creator.id} 
                         className="overflow-hidden hover:shadow-elevated transition-smooth cursor-pointer"
-                        onClick={() => navigate(`/p/${user?.slug}`)}
+                        onClick={() => displaySlug && navigate(`/p/${displaySlug}`)}
                       >
                         <div className="aspect-square bg-muted relative">
                           {coverImage && (
                             <img
                               src={coverImage}
-                              alt={user?.name}
+                              alt={displayName}
                               className="w-full h-full object-cover"
                             />
                           )}
                         </div>
                         <CardContent className="p-4">
-                          <h3 className="font-semibold text-lg mb-1">{user?.name}</h3>
-                          {user?.city && (
+                          <h3 className="font-semibold text-lg mb-1">{displayName}</h3>
+                          {displayCity && (
                             <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
                               <MapPin className="w-3 h-3" />
-                              {user.city}
+                              {displayCity}
                             </p>
                           )}
                           <div className="flex flex-wrap gap-1 mb-3">
@@ -249,30 +256,37 @@ const Discover = () => {
                 {creators.length > 6 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {creators.slice(6).map((creator) => {
-                      const user = creator.users_extended;
-                      const coverImage = creator.avatar_url || user?.avatar_url;
+                      // Handle both nested and flat structure
+                      const userExtended = Array.isArray(creator.users_extended) 
+                        ? creator.users_extended[0] 
+                        : creator.users_extended;
+                      
+                      const displayName = userExtended?.name || creator.name || 'Unknown';
+                      const displayCity = userExtended?.city || creator.city;
+                      const displaySlug = userExtended?.slug || creator.slug;
+                      const coverImage = creator.avatar_url || userExtended?.avatar_url;
                       
                       return (
                         <Card 
                           key={creator.id} 
                           className="overflow-hidden hover:shadow-elevated transition-smooth cursor-pointer"
-                          onClick={() => navigate(`/p/${user?.slug}`)}
+                          onClick={() => displaySlug && navigate(`/p/${displaySlug}`)}
                         >
                           <div className="aspect-square bg-muted relative">
                             {coverImage && (
                               <img
                                 src={coverImage}
-                                alt={user?.name}
+                                alt={displayName}
                                 className="w-full h-full object-cover"
                               />
                             )}
                           </div>
                           <CardContent className="p-4">
-                            <h3 className="font-semibold text-lg mb-1">{user?.name}</h3>
-                            {user?.city && (
+                            <h3 className="font-semibold text-lg mb-1">{displayName}</h3>
+                            {displayCity && (
                               <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
                                 <MapPin className="w-3 h-3" />
-                                {user.city}
+                                {displayCity}
                               </p>
                             )}
                             <div className="flex flex-wrap gap-1 mb-3">
