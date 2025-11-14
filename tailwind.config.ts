@@ -12,13 +12,16 @@ export default {
         "2xl": "1400px",
       },
     },
-    extend: {
-      colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+		extend: {
+			fontFamily: {
+				sans: ["var(--font-sans)"],
+			},
+			colors: {
+				border: "hsl(var(--border))",
+				input: "hsl(var(--input))",
+				ring: "hsl(var(--ring))",
+				background: "hsl(var(--background))",
+				foreground: "hsl(var(--foreground))",
 				"cp-green": "hsl(var(--cp-green))",
 				"cp-gold": "hsl(var(--cp-gold))",
 				"cp-ink": "hsl(var(--cp-ink))",
