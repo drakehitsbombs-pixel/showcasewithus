@@ -116,11 +116,20 @@ const Discover = () => {
       ? creator.users_extended[0] 
       : creator.users_extended;
     
+    console.log('Creator data:', { 
+      creator_id: creator.id,
+      userExtended_name: userExtended?.name, 
+      userExtended_email: userExtended?.email,
+      show_name_public: creator.show_name_public 
+    });
+    
     const displayName = getPublicDisplayName(
       userExtended?.name,
       userExtended?.email,
       creator.show_name_public !== false // default to true if undefined
     );
+    
+    console.log('Display name result:', displayName);
     const displayCity = userExtended?.city || creator.city;
     const displaySlug = userExtended?.slug || creator.slug;
     const coverImage = creator.avatar_url || userExtended?.avatar_url;
