@@ -164,6 +164,7 @@ export type Database = {
           public_profile: boolean | null
           rating_avg: number | null
           review_count: number | null
+          show_name_public: boolean | null
           show_price_range: boolean | null
           showcase_rank: number | null
           showcase_score: number | null
@@ -185,6 +186,7 @@ export type Database = {
           public_profile?: boolean | null
           rating_avg?: number | null
           review_count?: number | null
+          show_name_public?: boolean | null
           show_price_range?: boolean | null
           showcase_rank?: number | null
           showcase_score?: number | null
@@ -206,6 +208,7 @@ export type Database = {
           public_profile?: boolean | null
           rating_avg?: number | null
           review_count?: number | null
+          show_name_public?: boolean | null
           show_price_range?: boolean | null
           showcase_rank?: number | null
           showcase_score?: number | null
