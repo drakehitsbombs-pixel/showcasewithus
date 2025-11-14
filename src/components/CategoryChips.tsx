@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const categories = [
@@ -24,16 +23,15 @@ export function CategoryChips() {
   return (
     <div className="w-full">
       <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex gap-2 p-1">
+        <div className="chips justify-center p-2">
           {categories.map((category) => (
-            <Badge
+            <button
               key={category.id}
-              variant="secondary"
-              className="px-4 py-2 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors text-sm font-medium"
+              className="chip cursor-pointer hover:shadow-sm transition-all"
               onClick={() => handleCategoryClick(category.id)}
             >
               {category.label}
-            </Badge>
+            </button>
           ))}
         </div>
         <ScrollBar orientation="horizontal" />
