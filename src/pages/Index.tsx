@@ -6,9 +6,17 @@ import { CategoryChips } from "@/components/CategoryChips";
 import { ShowcaseGrid } from "@/components/ShowcaseGrid";
 import { SocialProof } from "@/components/SocialProof";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 
 const Index = () => {
   const navigate = useNavigate();
+  
+  // Intersection observers for scroll animations
+  const socialProofAnim = useIntersectionObserver();
+  const howItWorksAnim = useIntersectionObserver();
+  const browseStyleAnim = useIntersectionObserver();
+  const featuredAnim = useIntersectionObserver();
+  const ctaAnim = useIntersectionObserver();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -92,14 +100,24 @@ const Index = () => {
       </section>
 
       {/* Social Proof */}
-      <section className="py-6 bg-cp-cream">
+      <section 
+        ref={socialProofAnim.ref}
+        className={`py-6 bg-cp-cream transition-all duration-700 ${
+          socialProofAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         <div className="trust-strip max-w-4xl">
           <SocialProof />
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="section-sm bg-cp-cream">
+      <section 
+        ref={howItWorksAnim.ref}
+        className={`section-sm bg-cp-cream transition-all duration-700 ${
+          howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         <div className="text-center mb-16">
           <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Simple Process</p>
           <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">How It Works</h2>
@@ -109,7 +127,12 @@ const Index = () => {
         </div>
         
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div className="float-card text-center">
+          <div 
+            className={`float-card text-center transition-all duration-700 ${
+              howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+            }`}
+            style={{ transitionDelay: howItWorksAnim.isVisible ? "100ms" : "0ms" }}
+          >
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-cp-green/10 mb-6">
               <Sparkles className="w-10 h-10 text-cp-green" />
             </div>
@@ -120,7 +143,12 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="float-card text-center">
+          <div 
+            className={`float-card text-center transition-all duration-700 ${
+              howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+            }`}
+            style={{ transitionDelay: howItWorksAnim.isVisible ? "200ms" : "0ms" }}
+          >
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-cp-green/10 mb-6">
               <Heart className="w-10 h-10 text-cp-green" />
             </div>
@@ -131,7 +159,12 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="float-card text-center">
+          <div 
+            className={`float-card text-center transition-all duration-700 ${
+              howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+            }`}
+            style={{ transitionDelay: howItWorksAnim.isVisible ? "300ms" : "0ms" }}
+          >
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-cp-green/10 mb-6">
               <Zap className="w-10 h-10 text-cp-green" />
             </div>
@@ -145,7 +178,12 @@ const Index = () => {
       </section>
 
       {/* Browse by Category */}
-      <section className="section-sm bg-white">
+      <section 
+        ref={browseStyleAnim.ref}
+        className={`section-sm bg-white transition-all duration-700 ${
+          browseStyleAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         <div className="text-center mb-12">
           <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Explore Styles</p>
           <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">Browse by Style</h2>
@@ -159,7 +197,12 @@ const Index = () => {
       </section>
 
       {/* Featured Photographers */}
-      <section className="section-sm bg-cp-cream">
+      <section 
+        ref={featuredAnim.ref}
+        className={`section-sm bg-cp-cream transition-all duration-700 ${
+          featuredAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         <div className="text-center mb-12">
           <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Top Talent</p>
           <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">Featured Photographers</h2>
@@ -180,10 +223,20 @@ const Index = () => {
       </section>
 
       {/* CTA Sections - Two Tiles */}
-      <section className="section-sm bg-white">
+      <section 
+        ref={ctaAnim.ref}
+        className={`section-sm bg-white transition-all duration-700 ${
+          ctaAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {/* For Clients */}
-          <div className="tile p-10 text-center">
+          <div 
+            className={`tile p-10 text-center transition-all duration-700 ${
+              ctaAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+            }`}
+            style={{ transitionDelay: ctaAnim.isVisible ? "100ms" : "0ms" }}
+          >
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cp-green/10 mb-5">
               <Camera className="w-8 h-8 text-cp-green" />
             </div>
@@ -200,7 +253,12 @@ const Index = () => {
           </div>
 
           {/* For Photographers */}
-          <div className="tile p-10 text-center">
+          <div 
+            className={`tile p-10 text-center transition-all duration-700 ${
+              ctaAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+            }`}
+            style={{ transitionDelay: ctaAnim.isVisible ? "250ms" : "0ms" }}
+          >
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cp-gold/10 mb-5">
               <Sparkles className="w-8 h-8 text-cp-gold" />
             </div>
