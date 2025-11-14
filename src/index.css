@@ -54,7 +54,10 @@
     --input: 240 9% 91%;
     --ring: 154 60% 21%;
 
-    --radius: 1rem;
+    --radius: 20px;
+    --radius-lg: 999px;
+    --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 16px 40px rgba(0, 0, 0, 0.08);
 
     --gradient-primary: linear-gradient(135deg, hsl(154 60% 21%), hsl(154 60% 17%));
     --gradient-accent: linear-gradient(135deg, hsl(40 80% 43%), hsl(40 80% 50%));
@@ -332,7 +335,26 @@
   .section {
     max-width: 80rem;
     margin-inline: auto;
-    padding: 4.5rem 1.5rem;
+    padding: 72px 24px;
+  }
+
+  .section-sm {
+    padding: 48px 20px;
+  }
+
+  /* Headings + lead */
+  .h-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: hsl(var(--cp-gold));
+    font-weight: 700;
+  }
+
+  .h-lead {
+    color: hsl(var(--muted));
+    font-size: clamp(16px, 2.2vw, 20px);
+    max-width: 65ch;
+    margin: 10px auto 0;
   }
 
   /* Navbar (sticky, minimal) */
@@ -386,11 +408,10 @@
   }
 
   .hero h1 {
-    font-family: inherit;
     font-weight: 900;
-    font-size: clamp(40px, 7vw, 96px);
+    letter-spacing: -0.02em;
+    font-size: clamp(42px, 7vw, 96px);
     line-height: 0.95;
-    letter-spacing: -0.015em;
     margin: 16px auto 8px;
     max-width: 18ch;
   }
@@ -420,7 +441,7 @@
   }
 
   .hero .cta {
-    margin-top: 24px;
+    margin-top: 22px;
     display: flex;
     gap: 12px;
     justify-content: center;
@@ -450,7 +471,121 @@
     line-height: 1;
   }
 
-  .btn, button, [role="button"] {
+  /* Buttons – unified styles */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: var(--radius-lg);
+    font-weight: 800;
+    line-height: 1;
+    transition: transform 0.08s ease, box-shadow 0.15s ease;
+  }
+
+  .btn:focus-visible {
+    outline: 3px solid color-mix(in srgb, hsl(var(--cp-gold)) 70%, #fff 30%);
+    outline-offset: 2px;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Sizes */
+  .btn-lg {
+    padding: 14px 22px;
+    font-size: 16px;
+  }
+
+  .btn-md {
+    padding: 12px 18px;
+    font-size: 15px;
+  }
+
+  .btn-sm {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  /* Variants */
+  .btn-primary {
+    background: hsl(var(--cp-green));
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover {
+    filter: brightness(0.92);
+  }
+
+  .btn-secondary {
+    background: #fff;
+    color: hsl(var(--ink));
+    border: 1px solid hsl(var(--border));
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: hsl(var(--cp-green));
+    border: 1px dashed hsl(var(--border));
+  }
+
+  /* Icon button (navbar) */
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    border: 1px solid hsl(var(--border));
+    background: #fff;
+  }
+
+  /* Pill chips (Style filters) */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, hsl(var(--cp-gold)) 35%, #fff 65%);
+    background: color-mix(in srgb, hsl(var(--cp-gold)) 10%, #fff 90%);
+    color: hsl(var(--ink));
+    font-weight: 700;
+    transition: transform 0.08s ease, box-shadow 0.15s ease;
+  }
+
+  .chip:hover {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  .chip.is-active {
+    background: hsl(var(--cp-green));
+    border-color: hsl(var(--cp-green));
+    color: #fff;
+  }
+
+  /* Discover card price line + tag row spacing */
+  .price-line {
+    color: hsl(var(--cp-green));
+    font-weight: 800;
+    margin-top: 8px;
+  }
+
+  .card .tags {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  button, [role="button"] {
     font-weight: 700;
     border-radius: 999px;
     padding: 12px 16px;
@@ -542,29 +677,45 @@
   .cp-card {
     background: hsl(var(--cp-card));
     border: 1px solid hsl(var(--cp-border));
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .cp-card:hover {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
+    box-shadow: var(--shadow-md);
     transform: translateY(-2px);
   }
 
   .cp-card img {
-    border-radius: 18px;
+    border-radius: calc(var(--radius) - 4px);
+    object-fit: cover;
+  }
+
+  /* Generic card utility */
+  .card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card img {
+    border-radius: calc(var(--radius) - 4px);
+    object-fit: cover;
   }
 
   /* Cal Poly Chip */
   .cp-chip {
-    background: color-mix(in srgb, hsl(var(--cp-gold)) 12%, #fff 88%);
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: var(--radius-lg);
     border: 1px solid color-mix(in srgb, hsl(var(--cp-gold)) 35%, #fff 65%);
-    color: hsl(var(--cp-ink));
-    border-radius: 999px;
-    padding: 4px 8px;
+    background: color-mix(in srgb, hsl(var(--cp-gold)) 10%, #fff 90%);
+    color: hsl(var(--ink));
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .price-line {
