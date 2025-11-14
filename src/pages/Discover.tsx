@@ -37,10 +37,7 @@ const Discover = () => {
     try {
       let query = supabase
         .from("creator_profiles")
-        .select(`
-          *,
-          users_extended!creator_profiles_user_id_fkey(slug)
-        `)
+        .select("*")
         .eq("is_discoverable", true)
         .eq("public_profile", true)
         .eq("status", "published")
@@ -95,7 +92,7 @@ const Discover = () => {
 
   const renderCreatorCard = (creator: any, index: number) => {
     const displayName = creator.display_name || "Photographer";
-    const displaySlug = creator.users_extended?.slug || creator.user_id;
+    const displaySlug = creator.slug;
     const coverImage = creator.avatar_url;
     const styles = creator.styles || [];
     const extraTagsCount = styles.length > 3 ? styles.length - 3 : 0;

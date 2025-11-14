@@ -169,6 +169,7 @@ export type Database = {
           show_price_range: boolean | null
           showcase_rank: number | null
           showcase_score: number | null
+          slug: string | null
           status: Database["public"]["Enums"]["profile_status"] | null
           styles: string[] | null
           travel_radius_km: number | null
@@ -193,6 +194,7 @@ export type Database = {
           show_price_range?: boolean | null
           showcase_rank?: number | null
           showcase_score?: number | null
+          slug?: string | null
           status?: Database["public"]["Enums"]["profile_status"] | null
           styles?: string[] | null
           travel_radius_km?: number | null
@@ -217,6 +219,7 @@ export type Database = {
           show_price_range?: boolean | null
           showcase_rank?: number | null
           showcase_score?: number | null
+          slug?: string | null
           status?: Database["public"]["Enums"]["profile_status"] | null
           styles?: string[] | null
           travel_radius_km?: number | null
@@ -869,6 +872,7 @@ export type Database = {
         Returns: undefined
       }
       compute_display_name: { Args: { p_user_id: string }; Returns: string }
+      generate_creator_slug: { Args: { p_user_id: string }; Returns: string }
       generate_slug: { Args: { display_name: string }; Returns: string }
       get_creator_profile_by_username_or_id: {
         Args: { p_user_id?: string; p_username?: string }
