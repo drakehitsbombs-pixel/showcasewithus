@@ -43,6 +43,7 @@ const Discover = () => {
         `)
         .eq("is_discoverable", true)
         .eq("public_profile", true)
+        .eq("status", "published")
         .order("showcase_score", { ascending: false })
         .limit(50);
 
@@ -108,22 +109,16 @@ const Discover = () => {
         aria-label={`Open ${displayName}'s profile`}
       >
         <div className="aspect-square bg-muted relative">
-          {coverImage ? (
-            <img
-              src={coverImage}
-              alt={`${displayName} portfolio cover`}
-              className="w-full h-full object-cover"
-              loading={index < 3 ? "eager" : "lazy"}
-              decoding="async"
-              width={400}
-              height={400}
-              fetchPriority={index < 3 ? "high" : undefined}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-muted">
-              <span className="text-muted-foreground text-sm">No image</span>
-            </div>
-          )}
+          <img
+            src={coverImage || '/img/placeholder-photo.jpg'}
+            alt={`${displayName} portfolio cover`}
+            className="w-full h-full object-cover"
+            loading={index < 3 ? "eager" : "lazy"}
+            decoding="async"
+            width={600}
+            height={450}
+            fetchPriority={index < 3 ? "high" : undefined}
+          />
         </div>
         <CardContent className="p-4">
           <h3 className="font-semibold text-lg mb-1">{displayName}</h3>
