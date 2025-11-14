@@ -67,7 +67,7 @@ const Index = () => {
 
       {/* Hero Section - Full Screen */}
       <section className="hero">
-        <div className="max-w-5xl mx-auto">
+        <div className="hero-inner">
           <p className="eyebrow text-white/90 uppercase tracking-widest text-sm font-semibold mb-6">
             The marketplace without the hassle
           </p>

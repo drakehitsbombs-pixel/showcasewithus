@@ -921,4 +921,83 @@
     backdrop-filter: none !important;
     background-blend-mode: normal !important;
   }
+
+  /* ===== FULL-BLEED HERO ===== */
+  /* 1) Full-bleed container on large viewports */
+  @media (min-width: 1024px) {
+    /* Relax page-frame for hero */
+    .page-frame {
+      max-width: none !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      background: var(--cream);
+    }
+  }
+
+  /* 2) Hero: 100% viewport height & width, edge-to-edge */
+  .hero {
+    position: relative;
+    inset: 0;
+    width: 100vw;
+    left: 50%;
+    right: auto;
+    margin-left: -50vw;
+    background: var(--cp-green-700) !important;
+    color: #fff !important;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(48px, 8vh, 96px) 24px;
+    overflow: hidden;
+  }
+
+  /* Make inner content behave like a normal section */
+  .hero > .hero-inner {
+    width: min(1200px, 100%);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  /* 3) Fixed navbar sits on top of hero */
+  .navbar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50 !important;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Add top padding so hero content isn't under navbar */
+  body {
+    padding-top: 64px;
+  }
+
+  /* 4) Smooth transition from hero to next section */
+  section.section-sm:first-of-type,
+  section.section:first-of-type {
+    margin-top: 0;
+    padding-top: 72px;
+  }
+
+  /* 5) Prevent horizontal scroll caused by full-bleed trick */
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* 6) Mobile: keep full-bleed too */
+  @media (max-width: 1023.98px) {
+    .hero {
+      width: 100vw;
+      left: 50%;
+      margin-left: -50vw;
+      min-height: 100svh;
+    }
+  }
 }
