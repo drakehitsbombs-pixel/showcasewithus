@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
-import { getPublicDisplayName } from "@/lib/name-utils";
 import Footer from "@/components/Footer";
 
 const Discover = () => {
@@ -40,7 +39,7 @@ const Discover = () => {
         .from("creator_profiles")
         .select(`
           *,
-          users_extended!creator_profiles_user_id_fkey(id, name, city, slug, bio, avatar_url, email)
+          users_extended!creator_profiles_user_id_fkey(slug)
         `)
         .eq("is_discoverable", true)
         .eq("public_profile", true)
@@ -61,25 +60,7 @@ const Discover = () => {
 
       if (error) throw error;
       
-      // Fetch portfolio images for creators without avatar_url
-      const creatorsWithImages = await Promise.all(
-        (data || []).map(async (creator) => {
-          if (!creator.avatar_url) {
-            const { data: portfolioImages } = await supabase
-              .from("portfolio_images")
-              .select("url")
-              .eq("creator_user_id", creator.user_id)
-              .limit(1);
-            
-            if (portfolioImages && portfolioImages.length > 0) {
-              return { ...creator, avatar_url: portfolioImages[0].url };
-            }
-          }
-          return creator;
-        })
-      );
-      
-      setCreators(creatorsWithImages);
+      setCreators(data || []);
     } catch (error) {
       console.error("Error loading creators:", error);
     } finally {
@@ -112,27 +93,9 @@ const Discover = () => {
   };
 
   const renderCreatorCard = (creator: any, index: number) => {
-    const userExtended = Array.isArray(creator.users_extended) 
-      ? creator.users_extended[0] 
-      : creator.users_extended;
-    
-    console.log('Creator data:', { 
-      creator_id: creator.id,
-      userExtended_name: userExtended?.name, 
-      userExtended_email: userExtended?.email,
-      show_name_public: creator.show_name_public 
-    });
-    
-    const displayName = getPublicDisplayName(
-      userExtended?.name,
-      userExtended?.email,
-      creator.show_name_public !== false // default to true if undefined
-    );
-    
-    console.log('Display name result:', displayName);
-    const displayCity = userExtended?.city || creator.city;
-    const displaySlug = userExtended?.slug || creator.slug;
-    const coverImage = creator.avatar_url || userExtended?.avatar_url;
+    const displayName = creator.display_name || "Photographer";
+    const displaySlug = creator.users_extended?.slug || creator.user_id;
+    const coverImage = creator.avatar_url;
     const styles = creator.styles || [];
     const extraTagsCount = styles.length > 3 ? styles.length - 3 : 0;
     
@@ -164,10 +127,10 @@ const Discover = () => {
         </div>
         <CardContent className="p-4">
           <h3 className="font-semibold text-lg mb-1">{displayName}</h3>
-          {displayCity && (
+          {creator.city && (
             <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
               <MapPin className="w-3 h-3" />
-              {displayCity}
+              {creator.city}
             </p>
           )}
           {styles.length > 0 && (
