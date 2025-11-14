@@ -4,10 +4,10 @@ import { Helmet } from "react-helmet";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Search as SearchIcon, Sliders } from "lucide-react";
+import { MapPin, Sliders } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
 import Footer from "@/components/Footer";
 
@@ -39,7 +39,7 @@ const Discover = () => {
         .from("creator_profiles")
         .select(`
           *,
-          users_extended!creator_profiles_user_id_fkey(id, name, city, slug, bio, avatar_url)
+          users_extended!creator_profiles_user_id_fkey(id, name, city, slug, bio, avatar_url, email)
         `)
         .eq("is_discoverable", true)
         .eq("public_profile", true)
@@ -59,7 +59,26 @@ const Discover = () => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setCreators(data || []);
+      
+      // Fetch portfolio images for creators without avatar_url
+      const creatorsWithImages = await Promise.all(
+        (data || []).map(async (creator) => {
+          if (!creator.avatar_url) {
+            const { data: portfolioImages } = await supabase
+              .from("portfolio_images")
+              .select("url")
+              .eq("creator_user_id", creator.user_id)
+              .limit(1);
+            
+            if (portfolioImages && portfolioImages.length > 0) {
+              return { ...creator, avatar_url: portfolioImages[0].url };
+            }
+          }
+          return creator;
+        })
+      );
+      
+      setCreators(creatorsWithImages);
     } catch (error) {
       console.error("Error loading creators:", error);
     } finally {
@@ -91,9 +110,96 @@ const Discover = () => {
     });
   };
 
+  const getDisplayName = (userExtended: any, creator: any) => {
+    const name = userExtended?.name || creator.name;
+    if (name) return name;
+    
+    // Fallback: compose from email
+    const email = userExtended?.email;
+    if (email) {
+      const username = email.split('@')[0];
+      const city = userExtended?.city || creator.city;
+      return city ? `${username} (${city})` : username;
+    }
+    
+    return 'Photographer';
+  };
+
+  const renderCreatorCard = (creator: any, index: number) => {
+    const userExtended = Array.isArray(creator.users_extended) 
+      ? creator.users_extended[0] 
+      : creator.users_extended;
+    
+    const displayName = getDisplayName(userExtended, creator);
+    const displayCity = userExtended?.city || creator.city;
+    const displaySlug = userExtended?.slug || creator.slug;
+    const coverImage = creator.avatar_url || userExtended?.avatar_url;
+    const styles = creator.styles || [];
+    const extraTagsCount = styles.length > 3 ? styles.length - 3 : 0;
+    
+    return (
+      <Card 
+        key={creator.id} 
+        className="overflow-hidden hover:shadow-elevated transition-smooth cursor-pointer"
+        onClick={() => displaySlug && navigate(`/p/${displaySlug}`)}
+        role="link"
+        aria-label={`Open ${displayName}'s profile`}
+      >
+        <div className="aspect-square bg-muted relative">
+          {coverImage ? (
+            <img
+              src={coverImage}
+              alt={`${displayName} portfolio cover`}
+              className="w-full h-full object-cover"
+              loading={index < 3 ? "eager" : "lazy"}
+              decoding="async"
+              width={400}
+              height={400}
+              fetchPriority={index < 3 ? "high" : undefined}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-muted">
+              <span className="text-muted-foreground text-sm">No image</span>
+            </div>
+          )}
+        </div>
+        <CardContent className="p-4">
+          <h3 className="font-semibold text-lg mb-1">{displayName}</h3>
+          {displayCity && (
+            <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
+              <MapPin className="w-3 h-3" />
+              {displayCity}
+            </p>
+          )}
+          {styles.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-3">
+              {styles.slice(0, 3).map((style: string) => (
+                <Badge key={style} variant="secondary" className="text-xs">
+                  {getStyleLabel(style)}
+                </Badge>
+              ))}
+              {extraTagsCount > 0 && (
+                <Badge variant="secondary" className="text-xs">
+                  +{extraTagsCount} more
+                </Badge>
+              )}
+            </div>
+          )}
+          {creator.min_project_budget_usd > 0 && (
+            <p className="text-sm font-semibold text-primary">
+              Minimum project ${creator.min_project_budget_usd.toLocaleString()}
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <>
       <Helmet>
+        <title>Discover Photographers | ShowCase</title>
+        <meta name="description" content="Browse local photographers by style and budget. No account required." />
         <script>
           {`(adsbygoogle = window.adsbygoogle || []).push({});`}
         </script>
@@ -180,139 +286,36 @@ const Discover = () => {
 
           <div className="lg:col-span-3">
             {loading ? (
-              <div className="text-center py-20">
-                <p className="text-muted-foreground">Loading photographers...</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <Card key={i} className="overflow-hidden">
+                    <Skeleton className="aspect-square w-full" />
+                    <CardContent className="p-4 space-y-2">
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-4 w-full" />
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             ) : creators.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {creators.slice(0, 6).map((creator) => {
-                    // Handle both nested and flat structure
-                    const userExtended = Array.isArray(creator.users_extended) 
-                      ? creator.users_extended[0] 
-                      : creator.users_extended;
-                    
-                    const displayName = userExtended?.name || creator.name || 'Unknown';
-                    const displayCity = userExtended?.city || creator.city;
-                    const displaySlug = userExtended?.slug || creator.slug;
-                    const coverImage = creator.avatar_url || userExtended?.avatar_url;
-                    
-                    return (
-                      <Card 
-                        key={creator.id} 
-                        className="overflow-hidden hover:shadow-elevated transition-smooth cursor-pointer"
-                        onClick={() => displaySlug && navigate(`/p/${displaySlug}`)}
-                      >
-                        <div className="aspect-square bg-muted relative">
-                          {coverImage && (
-                            <img
-                              src={coverImage}
-                              alt={displayName}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                        </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-lg mb-1">{displayName}</h3>
-                          {displayCity && (
-                            <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
-                              <MapPin className="w-3 h-3" />
-                              {displayCity}
-                            </p>
-                          )}
-                          <div className="flex flex-wrap gap-1 mb-3">
-                            {creator.styles?.slice(0, 3).map((style: string) => (
-                              <Badge key={style} variant="secondary" className="text-xs">
-                                {getStyleLabel(style)}
-                              </Badge>
-                            ))}
-                        </div>
-                        {creator.min_project_budget_usd > 0 && (
-                          <p className="text-sm font-semibold text-primary">
-                            Minimum project ${creator.min_project_budget_usd}
-                          </p>
-                        )}
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                  {creators.slice(0, 6).map((creator, index) => renderCreatorCard(creator, index))}
                 </div>
-
-                {/* Manual Ad Banner after first row */}
-                {creators.length > 6 && (
-                  <div className="ad-manual-banner">
-                    <ins 
-                      className="adsbygoogle"
-                      style={{ display: 'block', margin: '24px 0' }}
-                      data-ad-client="ca-pub-8904686344566128"
-                      data-ad-slot="0000000000"
-                      data-ad-format="auto"
-                      data-full-width-responsive="true"
-                    />
-                  </div>
-                )}
 
                 {/* Remaining photographers */}
                 {creators.length > 6 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {creators.slice(6).map((creator) => {
-                      // Handle both nested and flat structure
-                      const userExtended = Array.isArray(creator.users_extended) 
-                        ? creator.users_extended[0] 
-                        : creator.users_extended;
-                      
-                      const displayName = userExtended?.name || creator.name || 'Unknown';
-                      const displayCity = userExtended?.city || creator.city;
-                      const displaySlug = userExtended?.slug || creator.slug;
-                      const coverImage = creator.avatar_url || userExtended?.avatar_url;
-                      
-                      return (
-                        <Card 
-                          key={creator.id} 
-                          className="overflow-hidden hover:shadow-elevated transition-smooth cursor-pointer"
-                          onClick={() => displaySlug && navigate(`/p/${displaySlug}`)}
-                        >
-                          <div className="aspect-square bg-muted relative">
-                            {coverImage && (
-                              <img
-                                src={coverImage}
-                                alt={displayName}
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
-                          <CardContent className="p-4">
-                            <h3 className="font-semibold text-lg mb-1">{displayName}</h3>
-                            {displayCity && (
-                              <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
-                                <MapPin className="w-3 h-3" />
-                                {displayCity}
-                              </p>
-                            )}
-                            <div className="flex flex-wrap gap-1 mb-3">
-                              {creator.styles?.slice(0, 3).map((style: string) => (
-                                <Badge key={style} variant="secondary" className="text-xs">
-                                  {getStyleLabel(style)}
-                                </Badge>
-                              ))}
-                          </div>
-                          {creator.min_project_budget_usd > 0 && (
-                            <p className="text-sm font-semibold text-primary">
-                              Minimum project ${creator.min_project_budget_usd}
-                            </p>
-                          )}
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+                    {creators.slice(6).map((creator, index) => renderCreatorCard(creator, index + 6))}
                   </div>
                 )}
               </>
             ) : (
               <div className="text-center py-20">
-                <p className="text-muted-foreground mb-4">No photographers found</p>
+                <p className="text-lg text-muted-foreground mb-2">No photographers match those filters</p>
                 <p className="text-sm text-muted-foreground mb-6">
-                  Try adjusting your filters
+                  Try clearing filters or widening your budget
                 </p>
                 <Button onClick={clearFilters} variant="outline">
                   Clear Filters
