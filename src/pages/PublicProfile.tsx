@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Star, DollarSign, MessageSquare, Calendar, Mail, Phone } from "lucide-react";
-import { getPublicDisplayName } from "@/lib/name-utils";
 import Footer from "@/components/Footer";
 
 const PublicProfile = () => {
@@ -23,24 +22,11 @@ const PublicProfile = () => {
 
   const loadPublicProfile = async () => {
     try {
-      // Get user by slug
-      const { data: userData, error: userError } = await supabase
-        .from("users_extended")
-        .select("id, name, email, city, slug, bio, avatar_url")
-        .eq("slug", slug)
-        .maybeSingle();
-
-      if (userError || !userData) {
-        console.error("User not found");
-        setLoading(false);
-        return;
-      }
-
-      // Get creator profile
+      // Get creator profile by slug
       const { data: creatorProfile, error: profileError } = await supabase
         .from("creator_profiles")
-        .select("*, email_public:email_public, phone_public:phone_public, show_name_public:show_name_public")
-        .eq("user_id", userData.id)
+        .select("*")
+        .eq("slug", slug)
         .eq("status", "published")
         .eq("public_profile", true)
         .maybeSingle();
@@ -51,13 +37,24 @@ const PublicProfile = () => {
         return;
       }
 
-      setProfile({ ...userData, ...creatorProfile });
+      // Get user details
+      const { data: userData, error: userError } = await supabase
+        .from("users_extended")
+        .select("id, name, email, city, bio, avatar_url, phone")
+        .eq("id", creatorProfile.user_id)
+        .maybeSingle();
+
+      if (userError) {
+        console.error("User not found");
+      }
+
+      setProfile({ ...creatorProfile, ...userData });
 
       // Load portfolio
       const { data: portfolioData } = await supabase
         .from("portfolio_images")
         .select("*")
-        .eq("creator_user_id", userData.id)
+        .eq("creator_user_id", creatorProfile.user_id)
         .order("created_at", { ascending: false });
 
       setPortfolio(portfolioData || []);
@@ -69,7 +66,7 @@ const PublicProfile = () => {
           *,
           users_extended!reviews_client_user_id_fkey(name, avatar_url)
         `)
-        .eq("creator_user_id", userData.id)
+        .eq("creator_user_id", creatorProfile.user_id)
         .order("created_at", { ascending: false })
         .limit(10);
 
@@ -78,7 +75,7 @@ const PublicProfile = () => {
       // Track public profile view
       const { data: { session } } = await supabase.auth.getSession();
       await supabase.from("profile_views").insert({
-        creator_user_id: userData.id,
+        creator_user_id: creatorProfile.user_id,
         viewer_user_id: session?.user?.id || null,
       });
 
@@ -121,17 +118,13 @@ const PublicProfile = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <h1 className="text-2xl font-bold">Profile Not Found</h1>
-        <p className="text-muted-foreground">This profile is private or doesn't exist.</p>
-        <Button onClick={() => navigate("/")}>Go Home</Button>
+        <p className="text-muted-foreground">This photographer profile doesn't exist or is not published.</p>
+        <Button onClick={() => navigate("/discover")}>Browse Photographers</Button>
       </div>
     );
   }
 
-  const displayName = getPublicDisplayName(
-    profile.name,
-    profile.email,
-    profile.show_name_public !== false
-  );
+  const displayName = profile.display_name || "Photographer";
   const coverImage = portfolio[0]?.url || profile.avatar_url;
   const showMinBudget = profile.min_project_budget_usd > 0;
 
