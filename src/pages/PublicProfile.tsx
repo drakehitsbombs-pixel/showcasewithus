@@ -41,17 +41,12 @@ const PublicProfile = () => {
         .from("creator_profiles")
         .select("*, email_public:email_public, phone_public:phone_public, show_name_public:show_name_public")
         .eq("user_id", userData.id)
+        .eq("status", "published")
+        .eq("public_profile", true)
         .maybeSingle();
 
       if (profileError || !creatorProfile) {
         console.error("Creator profile not found");
-        setLoading(false);
-        return;
-      }
-
-      // Check if profile is public
-      if (!creatorProfile.public_profile) {
-        console.error("Profile is private");
         setLoading(false);
         return;
       }

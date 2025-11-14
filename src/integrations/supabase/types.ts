@@ -169,6 +169,7 @@ export type Database = {
           show_price_range: boolean | null
           showcase_rank: number | null
           showcase_score: number | null
+          status: Database["public"]["Enums"]["profile_status"] | null
           styles: string[] | null
           travel_radius_km: number | null
           updated_at: string
@@ -192,6 +193,7 @@ export type Database = {
           show_price_range?: boolean | null
           showcase_rank?: number | null
           showcase_score?: number | null
+          status?: Database["public"]["Enums"]["profile_status"] | null
           styles?: string[] | null
           travel_radius_km?: number | null
           updated_at?: string
@@ -215,6 +217,7 @@ export type Database = {
           show_price_range?: boolean | null
           showcase_rank?: number | null
           showcase_score?: number | null
+          status?: Database["public"]["Enums"]["profile_status"] | null
           styles?: string[] | null
           travel_radius_km?: number | null
           updated_at?: string
@@ -896,6 +899,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "creator" | "client"
+      profile_status: "draft" | "published" | "hidden"
       project_type:
         | "wedding"
         | "portrait"
@@ -1034,6 +1038,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "creator", "client"],
+      profile_status: ["draft", "published", "hidden"],
       project_type: [
         "wedding",
         "portrait",
