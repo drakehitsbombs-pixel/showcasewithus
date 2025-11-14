@@ -2,115 +2,123 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Shutter Match Design System */
+/* Cal Poly SLO Design System */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --bg: 0 0% 100%;
-    --soft: 240 5% 96%;
-    --text: 240 10% 3.9%;
+    /* Cal Poly Colors */
+    --cp-green: 154 60% 21%;
+    --cp-gold: 40 80% 43%;
+    --cp-ink: 232 38% 7%;
+    --cp-gray1: 240 14% 97%;
+    --cp-gray2: 240 9% 91%;
+    --cp-muted: 220 9% 46%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --background: 0 0% 100%;
+    --foreground: 232 38% 7%;
+    --bg: 0 0% 100%;
+    --soft: 240 14% 97%;
+    --text: 232 38% 7%;
+
+    --card: 240 14% 97%;
+    --card-foreground: 232 38% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 232 38% 7%;
 
-    --primary: 263 70% 50%;
+    --primary: 154 60% 21%;
     --primary-foreground: 0 0% 100%;
-    --brand: 263 70% 50%;
-    --brand-600: 263 70% 45%;
+    --brand: 154 60% 21%;
+    --brand-600: 154 60% 17%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary: 240 14% 97%;
+    --secondary-foreground: 232 38% 7%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 240 14% 97%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 351 83% 67%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 40 80% 43%;
+    --accent-foreground: 232 38% 7%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 263 70% 50%;
+    --border: 240 9% 91%;
+    --input: 240 9% 91%;
+    --ring: 154 60% 21%;
 
     --radius: 1rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(263 70% 50%), hsl(280 80% 60%));
-    --gradient-accent: linear-gradient(135deg, hsl(351 83% 67%), hsl(340 75% 75%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(240 5% 98%));
+    --gradient-primary: linear-gradient(135deg, hsl(154 60% 21%), hsl(154 60% 17%));
+    --gradient-accent: linear-gradient(135deg, hsl(40 80% 43%), hsl(40 80% 50%));
+    --gradient-card: linear-gradient(180deg, hsl(240 14% 97%), hsl(0 0% 100%));
 
-    --shadow-card: 0 4px 24px -4px hsl(240 10% 3.9% / 0.08);
-    --shadow-elevated: 0 12px 40px -8px hsl(240 10% 3.9% / 0.12);
-    --shadow-glow: 0 0 30px hsl(263 70% 50% / 0.15);
+    --shadow-card: 0 1px 2px hsl(232 38% 7% / 0.04);
+    --shadow-elevated: 0 4px 12px hsl(232 38% 7% / 0.08);
+    --shadow-glow: 0 0 24px hsl(154 60% 21% / 0.12);
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-foreground: 232 38% 7%;
+    --sidebar-primary: 154 60% 21%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 263 70% 50%;
+    --sidebar-accent: 240 14% 97%;
+    --sidebar-accent-foreground: 232 38% 7%;
+    --sidebar-border: 240 9% 91%;
+    --sidebar-ring: 154 60% 21%;
   }
 
   .dark {
-    --background: 240 10% 4%;
+    --background: 232 38% 7%;
     --foreground: 0 0% 95%;
-    --bg: 240 10% 4%;
-    --soft: 240 8% 7%;
+    --bg: 232 38% 7%;
+    --soft: 232 30% 12%;
     --text: 0 0% 95%;
 
-    --card: 240 8% 8%;
+    --card: 232 30% 12%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 240 8% 8%;
+    --popover: 232 30% 12%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 263 85% 70%;
-    --primary-foreground: 240 10% 4%;
-    --brand: 263 85% 70%;
-    --brand-600: 263 80% 60%;
+    --primary: 154 60% 45%;
+    --primary-foreground: 232 38% 7%;
+    --brand: 154 60% 45%;
+    --brand-600: 154 60% 35%;
 
-    --secondary: 240 5% 15%;
+    --secondary: 232 30% 15%;
     --secondary-foreground: 0 0% 95%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 4% 64%;
+    --muted: 232 30% 15%;
+    --muted-foreground: 220 9% 64%;
 
-    --accent: 351 100% 75%;
-    --accent-foreground: 240 10% 4%;
+    --accent: 40 80% 55%;
+    --accent-foreground: 232 38% 7%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 6% 18%;
-    --input: 240 6% 18%;
-    --ring: 263 85% 70%;
+    --border: 232 30% 18%;
+    --input: 232 30% 18%;
+    --ring: 154 60% 45%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(263 85% 70%), hsl(280 90% 75%));
-    --gradient-accent: linear-gradient(135deg, hsl(351 100% 75%), hsl(340 90% 80%));
-    --gradient-card: linear-gradient(180deg, hsl(240 8% 8%), hsl(240 8% 6%));
+    --gradient-primary: linear-gradient(135deg, hsl(154 60% 45%), hsl(154 60% 35%));
+    --gradient-accent: linear-gradient(135deg, hsl(40 80% 55%), hsl(40 80% 65%));
+    --gradient-card: linear-gradient(180deg, hsl(232 30% 12%), hsl(232 30% 10%));
 
-    --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.5);
-    --shadow-elevated: 0 12px 40px -8px hsl(0 0% 0% / 0.7);
-    --shadow-glow: 0 0 40px hsl(263 85% 70% / 0.4);
+    --shadow-card: 0 2px 8px hsl(0 0% 0% / 0.4);
+    --shadow-elevated: 0 8px 24px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 32px hsl(154 60% 45% / 0.3);
 
-    --sidebar-background: 240 8% 7%;
+    --sidebar-background: 232 30% 12%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 263 85% 70%;
-    --sidebar-primary-foreground: 240 10% 4%;
-    --sidebar-accent: 240 5% 15%;
+    --sidebar-primary: 154 60% 45%;
+    --sidebar-primary-foreground: 232 38% 7%;
+    --sidebar-accent: 232 30% 15%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 6% 18%;
-    --sidebar-ring: 263 85% 70%;
+    --sidebar-border: 232 30% 18%;
+    --sidebar-ring: 154 60% 45%;
   }
 
   /* Respect reduced motion preference */
@@ -288,5 +296,44 @@
   .card img {
     aspect-ratio: 1/1;
     object-fit: cover;
+  }
+
+  /* Section Wrapper (phamilypharma style) */
+  .section {
+    max-width: 80rem;
+    margin-inline: auto;
+    padding: 4.5rem 1.5rem;
+  }
+
+  /* Cal Poly Card Style */
+  .cp-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+
+  .cp-card:hover {
+    box-shadow: var(--shadow-elevated);
+    transform: translateY(-2px);
+  }
+
+  /* Cal Poly Chip */
+  .cp-chip {
+    background: color-mix(in srgb, hsl(var(--accent)) 10%, transparent);
+    color: hsl(var(--foreground));
+    border: 1px solid color-mix(in srgb, hsl(var(--accent)) 35%, transparent);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  /* Sticky Blur Nav */
+  .nav-blur {
+    backdrop-filter: blur(12px);
+    background: color-mix(in srgb, hsl(var(--background)) 80%, transparent);
+    border-bottom: 1px solid hsl(var(--border));
   }
 }
