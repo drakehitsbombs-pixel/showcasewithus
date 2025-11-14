@@ -45,22 +45,22 @@ const Index = () => {
   return (
     <div className="page-frame">
       {/* Navigation Header */}
-      <header className="navbar">
-        <nav className="flex items-center gap-8">
-          <button onClick={() => navigate("/discover")} className="text-sm font-medium hover:text-cp-green transition-colors">
+      <header className="navbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px' }}>
+        <nav className="flex items-center gap-4 flex-shrink-0">
+          <button onClick={() => navigate("/discover")} className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
             Find Photographers
           </button>
-          <button onClick={() => navigate("/auth")} className="text-sm font-medium hover:text-cp-green transition-colors">
+          <button onClick={() => navigate("/auth")} className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
             Become a Photographer
           </button>
         </nav>
         
-        <div className="flex items-center gap-2">
-          <Camera className="w-7 h-7 text-cp-green" />
-          <span className="text-2xl font-bold tracking-tight text-cp-ink">SHOW CASE</span>
+        <div className="flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
+          <Camera className="w-6 h-6 text-cp-green" />
+          <span className="text-xl font-bold tracking-tight text-cp-ink">SHOW CASE</span>
         </div>
         
-        <div className="flex items-center gap-8">
+        <div className="flex items-center flex-shrink-0">
           <ThemeToggle />
         </div>
       </header>
