@@ -6,19 +6,20 @@
 
 @layer base {
   :root {
-    /* Cal Poly Colors */
-    --cp-green: 154 60% 21%;
+    /* Cal Poly Colors - Phamily Style */
+    --cp-green: 21 60% 21%;
     --cp-gold: 40 80% 43%;
-    --cp-ink: 232 38% 7%;
-    --cp-gray1: 240 14% 97%;
-    --cp-gray2: 240 9% 91%;
+    --cp-ink: 222 47% 5%;
+    --cp-cream: 36 100% 97%;
+    --cp-card: 0 0% 100%;
+    --cp-border: 240 9% 91%;
     --cp-muted: 220 9% 46%;
 
-    --background: 0 0% 100%;
-    --foreground: 232 38% 7%;
-    --bg: 0 0% 100%;
+    --background: 36 100% 97%;
+    --foreground: 222 47% 5%;
+    --bg: 36 100% 97%;
     --soft: 240 14% 97%;
-    --text: 232 38% 7%;
+    --text: 222 47% 5%;
 
     --card: 240 14% 97%;
     --card-foreground: 232 38% 7%;
@@ -138,8 +139,10 @@
     @apply border-border;
   }
 
-  body {
+  html, body {
     @apply bg-background text-foreground;
+    background: hsl(var(--cp-cream));
+    color: hsl(var(--cp-ink));
   }
 }
 
@@ -298,6 +301,17 @@
     object-fit: cover;
   }
 
+  /* Page Frame (rounded outer container like Phamily) */
+  .page-frame {
+    max-width: 1280px;
+    margin: 24px auto;
+    border-radius: 24px;
+    overflow: hidden;
+    background: linear-gradient(180deg, hsl(var(--cp-green)) 0%, hsl(var(--cp-green)) 1px, hsl(var(--cp-cream)) 1px, hsl(var(--cp-cream)) 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
   /* Section Wrapper (phamilypharma style) */
   .section {
     max-width: 80rem;
@@ -305,35 +319,240 @@
     padding: 4.5rem 1.5rem;
   }
 
+  /* Navbar (sticky, minimal) */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid hsl(var(--cp-border));
+  }
+
+  .navbar a {
+    font-weight: 600;
+    color: hsl(var(--cp-ink));
+  }
+
+  .navbar .btn-primary {
+    background: hsl(var(--cp-green));
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 16px;
+  }
+
+  /* Hero Section (deep green band) */
+  .hero {
+    background: hsl(var(--cp-green));
+    color: #fff;
+    padding: 96px 24px 120px;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero h1 {
+    font-family: inherit;
+    font-weight: 800;
+    font-size: clamp(42px, 7vw, 92px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin: 16px auto 8px;
+    max-width: 18ch;
+  }
+
+  .hero .headline-line-2 {
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+  }
+
+  .hero .headline-line-2::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -6px 0;
+    height: 36px;
+    z-index: -1;
+    background: hsl(var(--cp-gold));
+    border-radius: 12px;
+    opacity: 0.9;
+  }
+
+  .hero p {
+    max-width: 60ch;
+    margin: 16px auto 28px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.125rem;
+  }
+
+  .hero .cta {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero .cta .btn-primary {
+    background: #23A065;
+    color: #fff;
+    border-radius: 999px;
+    padding: 12px 24px;
+    font-weight: 700;
+  }
+
+  .hero .cta .btn-secondary {
+    background: #fff;
+    color: #1F2937;
+    border-radius: 999px;
+    padding: 12px 24px;
+    border: 1px solid hsl(var(--cp-border));
+    font-weight: 700;
+  }
+
+  /* Trust Strip */
+  .trust-strip {
+    background: #fff;
+    border: 1px solid hsl(var(--cp-border));
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 14px 18px;
+    max-width: 900px;
+    margin: -32px auto 24px;
+    position: relative;
+  }
+
+  /* Float Cards (tilted benefit cards) */
+  .float-card {
+    background: hsl(var(--cp-card));
+    border: 1px solid hsl(var(--cp-border));
+    border-radius: 22px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+    padding: 28px;
+    transform: rotate(-1.2deg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .float-card:nth-child(even) {
+    transform: rotate(1.2deg);
+  }
+
+  .float-card:hover {
+    transform: rotate(0deg) translateY(-2px);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.10);
+  }
+
+  /* Split Layout (How It Works) */
+  .split {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    align-items: center;
+    padding: 80px 24px;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    margin: 14px 0;
+    align-items: flex-start;
+  }
+
+  .step .num {
+    font-weight: 800;
+    color: hsl(var(--cp-green));
+    font-size: 28px;
+    min-width: 40px;
+  }
+
+  /* CTA Tiles */
+  .tile {
+    background: hsl(var(--cp-card));
+    border: 1px solid hsl(var(--cp-border));
+    border-radius: 22px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease;
+  }
+
+  .tile:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero {
+      padding: 56px 24px 80px;
+    }
+
+    .split {
+      grid-template-columns: 1fr;
+      padding: 48px 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 6vw, 52px);
+    }
+  }
+
   /* Cal Poly Card Style */
   .cp-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-radius: 1rem;
-    box-shadow: var(--shadow-card);
-    transition: var(--transition-smooth);
+    background: hsl(var(--cp-card));
+    border: 1px solid hsl(var(--cp-border));
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .cp-card:hover {
-    box-shadow: var(--shadow-elevated);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
     transform: translateY(-2px);
+  }
+
+  .cp-card img {
+    border-radius: 18px;
   }
 
   /* Cal Poly Chip */
   .cp-chip {
-    background: color-mix(in srgb, hsl(var(--accent)) 10%, transparent);
-    color: hsl(var(--foreground));
-    border: 1px solid color-mix(in srgb, hsl(var(--accent)) 35%, transparent);
+    background: color-mix(in srgb, hsl(var(--cp-gold)) 12%, #fff 88%);
+    border: 1px solid color-mix(in srgb, hsl(var(--cp-gold)) 35%, #fff 65%);
+    color: hsl(var(--cp-ink));
     border-radius: 999px;
-    padding: 0.25rem 0.75rem;
+    padding: 4px 8px;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
+  }
+
+  .price-line {
+    color: hsl(var(--cp-green));
+    font-weight: 700;
   }
 
   /* Sticky Blur Nav */
   .nav-blur {
-    backdrop-filter: blur(12px);
-    background: color-mix(in srgb, hsl(var(--background)) 80%, transparent);
-    border-bottom: 1px solid hsl(var(--border));
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.65);
+    border-bottom: 1px solid hsl(var(--cp-border));
+  }
+
+  /* Footer (rounded) */
+  .footer {
+    background: #fff;
+    border-top: 1px solid hsl(var(--cp-border));
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    padding: 36px 24px;
+    color: hsl(var(--cp-muted));
+  }
+
+  .footer a {
+    color: hsl(var(--cp-ink));
+    font-weight: 600;
   }
 }
