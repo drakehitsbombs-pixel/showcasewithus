@@ -812,4 +812,97 @@
     background: transparent;
     color: var(--ink);
   }
+
+  /* ===== HOTFIX: reset bad opacity/blends and force safe colors ===== */
+  :root {
+    --cp-green: #154734;           /* Cal Poly green */
+    --cp-green-700: #0F3A2A;       /* darker hero */
+    --cp-gold: #C69214;
+    --ink: #0B0E13;                /* body text */
+    --muted: #5B6472;
+    --cream: #FFF7EE;              /* page bg */
+    --card: #FFFFFF;
+    --border: #E8E8EF;
+  }
+
+  /* Base canvas/text */
+  html, body {
+    background: var(--cream) !important;
+    color: var(--ink) !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  /* Kill any global overlays/filters that might be dimming the page */
+  .page-frame, .page, .app, .container {
+    background: transparent !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+  }
+
+  /* HERO: force dark bg + white text, remove transparency */
+  .hero {
+    background: var(--cp-green-700) !important;
+    color: #FFFFFF !important;
+    min-height: 100svh !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero, .hero * {
+    opacity: 1 !important;
+    filter: none !important;
+    mix-blend-mode: normal !important;
+    text-shadow: none !important;
+  }
+
+  .hero h1 {
+    color: #FFFFFF !important;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p {
+    color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  .hero .eyebrow {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  /* Buttons: strong contrast */
+  .btn-primary, [data-btn="primary"] {
+    background: var(--cp-green) !important;
+    color: #FFFFFF !important;
+    border: 1px solid color-mix(in srgb, var(--cp-green) 70%, #000 30%) !important;
+  }
+
+  .btn-secondary, [data-btn="secondary"] {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  /* Links readable on light bg */
+  a {
+    color: var(--cp-green) !important;
+  }
+
+  /* Cards and text on light sections */
+  .card, [data-card] {
+    background: #FFFFFF !important;
+    color: var(--ink) !important;
+  }
+
+  .lead, .subtitle {
+    color: var(--muted) !important;
+  }
+
+  /* Remove any accidental global translucency on content bands */
+  section, header, main, footer {
+    backdrop-filter: none !important;
+    background-blend-mode: normal !important;
+  }
 }
