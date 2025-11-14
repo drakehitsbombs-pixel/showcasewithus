@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MapPin, Star, DollarSign, MessageSquare, Calendar, Mail, Phone } from "lucide-react";
+import { MapPin, Star, DollarSign, MessageSquare, Calendar, Mail, Phone, ArrowLeft } from "lucide-react";
 import Footer from "@/components/Footer";
 
 const PublicProfile = () => {
@@ -130,6 +130,19 @@ const PublicProfile = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* Back Button */}
+      <div className="absolute top-4 left-4 z-20">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate("/discover")}
+          className="bg-background/80 backdrop-blur-sm"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Browse
+        </Button>
+      </div>
+
       {/* Cover Image */}
       <div className="relative h-64 md:h-96 bg-muted ad-exclude-hero">
           {coverImage && (
