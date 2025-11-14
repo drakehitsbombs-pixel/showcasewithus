@@ -59,17 +59,17 @@ const Index = () => {
 
       {/* Hero Section - Full Screen */}
       <section className="hero">
-        <div>
-          <p className="eyebrow text-white/90 uppercase tracking-widest text-sm font-semibold mb-8">
+        <div className="max-w-5xl mx-auto">
+          <p className="eyebrow text-white/90 uppercase tracking-widest text-sm font-semibold mb-6">
             The marketplace without the hassle
           </p>
           
-          <h1>
+          <h1 className="mb-6">
             <span>FIND YOUR</span><br />
             <span className="headline-line-2">PERFECT MATCH</span>
           </h1>
           
-          <p>
+          <p className="mb-8">
             Show Case helps you find THE right photographer. Swipe through local talent, 
             match with your style, and book—weddings, surf, portraits and more.
           </p>
@@ -77,13 +77,13 @@ const Index = () => {
           <div className="cta">
             <button 
               onClick={() => navigate("/discover")}
-              className="btn-primary"
+              className="btn-primary btn-lg"
             >
               I am looking for a photographer
             </button>
             <button 
               onClick={() => navigate("/auth")}
-              className="btn-secondary"
+              className="btn-secondary btn-lg"
             >
               I am a photographer
             </button>
@@ -92,17 +92,17 @@ const Index = () => {
       </section>
 
       {/* Social Proof */}
-      <section className="py-8 bg-cp-cream">
-        <div className="trust-strip">
+      <section className="py-6 bg-cp-cream">
+        <div className="trust-strip max-w-4xl">
           <SocialProof />
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="section bg-cp-cream">
-        <div className="text-center mb-20">
-          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-4">Simple Process</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-4">How It Works</h2>
+      <section className="section-sm bg-cp-cream">
+        <div className="text-center mb-16">
+          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Simple Process</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">How It Works</h2>
           <p className="text-cp-muted text-lg max-w-2xl mx-auto">
             Finding the perfect photographer has never been easier
           </p>
@@ -145,31 +145,33 @@ const Index = () => {
       </section>
 
       {/* Browse by Category */}
-      <section className="section bg-white">
-        <div className="text-center mb-16">
-          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-4">Explore Styles</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-4">Browse by Style</h2>
-          <p className="text-cp-muted text-lg max-w-2xl mx-auto">
+      <section className="section-sm bg-white">
+        <div className="text-center mb-12">
+          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Explore Styles</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">Browse by Style</h2>
+          <p className="text-cp-muted text-lg max-w-2xl mx-auto mb-8">
             Find photographers who specialize in what you need
           </p>
         </div>
-        <CategoryChips />
+        <div className="max-w-4xl mx-auto">
+          <CategoryChips />
+        </div>
       </section>
 
       {/* Featured Photographers */}
-      <section className="section bg-cp-cream">
-        <div className="text-center mb-16">
-          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-4">Top Talent</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-4">Featured Photographers</h2>
+      <section className="section-sm bg-cp-cream">
+        <div className="text-center mb-12">
+          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Top Talent</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">Featured Photographers</h2>
           <p className="text-cp-muted text-lg max-w-2xl mx-auto">
             Top-rated professionals ready to capture your special moments
           </p>
         </div>
         <ShowcaseGrid />
-        <div className="text-center mt-12">
+        <div className="text-center mt-10">
           <button
             onClick={() => navigate("/discover")}
-            className="px-8 py-3 rounded-full bg-cp-green text-white font-semibold hover:brightness-90 transition-all inline-flex items-center gap-2"
+            className="btn-primary btn-lg inline-flex items-center gap-2"
           >
             View All Photographers
             <ArrowRight className="w-5 h-5" />
@@ -178,37 +180,37 @@ const Index = () => {
       </section>
 
       {/* CTA Sections - Two Tiles */}
-      <section className="section bg-white">
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+      <section className="section-sm bg-white">
+        <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {/* For Clients */}
-          <div className="tile p-12 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-cp-green/10 mb-6">
-              <Camera className="w-10 h-10 text-cp-green" />
+          <div className="tile p-10 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cp-green/10 mb-5">
+              <Camera className="w-8 h-8 text-cp-green" />
             </div>
-            <h3 className="text-3xl font-bold text-cp-ink mb-4">Need a photographer?</h3>
-            <p className="text-cp-muted text-lg mb-8 leading-relaxed">
+            <h3 className="text-2xl font-bold text-cp-ink mb-3">Need a photographer?</h3>
+            <p className="text-cp-muted text-base mb-6 leading-relaxed">
               Browse talented photographers, view portfolios, and book the perfect match for your moments.
             </p>
             <button
               onClick={() => navigate("/discover")}
-              className="px-8 py-3 rounded-full bg-cp-green text-white font-semibold hover:brightness-90 transition-all"
+              className="btn-primary btn-md"
             >
               View Photographers
             </button>
           </div>
 
           {/* For Photographers */}
-          <div className="tile p-12 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-cp-gold/10 mb-6">
-              <Sparkles className="w-10 h-10 text-cp-gold" />
+          <div className="tile p-10 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cp-gold/10 mb-5">
+              <Sparkles className="w-8 h-8 text-cp-gold" />
             </div>
-            <h3 className="text-3xl font-bold text-cp-ink mb-4">Are you a photographer?</h3>
-            <p className="text-cp-muted text-lg mb-8 leading-relaxed">
+            <h3 className="text-2xl font-bold text-cp-ink mb-3">Are you a photographer?</h3>
+            <p className="text-cp-muted text-base mb-6 leading-relaxed">
               Join our platform to connect with clients, showcase your work, and grow your business.
             </p>
             <button
               onClick={() => navigate("/auth")}
-              className="px-8 py-3 rounded-full bg-cp-gold text-white font-semibold hover:brightness-110 transition-all"
+              className="px-6 py-3 rounded-full bg-cp-gold text-white font-bold hover:brightness-110 transition-all text-sm"
             >
               Get Started
             </button>
