@@ -8,11 +8,17 @@
   :root {
     /* Cal Poly Colors - Phamily Style */
     --cp-green: 21 60% 21%;
+    --cp-green-700: 154 60% 17%;
     --cp-gold: 40 80% 43%;
     --cp-ink: 222 47% 5%;
+    --ink: 222 47% 5%;
+    --muted: 220 9% 46%;
     --cp-cream: 36 100% 97%;
+    --cream: 36 100% 97%;
     --cp-card: 0 0% 100%;
+    --card: 0 0% 100%;
     --cp-border: 240 9% 91%;
+    --border: 240 9% 91%;
     --cp-muted: 220 9% 46%;
 
     --background: 36 100% 97%;
@@ -141,8 +147,18 @@
 
   html, body {
     @apply bg-background text-foreground;
-    background: hsl(var(--cp-cream));
-    color: hsl(var(--cp-ink));
+    background: hsl(var(--cream));
+    color: hsl(var(--ink));
+    scroll-snap-type: y proximity;
+  }
+
+  h1, h2, h3 {
+    letter-spacing: -0.015em;
+  }
+
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, hsl(var(--cp-gold)) 70%, #fff 30%);
+    outline-offset: 2px;
   }
 }
 
@@ -345,21 +361,36 @@
     padding: 10px 16px;
   }
 
-  /* Hero Section (deep green band) */
+  /* Hero Section (full-screen) */
   .hero {
-    background: hsl(var(--cp-green));
+    background: hsl(var(--cp-green-700));
     color: #fff;
-    padding: 96px 24px 120px;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(48px, 8vh, 96px) 24px;
     text-align: center;
     position: relative;
+    scroll-snap-align: start;
+  }
+
+  .hero * {
+    text-shadow: none !important;
+  }
+
+  .hero .eyebrow {
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.9;
   }
 
   .hero h1 {
     font-family: inherit;
-    font-weight: 800;
-    font-size: clamp(42px, 7vw, 92px);
-    line-height: 0.92;
-    letter-spacing: -0.02em;
+    font-weight: 900;
+    font-size: clamp(40px, 7vw, 96px);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
     margin: 16px auto 8px;
     max-width: 18ch;
   }
@@ -384,11 +415,12 @@
   .hero p {
     max-width: 60ch;
     margin: 16px auto 28px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.92);
     font-size: 1.125rem;
   }
 
   .hero .cta {
+    margin-top: 24px;
     display: flex;
     gap: 12px;
     justify-content: center;
@@ -396,32 +428,38 @@
   }
 
   .hero .cta .btn-primary {
-    background: #23A065;
+    background: hsl(var(--cp-green));
     color: #fff;
     border-radius: 999px;
-    padding: 12px 24px;
+    padding: 12px 16px;
     font-weight: 700;
+    line-height: 1;
+  }
+
+  .hero .cta .btn-primary:hover {
+    filter: brightness(0.92);
   }
 
   .hero .cta .btn-secondary {
     background: #fff;
     color: #1F2937;
     border-radius: 999px;
-    padding: 12px 24px;
-    border: 1px solid hsl(var(--cp-border));
+    padding: 12px 16px;
+    border: 1px solid hsl(var(--border));
     font-weight: 700;
+    line-height: 1;
   }
 
-  /* Trust Strip */
+  .btn, button, [role="button"] {
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 12px 16px;
+    line-height: 1;
+  }
+
+  /* Trust Strip - Hidden for full-screen hero */
   .trust-strip {
-    background: #fff;
-    border: 1px solid hsl(var(--cp-border));
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    padding: 14px 18px;
-    max-width: 900px;
-    margin: -32px auto 24px;
-    position: relative;
+    display: none !important;
   }
 
   /* Float Cards (tilted benefit cards) */
