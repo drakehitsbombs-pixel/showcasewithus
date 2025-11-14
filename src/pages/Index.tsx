@@ -57,35 +57,37 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section - Full Screen */}
       <section className="hero">
-        <p className="text-white/90 uppercase tracking-widest text-sm font-semibold mb-8">
-          The marketplace without the hassle
-        </p>
-        
-        <h1>
-          <span>FIND YOUR</span><br />
-          <span className="headline-line-2">PERFECT MATCH</span>
-        </h1>
-        
-        <p>
-          Show Case helps you find THE right photographer. Swipe through local talent, 
-          match with your style, and book—weddings, surf, portraits and more.
-        </p>
-        
-        <div className="cta">
-          <button 
-            onClick={() => navigate("/discover")}
-            className="btn-primary"
-          >
-            I am looking for a photographer
-          </button>
-          <button 
-            onClick={() => navigate("/auth")}
-            className="btn-secondary"
-          >
-            I am a photographer
-          </button>
+        <div>
+          <p className="eyebrow text-white/90 uppercase tracking-widest text-sm font-semibold mb-8">
+            The marketplace without the hassle
+          </p>
+          
+          <h1>
+            <span>FIND YOUR</span><br />
+            <span className="headline-line-2">PERFECT MATCH</span>
+          </h1>
+          
+          <p>
+            Show Case helps you find THE right photographer. Swipe through local talent, 
+            match with your style, and book—weddings, surf, portraits and more.
+          </p>
+          
+          <div className="cta">
+            <button 
+              onClick={() => navigate("/discover")}
+              className="btn-primary"
+            >
+              I am looking for a photographer
+            </button>
+            <button 
+              onClick={() => navigate("/auth")}
+              className="btn-secondary"
+            >
+              I am a photographer
+            </button>
+          </div>
         </div>
       </section>
 
