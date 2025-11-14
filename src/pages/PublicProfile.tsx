@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Star, DollarSign, MessageSquare, Calendar, Mail, Phone } from "lucide-react";
+import { getPublicDisplayName } from "@/lib/name-utils";
 import Footer from "@/components/Footer";
 
 const PublicProfile = () => {
@@ -25,9 +26,9 @@ const PublicProfile = () => {
       // Get user by slug
       const { data: userData, error: userError } = await supabase
         .from("users_extended")
-        .select("*")
+        .select("id, name, email, city, slug, bio, avatar_url")
         .eq("slug", slug)
-        .single();
+        .maybeSingle();
 
       if (userError || !userData) {
         console.error("User not found");
@@ -38,9 +39,9 @@ const PublicProfile = () => {
       // Get creator profile
       const { data: creatorProfile, error: profileError } = await supabase
         .from("creator_profiles")
-        .select("*")
+        .select("*, email_public:email_public, phone_public:phone_public, show_name_public:show_name_public")
         .eq("user_id", userData.id)
-        .single();
+        .maybeSingle();
 
       if (profileError || !creatorProfile) {
         console.error("Creator profile not found");
@@ -131,6 +132,11 @@ const PublicProfile = () => {
     );
   }
 
+  const displayName = getPublicDisplayName(
+    profile.name,
+    profile.email,
+    profile.show_name_public !== false
+  );
   const coverImage = portfolio[0]?.url || profile.avatar_url;
   const showMinBudget = profile.min_project_budget_usd > 0;
 
@@ -157,14 +163,14 @@ const PublicProfile = () => {
                   <Avatar className="w-32 h-32 border-4 border-background">
                     <AvatarImage src={profile.avatar_url} />
                     <AvatarFallback className="text-4xl">
-                      {profile.name?.charAt(0)?.toUpperCase()}
+                      {displayName?.charAt(0)?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
 
                   <div className="flex-1">
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                       <div>
-                        <h1 className="text-3xl font-bold mb-2">{profile.name}</h1>
+                        <h1 className="text-3xl font-bold mb-2">{displayName}</h1>
                         {profile.city && (
                           <p className="text-muted-foreground flex items-center gap-1">
                             <MapPin className="w-4 h-4" />

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
+import { getPublicDisplayName } from "@/lib/name-utils";
 import Footer from "@/components/Footer";
 
 const Discover = () => {
@@ -110,27 +111,16 @@ const Discover = () => {
     });
   };
 
-  const getDisplayName = (userExtended: any, creator: any) => {
-    const name = userExtended?.name || creator.name;
-    if (name) return name;
-    
-    // Fallback: compose from email
-    const email = userExtended?.email;
-    if (email) {
-      const username = email.split('@')[0];
-      const city = userExtended?.city || creator.city;
-      return city ? `${username} (${city})` : username;
-    }
-    
-    return 'Photographer';
-  };
-
   const renderCreatorCard = (creator: any, index: number) => {
     const userExtended = Array.isArray(creator.users_extended) 
       ? creator.users_extended[0] 
       : creator.users_extended;
     
-    const displayName = getDisplayName(userExtended, creator);
+    const displayName = getPublicDisplayName(
+      userExtended?.name,
+      userExtended?.email,
+      creator.show_name_public !== false // default to true if undefined
+    );
     const displayCity = userExtended?.city || creator.city;
     const displaySlug = userExtended?.slug || creator.slug;
     const coverImage = creator.avatar_url || userExtended?.avatar_url;
