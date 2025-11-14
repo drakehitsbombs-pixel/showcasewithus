@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import showcase1 from "@/assets/showcase-1.jpg";
+import showcase2 from "@/assets/showcase-2.jpg";
+import showcase3 from "@/assets/showcase-3.jpg";
+import showcase4 from "@/assets/showcase-4.jpg";
+import showcase5 from "@/assets/showcase-5.jpg";
+import showcase6 from "@/assets/showcase-6.jpg";
 
-// Placeholder showcase images - in production these would come from the database
 const showcaseImages = [
-  { id: 1, url: "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800", alt: "Wedding photography" },
-  { id: 2, url: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800", alt: "Portrait photography" },
-  { id: 3, url: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800", alt: "Surf photography" },
-  { id: 4, url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800", alt: "Event photography" },
-  { id: 5, url: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800", alt: "Nature photography" },
-  { id: 6, url: "https://images.unsplash.com/photo-1519167758481-83f29da8c6b3?w=800", alt: "Product photography" },
-  { id: 7, url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800", alt: "Lifestyle photography" },
-  { id: 8, url: "https://images.unsplash.com/photo-1529636798458-92182e662485?w=800", alt: "Portrait session" },
+  { id: 1, url: showcase1, alt: "Lake portrait" },
+  { id: 2, url: showcase2, alt: "Automotive photography" },
+  { id: 3, url: showcase3, alt: "Winter portrait" },
+  { id: 4, url: showcase4, alt: "Urban portrait" },
+  { id: 5, url: showcase5, alt: "Artistic portrait" },
+  { id: 6, url: showcase6, alt: "Automotive lifestyle" },
 ];
 
 export function ShowcaseGrid() {
@@ -19,7 +22,7 @@ export function ShowcaseGrid() {
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {showcaseImages.map((image) => (
           <div
             key={image.id}
