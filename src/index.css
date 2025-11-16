@@ -161,21 +161,10 @@
   background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0));
   color: white;
   border-bottom: 0 !important;
-  transition: background 0.25s ease, color 0.25s ease;
-}
-
-.navbar.is-solid {
-  background: white;
-  color: hsl(var(--cp-ink));
-  border-bottom: 1px solid rgba(0,0,0,0.08) !important;
 }
 
 .navbar a {
   color: inherit;
-}
-
-.navbar.is-solid a:not(.btn) {
-  color: hsl(var(--cp-ink));
 }
 
 /* Mobile tweaks */
