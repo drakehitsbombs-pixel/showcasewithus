@@ -2,6 +2,193 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mammut-style Hero Styles */
+.mammut-hero {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  margin-left: -50vw;
+  min-height: 100dvh;
+  color: white;
+  overflow: hidden;
+}
+
+.mammut-media {
+  position: absolute;
+  inset: 0;
+}
+
+.mammut-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 0.8s ease, opacity 0.6s ease;
+  opacity: 1;
+}
+
+.mammut-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.05) 75%);
+  pointer-events: none;
+}
+
+.mammut-content {
+  position: relative;
+  z-index: 2;
+  max-width: clamp(560px, 48vw, 760px);
+  padding: clamp(72px, 12vh, 120px) 24px 24px;
+  margin-left: clamp(16px, 8vw, 120px);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+}
+
+.mammut-content .eyebrow {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  font-weight: 800;
+  margin: 0 0 12px;
+  font-size: clamp(11px, 1.2vw, 14px);
+}
+
+.mammut-content .display {
+  font-weight: 900;
+  font-size: clamp(40px, 8vw, 84px);
+  line-height: 1.02;
+  margin: 0 0 16px;
+}
+
+.mammut-content .display .soft {
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.mammut-content .display .strong {
+  font-weight: 900;
+}
+
+.mammut-content .sub {
+  font-size: clamp(16px, 2.2vw, 20px);
+  line-height: 1.5;
+  opacity: 0.95;
+  margin: 0 0 24px;
+}
+
+.mammut-content .cta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mammut-content .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: transform 0.1s ease;
+  cursor: pointer;
+}
+
+.mammut-content .btn:hover {
+  transform: translateY(-1px);
+}
+
+.mammut-content .btn-primary {
+  background: hsl(var(--cp-green));
+  color: white;
+  border: 1px solid rgba(0,0,0,0.25);
+}
+
+.mammut-content .btn-ghost {
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+
+.mammut-content .btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.scroll-indicator {
+  position: absolute;
+  left: clamp(12px, 6vw, 72px);
+  bottom: 16px;
+  height: 44px;
+  width: 24px;
+  border: 2px solid rgba(255,255,255,0.7);
+  border-radius: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 6px;
+  opacity: 0.8;
+  z-index: 2;
+}
+
+.scroll-indicator span {
+  width: 6px;
+  height: 10px;
+  background: white;
+  border-radius: 3px;
+  animation: scrollDot 1.5s infinite;
+}
+
+@keyframes scrollDot {
+  0% { transform: translateY(0); opacity: 1; }
+  70% { transform: translateY(14px); opacity: 0.2; }
+  100% { transform: translateY(0); opacity: 0.9; }
+}
+
+/* Transparent header over hero; solid after hero */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0));
+  color: white;
+  border-bottom: 0 !important;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.navbar.is-solid {
+  background: white;
+  color: hsl(var(--cp-ink));
+  border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.navbar a {
+  color: inherit;
+}
+
+.navbar.is-solid a:not(.btn) {
+  color: hsl(var(--cp-ink));
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .mammut-content {
+    margin-left: 20px;
+    padding-top: 96px;
+  }
+  
+  .mammut-content .display {
+    font-size: clamp(34px, 9vw, 56px);
+  }
+}
+
 /* Cal Poly SLO Design System */
 
 @layer base {
