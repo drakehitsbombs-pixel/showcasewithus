@@ -62,9 +62,15 @@ const MeEdit = () => {
         .eq("id", session.user.id)
         .single();
 
-      setUserRole(userData?.role);
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
 
-      if (userData?.role === "creator") {
+      setUserRole(roleData?.role || null);
+
+      if (roleData?.role === "creator") {
         loadPortfolioImages(session.user.id);
         
         const { data: creatorProfile } = await supabase

@@ -35,10 +35,16 @@ const Me = () => {
         .eq("id", session.user.id)
         .single();
 
-      setUserData(user);
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      setUserData({ ...user, role: roleData?.role });
 
       // Load role-specific profile
-      if (user?.role === "creator") {
+      if (roleData?.role === "creator") {
         const { data: creatorProfile } = await supabase
           .from("creator_profiles")
           .select("*")

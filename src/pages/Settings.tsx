@@ -49,12 +49,18 @@ const Settings = () => {
       .eq("id", session.user.id)
       .single();
 
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+
     setUserId(session.user.id);
-    setUserRole(userData?.role || null);
+    setUserRole(roleData?.role || null);
     setName(userData?.name || "");
     setEmail(userData?.email || session.user.email || "");
     setCity(userData?.city || "");
-    await loadSettings(session.user.id, userData?.role);
+    await loadSettings(session.user.id, roleData?.role);
   };
 
   const loadSettings = async (uid: string, role: string | null) => {

@@ -23,10 +23,10 @@ const Navigation = () => {
     if (session) {
       setUserId(session.user.id);
       const { data } = await supabase
-        .from("users_extended")
+        .from("user_roles")
         .select("role")
-        .eq("id", session.user.id)
-        .single();
+        .eq("user_id", session.user.id)
+        .maybeSingle();
       setUserRole(data?.role || null);
       loadUnreadCount(session.user.id);
     }
