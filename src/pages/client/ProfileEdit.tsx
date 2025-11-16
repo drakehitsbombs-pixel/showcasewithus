@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
+import { kmToMiles, formatMiles } from "@/lib/constants";
 
 const availableStyles = ["wedding", "portrait", "product", "event", "lifestyle", "editorial"];
 
@@ -178,7 +179,7 @@ const ProfileEdit = () => {
             </div>
 
             <div>
-              <Label>Maximum Distance (km): {formData.distance_km}</Label>
+              <Label>Maximum Distance: {formatMiles(kmToMiles(formData.distance_km))} mi</Label>
               <Slider
                 value={[formData.distance_km]}
                 onValueChange={(value) => setFormData({ ...formData, distance_km: value[0] })}
