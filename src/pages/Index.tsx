@@ -31,7 +31,7 @@ const Index = () => {
       const solid = window.scrollY > window.innerHeight * 0.75;
       setNavSolid(solid);
       
-      const media = document.querySelector('.mammut-img');
+      const media = document.querySelector('.mammut-video, .mammut-img');
       if (media instanceof HTMLElement) {
         const t = Math.min(1, window.scrollY / window.innerHeight);
         media.style.transform = `scale(${1.02 + t * 0.03}) translateY(${t * 10}px)`;
@@ -92,7 +92,16 @@ const Index = () => {
       {/* Mammut-style Hero Section */}
       <section className="mammut-hero" aria-label="Intro">
         <div className="mammut-media">
-          <img className="mammut-img" src="/hero-bg-optimized.webp" alt="" loading="eager" />
+          <video 
+            className="mammut-video" 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            poster="/hero-bg-optimized.webp"
+          >
+            <source src="/hero-video.mp4" type="video/mp4" />
+          </video>
         </div>
 
         <div className="mammut-content">
