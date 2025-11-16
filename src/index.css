@@ -1238,7 +1238,6 @@ body:not(:has(.hero)){ background:#fff !important; }
 }
 
 /* NAVBAR + FOOTER */
-.navbar{ background:#fff !important; border-bottom:1px solid var(--border) !important; }
 .footer{ background:#fff !important; border-top:1px solid var(--border) !important; color:var(--muted) !important; }
 
 /* SECTIONS */
