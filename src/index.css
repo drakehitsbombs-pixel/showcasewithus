@@ -2,119 +2,191 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mammut-style Hero Styles */
-.mammut-hero {
+/* Root variables */
+:root {
+  --cp-green: #154734;
+  --ink: #0B0E13;
+  --white: #fff;
+  --radius-pill: 999px;
+  --content-max: 1200px;
+  --rhythm: 8px;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: Inter, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+.container {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  padding-inline: clamp(16px, 3vw, 28px);
+}
+
+/* Header: transparent over hero, minimal links */
+.site-header {
+  position: fixed;
+  inset: auto 0 0 0;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.40), rgba(0,0,0,0));
+  border-bottom: 0;
+  color: #fff;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.2s;
+}
+
+.site-header .nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 62px;
+  padding: 0 20px;
+}
+
+.site-header a {
+  color: currentColor;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 12px;
+  opacity: 0.92;
+}
+
+.site-header a:hover {
+  opacity: 1;
+}
+
+.site-header.is-solid {
+  background: #fff;
+  color: var(--ink);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Hero */
+.hero {
   position: relative;
-  width: 100vw;
-  left: 50%;
-  margin-left: -50vw;
   min-height: 100dvh;
-  color: white;
+  color: #fff;
   overflow: hidden;
 }
 
-.mammut-media {
+.hero__media {
   position: absolute;
   inset: 0;
 }
 
-.mammut-img,
-.mammut-video {
+.hero__media img,
+.hero__media video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.02);
-  transition: transform 0.8s ease, opacity 0.6s ease;
-  opacity: 1;
 }
 
-.mammut-hero::after {
+.hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.05) 75%);
+  background: linear-gradient(90deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.05) 75%);
   pointer-events: none;
 }
 
-.mammut-content {
+.hero__content {
   position: relative;
   z-index: 2;
-  max-width: clamp(560px, 48vw, 760px);
-  padding: clamp(72px, 12vh, 120px) 24px 24px;
+  width: min(46rem, 92%);
   margin-left: clamp(16px, 8vw, 120px);
+  padding-top: clamp(88px, 14vh, 140px);
   text-shadow: 0 2px 12px rgba(0,0,0,0.45);
 }
 
-.mammut-content .eyebrow {
-  letter-spacing: 0.12em;
+.eyebrow {
+  font-weight: 900;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  opacity: 0.9;
-  font-weight: 800;
   margin: 0 0 12px;
-  font-size: clamp(11px, 1.2vw, 14px);
-}
-
-.mammut-content .display {
-  font-weight: 900;
-  font-size: clamp(40px, 8vw, 84px);
-  line-height: 1.02;
-  margin: 0 0 16px;
-}
-
-.mammut-content .display .soft {
-  font-weight: 700;
   opacity: 0.95;
+  font-size: clamp(11px, 1.2vw, 13px);
 }
 
-.mammut-content .display .strong {
+.display {
+  font-family: Outfit, Inter, system-ui, sans-serif;
+  font-weight: 900;
+  line-height: 1.02;
+  font-size: clamp(44px, 9vw, 96px);
+  margin: 0 0 12px;
+}
+
+.display .soft {
+  font-weight: 800;
+  opacity: 0.98;
+}
+
+.display .strong {
   font-weight: 900;
 }
 
-.mammut-content .sub {
+.sub {
   font-size: clamp(16px, 2.2vw, 20px);
   line-height: 1.5;
-  opacity: 0.95;
-  margin: 0 0 24px;
+  margin: 0 0 22px;
+  opacity: 0.96;
 }
 
-.mammut-content .cta-row {
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  font-size: 13px;
+  border: 1px solid transparent;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, border-color 0.2s;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--cp-green);
+  color: #fff;
+  border-color: rgba(0,0,0,0.25);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255,255,255,0.70);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.cta-row {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.mammut-content .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 28px;
-  border-radius: 999px;
+.hero__reassure {
+  margin-top: 10px;
+  font-size: 12px;
   font-weight: 700;
-  font-size: 15px;
-  transition: transform 0.1s ease;
-  cursor: pointer;
-}
-
-.mammut-content .btn:hover {
-  transform: translateY(-1px);
-}
-
-.mammut-content .btn-primary {
-  background: hsl(var(--cp-green));
-  color: white;
-  border: 1px solid rgba(0,0,0,0.25);
-}
-
-.mammut-content .btn-ghost {
-  background: transparent;
-  color: white;
-  border: 2px solid rgba(255,255,255,0.6);
-}
-
-.mammut-content .btn-ghost:hover {
-  background: rgba(255,255,255,0.1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
 }
 
 .scroll-indicator {
@@ -147,46 +219,10 @@
   100% { transform: translateY(0); opacity: 0.9; }
 }
 
-/* Transparent header over hero; solid after hero */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 30;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0));
-  color: white;
-  border-bottom: 0 !important;
-  transition: background 0.25s ease, color 0.25s ease;
-}
-
-.navbar.is-solid {
-  background: white;
-  color: hsl(var(--cp-ink));
-  border-bottom: 1px solid rgba(0,0,0,0.08) !important;
-}
-
-.navbar a {
-  color: inherit;
-}
-
-.navbar.is-solid a:not(.btn) {
-  color: hsl(var(--cp-ink));
-}
-
-/* Mobile tweaks */
 @media (max-width: 768px) {
-  .mammut-content {
+  .hero__content {
     margin-left: 20px;
-    padding-top: 96px;
-  }
-  
-  .mammut-content .display {
-    font-size: clamp(34px, 9vw, 56px);
+    padding-top: 108px;
   }
 }
 

@@ -26,16 +26,10 @@ const Index = () => {
       }
     });
 
-    // Scroll effects for nav and parallax
+    // Scroll effects for nav
     const handleScroll = () => {
-      const solid = window.scrollY > window.innerHeight * 0.75;
+      const solid = window.scrollY > window.innerHeight * 0.66;
       setNavSolid(solid);
-      
-      const media = document.querySelector('.mammut-video, .mammut-img');
-      if (media instanceof HTMLElement) {
-        const t = Math.min(1, window.scrollY / window.innerHeight);
-        media.style.transform = `scale(${1.02 + t * 0.03}) translateY(${t * 10}px)`;
-      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -63,37 +57,34 @@ const Index = () => {
   return (
     <div className="page-frame">
       {/* Navigation Header */}
-      <header className={`navbar ${navSolid ? 'is-solid' : ''}`}>
-        {/* Desktop Navigation - Hidden on mobile */}
-        <nav className="hidden md:flex items-center gap-4 flex-shrink-0">
-          <Link to="/discover" className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
-            Find Photographers
-          </Link>
-          <Link to="/auth" className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
-            Become a Photographer
-          </Link>
-        </nav>
-        
-        {/* Mobile: Left spacer */}
-        <div className="md:hidden w-10"></div>
-        
-        {/* Logo - Centered */}
-        <div className="flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
-          <Camera className={`w-5 h-5 md:w-6 md:h-6 ${navSolid ? 'text-cp-green' : 'text-white'}`} />
-          <span className={`text-lg md:text-xl font-bold tracking-tight ${navSolid ? 'text-cp-ink' : 'text-white'}`}>SHOW CASE</span>
-        </div>
-        
-        {/* Theme Toggle */}
-        <div className="flex items-center flex-shrink-0">
-          <ThemeToggle />
+      <header className={`site-header ${navSolid ? 'is-solid' : ''}`}>
+        <div className="nav">
+          {/* Desktop Navigation - Hidden on mobile */}
+          <nav className="hidden md:flex items-center gap-4">
+            <Link to="/discover">Find Photographers</Link>
+            <Link to="/auth">Become a Photographer</Link>
+          </nav>
+          
+          {/* Mobile: Left spacer */}
+          <div className="md:hidden w-10"></div>
+          
+          {/* Logo - Centered */}
+          <div className="flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
+            <Camera className="w-5 h-5 md:w-6 md:h-6" />
+            <span className="text-lg md:text-xl font-bold tracking-tight">SHOW CASE</span>
+          </div>
+          
+          {/* Theme Toggle */}
+          <div className="flex items-center">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
-      {/* Mammut-style Hero Section */}
-      <section className="mammut-hero" aria-label="Intro">
-        <div className="mammut-media">
+      {/* Hero Section */}
+      <section className="hero" aria-label="Intro">
+        <div className="hero__media">
           <video 
-            className="mammut-video" 
             autoPlay 
             muted 
             loop 
@@ -104,11 +95,11 @@ const Index = () => {
           </video>
         </div>
 
-        <div className="mammut-content">
+        <div className="hero__content">
           <p className="eyebrow">Hire local photographers in minutes</p>
           <h1 className="display">
-            <span className="soft">FIND YOUR</span><br/>
-            <span className="strong">PERFECT MATCH</span>
+            <span className="soft">Find your</span><br/>
+            <span className="strong">perfect match</span>
           </h1>
           <p className="sub">Browse, compare, and book—weddings, surf, portraits and more.</p>
           <div className="cta-row">
@@ -125,9 +116,7 @@ const Index = () => {
               I am a photographer
             </button>
           </div>
-          <p className="mt-4 text-white/80 text-sm">
-            Free to browse • No signup to view profiles
-          </p>
+          <p className="hero__reassure">Free to browse • No signup to view profiles</p>
         </div>
 
         <div className="scroll-indicator" aria-hidden="true">
