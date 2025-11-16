@@ -13,35 +13,78 @@ import Footer from "@/components/Footer";
 const Discover = () => {
   const [creators, setCreators] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [searchFilters, setSearchFilters] = useState({
     styles: [] as string[],
-    distance: 100,
+    distance: 50,
     budgetMinimum: 0,
   });
   const navigate = useNavigate();
 
+  // Hydrate from URL on mount
   useEffect(() => {
     const stylesParam = searchParams.get("styles");
-    if (stylesParam) {
-      setSearchFilters(prev => ({
-        ...prev,
-        styles: stylesParam.split(","),
-      }));
+    const distanceParam = searchParams.get("maxMi");
+    const budgetParam = searchParams.get("minBudget");
+    const lat = searchParams.get("lat");
+    const lon = searchParams.get("lon");
+    
+    setSearchFilters(prev => ({
+      ...prev,
+      styles: stylesParam ? stylesParam.split(",") : [],
+      distance: distanceParam ? Number(distanceParam) : 50,
+      budgetMinimum: budgetParam ? Number(budgetParam) : 0,
+    }));
+
+    if (lat && lon) {
+      setUserLocation({ lat: Number(lat), lon: Number(lon) });
     }
-  }, [searchParams]);
+  }, []);
+
+  // Request user location
+  useEffect(() => {
+    if (!userLocation && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+        },
+        () => {
+          // User denied location - that's fine
+        }
+      );
+    }
+  }, []);
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 3959; // Earth's radius in miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
 
   const loadCreators = async () => {
     setLoading(true);
     try {
       let query = supabase
         .from("creator_profiles")
-        .select("*")
+        .select(`
+          *,
+          users_extended!inner(geo_lat, geo_lng, city)
+        `)
         .eq("is_discoverable", true)
         .eq("public_profile", true)
         .eq("status", "published")
         .order("showcase_score", { ascending: false })
-        .limit(50);
+        .limit(100);
 
       // Apply style filter
       if (searchFilters.styles.length > 0) {
@@ -54,10 +97,31 @@ const Discover = () => {
       }
 
       const { data, error } = await query;
-
       if (error) throw error;
       
-      setCreators(data || []);
+      let results = data || [];
+
+      // Apply distance filter client-side if user has location
+      if (userLocation && searchFilters.distance > 0) {
+        results = results.filter((creator: any) => {
+          const creatorLat = creator.users_extended?.geo_lat;
+          const creatorLon = creator.users_extended?.geo_lng;
+          
+          // If creator has no location, include them
+          if (!creatorLat || !creatorLon) return true;
+          
+          const distance = calculateDistance(
+            userLocation.lat,
+            userLocation.lon,
+            creatorLat,
+            creatorLon
+          );
+          
+          return distance <= searchFilters.distance;
+        });
+      }
+
+      setCreators(results.slice(0, 50));
     } catch (error) {
       console.error("Error loading creators:", error);
     } finally {
@@ -66,11 +130,28 @@ const Discover = () => {
   };
 
   useEffect(() => {
+    // Write to URL
+    const params = new URLSearchParams();
+    if (searchFilters.styles.length > 0) {
+      params.set('styles', searchFilters.styles.join(','));
+    }
+    if (searchFilters.distance !== 50) {
+      params.set('maxMi', String(searchFilters.distance));
+    }
+    if (searchFilters.budgetMinimum > 0) {
+      params.set('minBudget', String(searchFilters.budgetMinimum));
+    }
+    if (userLocation) {
+      params.set('lat', String(userLocation.lat));
+      params.set('lon', String(userLocation.lon));
+    }
+    setSearchParams(params, { replace: true });
+
     const timeoutId = setTimeout(() => {
       loadCreators();
     }, 350);
     return () => clearTimeout(timeoutId);
-  }, [searchFilters]);
+  }, [searchFilters, userLocation]);
 
   const toggleStyle = (style: string) => {
     setSearchFilters(prev => ({
@@ -84,9 +165,10 @@ const Discover = () => {
   const clearFilters = () => {
     setSearchFilters({
       styles: [],
-      distance: 100,
+      distance: 50,
       budgetMinimum: 0,
     });
+    setSearchParams({}, { replace: true });
   };
 
   const renderCreatorCard = (creator: any, index: number) => {
@@ -212,7 +294,27 @@ const Discover = () => {
                 </div>
 
                 <div>
-                  <Label className="filter-label">Budget ≥</Label>
+                  <Label className="filter-label">
+                    Distance: {searchFilters.distance} mi
+                  </Label>
+                  <input
+                    type="range"
+                    min="5"
+                    max="500"
+                    step="5"
+                    value={searchFilters.distance}
+                    onChange={(e) => setSearchFilters(prev => ({ ...prev, distance: Number(e.target.value) }))}
+                    className="w-full"
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {userLocation 
+                      ? 'Showing photographers within selected distance' 
+                      : 'Enable location to filter by distance'}
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="filter-label">Maximum Budget</Label>
                   <select
                     className="w-full p-2 border border-input rounded-lg bg-background text-sm"
                     value={searchFilters.budgetMinimum}
@@ -220,12 +322,12 @@ const Discover = () => {
                   >
                     {BUDGET_STEPS.map((value) => (
                       <option key={value} value={value}>
-                        {value === 0 ? 'Any Budget' : `${formatBudget(value)}+`}
+                        {value === 0 ? 'Any Budget' : `Up to ${formatBudget(value)}`}
                       </option>
                     ))}
                   </select>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Show photographers with minimum project budget at or below this amount
+                    Show photographers you can afford with this budget
                   </p>
                 </div>
 
