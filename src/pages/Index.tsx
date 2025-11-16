@@ -46,7 +46,8 @@ const Index = () => {
     <div className="page-frame">
       {/* Navigation Header */}
       <header className="navbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px' }}>
-        <nav className="flex items-center gap-4 flex-shrink-0">
+        {/* Desktop Navigation - Hidden on mobile */}
+        <nav className="hidden md:flex items-center gap-4 flex-shrink-0">
           <button onClick={() => navigate("/discover")} className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
             Find Photographers
           </button>
@@ -55,11 +56,16 @@ const Index = () => {
           </button>
         </nav>
         
+        {/* Mobile: Left spacer */}
+        <div className="md:hidden w-10"></div>
+        
+        {/* Logo - Centered */}
         <div className="flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
-          <Camera className="w-6 h-6 text-cp-green" />
-          <span className="text-xl font-bold tracking-tight text-cp-ink">SHOW CASE</span>
+          <Camera className="w-5 h-5 md:w-6 md:h-6 text-cp-green" />
+          <span className="text-lg md:text-xl font-bold tracking-tight text-cp-ink">SHOW CASE</span>
         </div>
         
+        {/* Theme Toggle */}
         <div className="flex items-center flex-shrink-0">
           <ThemeToggle />
         </div>
@@ -68,30 +74,30 @@ const Index = () => {
       {/* Hero Section - Full Screen */}
       <section className="hero">
         <div className="hero-inner">
-          <p className="eyebrow text-white/90 uppercase tracking-widest text-sm font-semibold mb-6">
+          <p className="eyebrow text-white/90 uppercase tracking-widest text-xs md:text-sm font-semibold mb-4 md:mb-6">
             The marketplace without the hassle
           </p>
           
-          <h1 className="mb-6">
+          <h1 className="mb-6 text-4xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.9]">
             <span>FIND YOUR</span><br />
             <span className="headline-line-2">PERFECT MATCH</span>
           </h1>
           
-          <p className="mb-8">
-            Show Case helps you find THE right photographer. Swipe through local talent, 
+          <p className="mb-8 text-lg md:text-2xl text-white/95 max-w-2xl mx-auto leading-relaxed font-light px-4">
+            Show Case helps you find <span className="font-semibold">THE</span> right photographer. Swipe through local talent, 
             match with your style, and book—weddings, surf, portraits and more.
           </p>
           
-          <div className="cta">
+          <div className="cta flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4">
             <button 
               onClick={() => navigate("/discover")}
-              className="btn-primary btn-lg"
+              className="btn-primary btn-lg w-full sm:w-auto text-sm md:text-base"
             >
               I am looking for a photographer
             </button>
             <button 
               onClick={() => navigate("/auth")}
-              className="btn-secondary btn-lg"
+              className="btn-secondary btn-lg w-full sm:w-auto text-sm md:text-base"
             >
               I am a photographer
             </button>
