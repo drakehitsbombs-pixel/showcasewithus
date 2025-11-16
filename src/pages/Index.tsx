@@ -17,6 +17,9 @@ const Index = () => {
   
   // Intersection observers for scroll animations
   const socialProofAnim = useIntersectionObserver();
+  const howItWorksAnim = useIntersectionObserver();
+  const browseStyleAnim = useIntersectionObserver();
+  const featuredAnim = useIntersectionObserver();
   const ctaAnim = useIntersectionObserver();
 
   useEffect(() => {
@@ -149,13 +152,34 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <HowItWorks />
+      <section
+        ref={howItWorksAnim.ref}
+        className={`transition-all duration-700 ${
+          howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <HowItWorks />
+      </section>
 
       {/* Browse by Style */}
-      <BrowseByStyle />
+      <section
+        ref={browseStyleAnim.ref}
+        className={`transition-all duration-700 ${
+          browseStyleAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <BrowseByStyle />
+      </section>
 
       {/* Featured Photographers */}
-      <FeaturedPhotographers />
+      <section
+        ref={featuredAnim.ref}
+        className={`transition-all duration-700 ${
+          featuredAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <FeaturedPhotographers />
+      </section>
 
       {/* CTA Sections - Two Tiles */}
       <section 
