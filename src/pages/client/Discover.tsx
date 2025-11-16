@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
+import { STYLE_OPTIONS, getStyleLabel, BUDGET_STEPS, formatBudget, kmToMiles, formatMiles } from "@/lib/constants";
 import SurfingLoader from "@/components/SurfingLoader";
 
 const Discover = () => {
@@ -36,8 +36,7 @@ const Discover = () => {
   const [searchFilters, setSearchFilters] = useState({
     styles: [] as string[],
     distance: 100,
-    budgetMin: 0,
-    budgetMax: 5000,
+    budgetMinimum: 0,
   });
   const [searchLoading, setSearchLoading] = useState(false);
   
@@ -217,8 +216,8 @@ const Discover = () => {
           filters: {
             styles: searchFilters.styles,
             distance: searchFilters.distance,
-            budget_min: searchFilters.budgetMin,
-            budget_max: searchFilters.budgetMax,
+            budget_min: searchFilters.budgetMinimum,
+            budget_max: searchFilters.budgetMinimum > 0 ? searchFilters.budgetMinimum : 10000,
             client_lat: brief?.geo_lat,
             client_lng: brief?.geo_lng,
           }
@@ -248,8 +247,7 @@ const Discover = () => {
     setSearchFilters({
       styles: [],
       distance: 100,
-      budgetMin: 0,
-      budgetMax: 5000,
+      budgetMinimum: 0,
     });
   };
 
@@ -421,24 +419,25 @@ const Discover = () => {
 
                   <div className="space-y-4">
                     <div>
-                      <Label className="text-sm font-medium mb-2 block">Styles</Label>
+                      <Label className="filter-label">Styles</Label>
                       <div className="flex flex-wrap gap-2">
                         {STYLE_OPTIONS.map((style) => (
-                          <Badge
+                          <button
                             key={style.id}
-                            variant={searchFilters.styles.includes(style.id) ? "default" : "outline"}
-                            className="cursor-pointer"
+                            className={`filter-pill ${
+                              searchFilters.styles.includes(style.id) ? 'active' : ''
+                            }`}
                             onClick={() => toggleSearchStyle(style.id)}
                           >
                             {style.label}
-                          </Badge>
+                          </button>
                         ))}
                       </div>
                     </div>
 
                     <div>
-                      <Label className="text-sm font-medium mb-2 block">
-                        Distance: {searchFilters.distance}km
+                      <Label className="filter-label">
+                        Distance: {formatMiles(kmToMiles(searchFilters.distance))} mi
                       </Label>
                       <Slider
                         value={[searchFilters.distance]}
@@ -446,32 +445,28 @@ const Discover = () => {
                         min={5}
                         max={200}
                         step={5}
+                        className="mt-2"
                       />
                     </div>
 
                     <div>
-                      <Label className="text-sm font-medium mb-2 block">Budget Range</Label>
-                      <div className="space-y-2">
-                        <div>
-                          <Label className="text-xs text-muted-foreground">Min: ${searchFilters.budgetMin}</Label>
-                          <Slider
-                            value={[searchFilters.budgetMin]}
-                            onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, budgetMin: value }))}
-                            min={0}
-                            max={5000}
-                            step={50}
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs text-muted-foreground">Max: ${searchFilters.budgetMax}</Label>
-                          <Slider
-                            value={[searchFilters.budgetMax]}
-                            onValueChange={([value]) => setSearchFilters(prev => ({ ...prev, budgetMax: value }))}
-                            min={0}
-                            max={5000}
-                            step={50}
-                          />
-                        </div>
+                      <Label className="filter-label">
+                        Budget ≥ {searchFilters.budgetMinimum === 0 ? 'Any' : formatBudget(searchFilters.budgetMinimum)}
+                      </Label>
+                      <Slider
+                        value={[BUDGET_STEPS.indexOf(searchFilters.budgetMinimum as typeof BUDGET_STEPS[number])]}
+                        onValueChange={([index]) => setSearchFilters(prev => ({ 
+                          ...prev, 
+                          budgetMinimum: BUDGET_STEPS[index] 
+                        }))}
+                        min={0}
+                        max={BUDGET_STEPS.length - 1}
+                        step={1}
+                        className="mt-2"
+                      />
+                      <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                        <span>Any</span>
+                        <span>$5k</span>
                       </div>
                     </div>
 
