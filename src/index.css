@@ -1052,6 +1052,9 @@
 html,body{ background:var(--bg) !important; color:var(--ink) !important; }
 *{ color-scheme: light !important; }          /* ignore OS dark mode */
 
+/* Override body background on non-homepage pages */
+body:not(:has(.hero)){ background:#fff !important; }
+
 /* Kill any dark theme class/vars */
 [class*="theme-dark"], [data-theme="dark"], .dark{
   background:var(--bg) !important; color:var(--ink) !important;
@@ -1101,8 +1104,11 @@ input, select, textarea{
 .badge, .chip{ background:color-mix(in srgb, var(--cp-gold) 10%, #fff 90%) !important; border:1px solid color-mix(in srgb, var(--cp-gold) 35%, #fff 65%) !important; color:var(--ink) !important; }
 
 /* AUTH PAGE */
-.auth-page{ background:linear-gradient(0deg, var(--bg), var(--bg)) !important; }
+.auth-page, .gradient-card{ background:#fff !important; }
 .auth-card h1, .auth-card h2, .auth-card label{ color:var(--ink) !important; }
+
+/* Fix cream bar at top of auth and other pages */
+.min-h-screen{ background:#fff !important; }
 
 /* DISCOVER/Profile cards keep light look */
 .discover-card, .profile-card{ background:#fff !important; border:1px solid var(--border) !important; }
