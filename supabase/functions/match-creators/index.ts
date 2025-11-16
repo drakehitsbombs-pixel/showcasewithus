@@ -79,33 +79,33 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { filters } = body as { filters: MatchFilters };
 
-    // Input validation for filters
+    // Input validation for filters - only validate if values are provided (not null/undefined)
     if (filters) {
-      if (filters.budget_min !== undefined && (typeof filters.budget_min !== 'number' || filters.budget_min < 0)) {
+      if (filters.budget_min !== undefined && filters.budget_min !== null && (typeof filters.budget_min !== 'number' || filters.budget_min < 0)) {
         return new Response(JSON.stringify({ error: 'budget_min must be a positive number' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      if (filters.budget_max !== undefined && (typeof filters.budget_max !== 'number' || filters.budget_max < 0)) {
+      if (filters.budget_max !== undefined && filters.budget_max !== null && (typeof filters.budget_max !== 'number' || filters.budget_max < 0)) {
         return new Response(JSON.stringify({ error: 'budget_max must be a positive number' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      if (filters.distance_km !== undefined && (typeof filters.distance_km !== 'number' || filters.distance_km < 0 || filters.distance_km > 10000)) {
+      if (filters.distance_km !== undefined && filters.distance_km !== null && (typeof filters.distance_km !== 'number' || filters.distance_km < 0 || filters.distance_km > 10000)) {
         return new Response(JSON.stringify({ error: 'distance_km must be between 0 and 10000' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      if (filters.client_lat !== undefined && (typeof filters.client_lat !== 'number' || filters.client_lat < -90 || filters.client_lat > 90)) {
+      if (filters.client_lat !== undefined && filters.client_lat !== null && (typeof filters.client_lat !== 'number' || filters.client_lat < -90 || filters.client_lat > 90)) {
         return new Response(JSON.stringify({ error: 'client_lat must be between -90 and 90' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      if (filters.client_lng !== undefined && (typeof filters.client_lng !== 'number' || filters.client_lng < -180 || filters.client_lng > 180)) {
+      if (filters.client_lng !== undefined && filters.client_lng !== null && (typeof filters.client_lng !== 'number' || filters.client_lng < -180 || filters.client_lng > 180)) {
         return new Response(JSON.stringify({ error: 'client_lng must be between -180 and 180' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
