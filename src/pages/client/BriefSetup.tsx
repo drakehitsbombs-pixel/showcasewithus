@@ -7,11 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Users, ArrowLeft } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Users, ArrowLeft, CalendarIcon } from "lucide-react";
 import { briefSchema } from "@/lib/validation";
 import { z } from "zod";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 const PROJECT_TYPES = ["Wedding", "Portrait", "Product", "Event", "Commercial", "Real Estate", "Other"];
 const MOOD_TAGS = ["bright", "moody", "candid", "studio", "outdoor", "indoor", "vintage", "modern"];
@@ -21,8 +24,8 @@ const BriefSetup = () => {
   const [loading, setLoading] = useState(false);
 
   const [projectType, setProjectType] = useState<string>("");
-  const [dateStart, setDateStart] = useState("");
-  const [dateEnd, setDateEnd] = useState("");
+  const [dateStart, setDateStart] = useState<Date>();
+  const [dateEnd, setDateEnd] = useState<Date>();
   const [city, setCity] = useState("");
   const [budgetLow, setBudgetLow] = useState("");
   const [budgetHigh, setBudgetHigh] = useState("");
@@ -55,8 +58,8 @@ const BriefSetup = () => {
       // Validate brief data
       const validated = briefSchema.parse({
         projectType: projectType as "wedding" | "portrait" | "product" | "event",
-        dateStart: dateStart || undefined,
-        dateEnd: dateEnd || undefined,
+        dateStart: dateStart ? format(dateStart, "yyyy-MM-dd") : undefined,
+        dateEnd: dateEnd ? format(dateEnd, "yyyy-MM-dd") : undefined,
         city: city || undefined,
         budgetMin: budgetLow || undefined,
         budgetMax: budgetHigh || undefined,
@@ -104,7 +107,7 @@ const BriefSetup = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 gradient-card">
+    <div className="min-h-screen p-4 bg-background">
       <div className="max-w-2xl mx-auto py-8">
         <Button
           variant="ghost"
@@ -115,14 +118,14 @@ const BriefSetup = () => {
           Back
         </Button>
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full gradient-accent mb-4">
-            <Users className="w-8 h-8 text-accent-foreground" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+            <Users className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-3xl font-bold mb-2">Create Your Brief</h1>
           <p className="text-muted-foreground">Tell us about your photography needs</p>
         </div>
 
-        <Card className="shadow-elevated">
+        <Card className="card-premium">
           <CardHeader>
             <CardTitle>Project Details</CardTitle>
             <CardDescription>Provide information about your photography project</CardDescription>
@@ -146,12 +149,57 @@ const BriefSetup = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="date-start">Start Date</Label>
-                <Input id="date-start" type="date" value={dateStart} onChange={(e) => setDateStart(e.target.value)} />
+                <Label>Start Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dateStart && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateStart ? format(dateStart, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dateStart}
+                      onSelect={setDateStart}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="date-end">End Date</Label>
-                <Input id="date-end" type="date" value={dateEnd} onChange={(e) => setDateEnd(e.target.value)} />
+                <Label>End Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dateEnd && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateEnd ? format(dateEnd, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dateEnd}
+                      onSelect={setDateEnd}
+                      disabled={(date) => dateStart ? date < dateStart : false}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
@@ -187,14 +235,13 @@ const BriefSetup = () => {
               <Label>Mood & Style Preferences</Label>
               <div className="flex flex-wrap gap-2">
                 {MOOD_TAGS.map((tag) => (
-                  <Badge
+                  <button
                     key={tag}
-                    variant={selectedMoodTags.includes(tag) ? "default" : "outline"}
-                    className="cursor-pointer"
+                    className={`filter-pill ${selectedMoodTags.includes(tag) ? 'active' : ''}`}
                     onClick={() => toggleMoodTag(tag)}
                   >
                     {tag}
-                  </Badge>
+                  </button>
                 ))}
               </div>
             </div>
@@ -221,7 +268,12 @@ const BriefSetup = () => {
               />
             </div>
 
-            <Button onClick={handleSubmit} className="w-full gradient-accent" disabled={loading || !projectType}>
+            <Button 
+              onClick={handleSubmit} 
+              className="w-full btn-primary" 
+              size="lg"
+              disabled={loading || !projectType}
+            >
               {loading ? "Creating Brief..." : "Find Photographers"}
             </Button>
           </CardContent>
