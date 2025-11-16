@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Camera } from "lucide-react";
@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [navSolid, setNavSolid] = useState(false);
   
   // Intersection observers for scroll animations
   const socialProofAnim = useIntersectionObserver();
@@ -24,6 +25,23 @@ const Index = () => {
         checkUserRole(session.user.id);
       }
     });
+
+    // Scroll effects for nav and parallax
+    const handleScroll = () => {
+      const solid = window.scrollY > window.innerHeight * 0.75;
+      setNavSolid(solid);
+      
+      const media = document.querySelector('.mammut-img');
+      if (media instanceof HTMLElement) {
+        const t = Math.min(1, window.scrollY / window.innerHeight);
+        media.style.transform = `scale(${1.02 + t * 0.03}) translateY(${t * 10}px)`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const checkUserRole = async (userId: string) => {
@@ -45,7 +63,7 @@ const Index = () => {
   return (
     <div className="page-frame">
       {/* Navigation Header */}
-      <header className="navbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px' }}>
+      <header className={`navbar ${navSolid ? 'is-solid' : ''}`}>
         {/* Desktop Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center gap-4 flex-shrink-0">
           <Link to="/discover" className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
@@ -61,8 +79,8 @@ const Index = () => {
         
         {/* Logo - Centered */}
         <div className="flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
-          <Camera className="w-5 h-5 md:w-6 md:h-6 text-cp-green" />
-          <span className="text-lg md:text-xl font-bold tracking-tight text-cp-ink">SHOW CASE</span>
+          <Camera className={`w-5 h-5 md:w-6 md:h-6 ${navSolid ? 'text-cp-green' : 'text-white'}`} />
+          <span className={`text-lg md:text-xl font-bold tracking-tight ${navSolid ? 'text-cp-ink' : 'text-white'}`}>SHOW CASE</span>
         </div>
         
         {/* Theme Toggle */}
@@ -71,41 +89,40 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Hero Section - Full Screen */}
-      <section className="hero">
-        <div className="hero-inner">
-          <p className="eyebrow text-white/90 uppercase tracking-widest text-xs md:text-sm font-semibold mb-4 md:mb-6">
-            Hire local photographers in minutes
-          </p>
-          
-          <h1 className="mb-6 text-4xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.9]">
-            <span>FIND YOUR</span><br />
-            <span className="headline-line-2">PERFECT MATCH</span>
+      {/* Mammut-style Hero Section */}
+      <section className="mammut-hero" aria-label="Intro">
+        <div className="mammut-media">
+          <img className="mammut-img" src="/hero-bg-optimized.webp" alt="" loading="eager" />
+        </div>
+
+        <div className="mammut-content">
+          <p className="eyebrow">Hire local photographers in minutes</p>
+          <h1 className="display">
+            <span className="soft">FIND YOUR</span><br/>
+            <span className="strong">PERFECT MATCH</span>
           </h1>
-          
-          <p className="mb-8 text-lg md:text-2xl text-white/95 max-w-2xl mx-auto leading-relaxed font-light px-4">
-            Show Case helps you find <span className="font-semibold">THE</span> right photographer. Swipe through local talent, 
-            match with your style, and book—weddings, surf, portraits and more.
-          </p>
-          
-          <div className="cta flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4">
+          <p className="sub">Browse, compare, and book—weddings, surf, portraits and more.</p>
+          <div className="cta-row">
             <button 
               onClick={() => navigate("/discover")}
-              className="w-full sm:w-auto px-8 py-4 bg-primary hover:brightness-90 text-primary-foreground rounded-full font-semibold text-sm md:text-base transition-all shadow-lg"
+              className="btn btn-primary"
             >
               I am looking for a photographer
             </button>
             <button 
               onClick={() => navigate("/auth")}
-              className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white/10 rounded-full font-semibold text-sm md:text-base transition-all"
+              className="btn btn-ghost"
             >
               I am a photographer
             </button>
           </div>
-          
-          <p className="mt-6 text-white/80 text-sm">
+          <p className="mt-4 text-white/80 text-sm">
             Free to browse • No signup to view profiles
           </p>
+        </div>
+
+        <div className="scroll-indicator" aria-hidden="true">
+          <span></span>
         </div>
       </section>
 
