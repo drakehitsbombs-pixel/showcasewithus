@@ -100,8 +100,7 @@ const Index = () => {
             autoPlay 
             muted 
             loop 
-            playsInline 
-            poster="/hero-bg-optimized.webp"
+            playsInline
           >
             <source src="/hero-video.mp4" type="video/mp4" />
           </video>
