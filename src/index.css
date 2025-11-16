@@ -1032,3 +1032,85 @@
   color: hsl(var(--foreground));
   background-color: hsl(var(--background));
 }
+
+/* ===== FORCE SINGLE LIGHT THEME ===== */
+:root{
+  /* Cal Poly theme */
+  --cp-green:#154734;         /* primary surfaces/buttons */
+  --cp-green-700:#0F3A2A;     /* hero / strong sections */
+  --cp-gold:#C69214;          /* accents */
+  --ink:#0B0E13;              /* main text */
+  --muted:#5B6472;            /* secondary text */
+  --bg:#FFF7EE;               /* page background (cream) */
+  --card:#FFFFFF;             /* cards/panels */
+  --border:#E8E8EF;           /* dividers */
+  --radius:20px; --radius-lg:999px;
+  --shadow-sm:0 8px 20px rgba(0,0,0,.06);
+}
+
+/* Force light theme app-wide */
+html,body{ background:var(--bg) !important; color:var(--ink) !important; }
+*{ color-scheme: light !important; }          /* ignore OS dark mode */
+
+/* Kill any dark theme class/vars */
+[class*="theme-dark"], [data-theme="dark"], .dark{
+  background:var(--bg) !important; color:var(--ink) !important;
+}
+
+/* NAVBAR + FOOTER */
+.navbar{ background:#fff !important; border-bottom:1px solid var(--border) !important; }
+.footer{ background:#fff !important; border-top:1px solid var(--border) !important; color:var(--muted) !important; }
+
+/* SECTIONS */
+section, main{ background:transparent !important; }
+.section{ max-width:80rem; margin-inline:auto; padding:72px 24px; }
+
+/* HERO (keep your full-bleed hero) */
+.hero{ background:var(--cp-green-700) !important; color:#fff !important; }
+
+/* CARDS / PANELS (dashboard/auth/etc.) */
+.card, .panel, .sheet, .dialog, .modal, .auth-card, .dashboard-card{
+  background:var(--card) !important;
+  color:var(--ink) !important;
+  border:1px solid var(--border) !important;
+  border-radius:var(--radius) !important;
+  box-shadow:var(--shadow-sm) !important;
+}
+
+/* INPUTS / SELECTS / TEXTAREAS */
+input, select, textarea{
+  background:#fff !important; color:var(--ink) !important;
+  border:1px solid var(--border) !important; border-radius:14px !important;
+}
+::placeholder{ color:color-mix(in srgb, var(--muted) 70%, #fff 30%) !important; }
+
+/* BUTTONS */
+.btn-primary, [data-btn=primary], button[class*="gradient-primary"]{
+  background:var(--cp-green) !important; color:#fff !important;
+  border:1px solid color-mix(in srgb, var(--cp-green) 70%, #000 30%) !important;
+  border-radius:var(--radius-lg) !important; padding:12px 18px !important; font-weight:800 !important;
+}
+.btn-secondary, [data-btn=secondary]{
+  background:#fff !important; color:var(--ink) !important;
+  border:1px solid var(--border) !important; border-radius:var(--radius-lg) !important;
+}
+.link, a{ color:var(--cp-green) !important; }
+
+/* DASHBOARD STRIP + CARDS */
+.stats-card, .metric, .quick-action{ background:#fff !important; border:1px solid var(--border) !important; color:var(--ink) !important; }
+.badge, .chip{ background:color-mix(in srgb, var(--cp-gold) 10%, #fff 90%) !important; border:1px solid color-mix(in srgb, var(--cp-gold) 35%, #fff 65%) !important; color:var(--ink) !important; }
+
+/* AUTH PAGE */
+.auth-page{ background:linear-gradient(0deg, var(--bg), var(--bg)) !important; }
+.auth-card h1, .auth-card h2, .auth-card label{ color:var(--ink) !important; }
+
+/* DISCOVER/Profile cards keep light look */
+.discover-card, .profile-card{ background:#fff !important; border:1px solid var(--border) !important; }
+
+/* Remove dark overlays/backdrops that dim content */
+.backdrop, .overlay{ background:rgba(0,0,0,.3) !important; } /* dialogs only */
+
+/* Force all text elements to respect light theme */
+h1, h2, h3, h4, h5, h6, p, span, div, label{ color:inherit !important; }
+.text-foreground{ color:var(--ink) !important; }
+.text-muted-foreground, .text-muted{ color:var(--muted) !important; }
