@@ -20,7 +20,6 @@ import ClientProfileEdit from "./pages/client/ProfileEdit";
 import ClientProfile from "./pages/client/Profile";
 import ClientShowcase from "./pages/client/Showcase";
 import PublicProfile from "./pages/PublicProfile";
-import Surfing from "./pages/Surfing";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
 import Thread from "./pages/Thread";

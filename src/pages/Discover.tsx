@@ -167,7 +167,6 @@ const Discover = () => {
             decoding="async"
             width={600}
             height={450}
-            fetchPriority={index < 3 ? "high" : undefined}
           />
         </div>
         <div className="p-6">
