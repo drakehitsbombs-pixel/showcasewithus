@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Camera } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [navSolid, setNavSolid] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -13,11 +14,8 @@ const Index = () => {
       }
     });
 
-    // Scroll effects for nav and parallax
+    // Scroll effects for parallax
     const handleScroll = () => {
-      const solid = window.scrollY > window.innerHeight * 0.75;
-      setNavSolid(solid);
-      
       const media = document.querySelector('.mammut-video, .mammut-img');
       if (media instanceof HTMLElement) {
         const t = Math.min(1, window.scrollY / window.innerHeight);
@@ -49,31 +47,31 @@ const Index = () => {
 
   return (
     <div className="page-frame">
-      {/* Minimal Navigation Header */}
-      <header className={`navbar ${navSolid ? 'is-solid' : ''}`}>
-        <div className="flex-1"></div>
-        
-        {/* Right-aligned navigation */}
-        <nav className="flex items-center gap-8">
-          <button 
-            onClick={() => navigate("/surfing")}
-            className={`text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity ${navSolid ? 'text-cp-ink' : 'text-white'}`}
-          >
-            INSPIRATION
-          </button>
-          <button 
-            onClick={() => navigate("/auth")}
-            className={`text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity ${navSolid ? 'text-cp-ink' : 'text-white'}`}
-          >
-            JOIN
-          </button>
-          <button 
-            onClick={() => navigate("/discover")}
-            className={`text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity ${navSolid ? 'text-cp-ink' : 'text-white'}`}
-          >
-            PRIZES
-          </button>
+      {/* Transparent Navigation Header */}
+      <header className="navbar">
+        {/* Desktop Navigation - Hidden on mobile */}
+        <nav className="hidden md:flex items-center gap-4 flex-shrink-0">
+          <Link to="/discover" className="text-sm font-semibold text-white hover:text-white/70 transition-colors whitespace-nowrap">
+            Find Photographers
+          </Link>
+          <Link to="/auth" className="text-sm font-semibold text-white hover:text-white/70 transition-colors whitespace-nowrap">
+            Become a Photographer
+          </Link>
         </nav>
+        
+        {/* Mobile: Left spacer */}
+        <div className="md:hidden w-10"></div>
+        
+        {/* Logo - Centered */}
+        <div className="flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2">
+          <Camera className="w-5 h-5 md:w-6 md:h-6 text-white" />
+          <span className="text-lg md:text-xl font-bold tracking-tight text-white">SHOW CASE</span>
+        </div>
+        
+        {/* Theme Toggle */}
+        <div className="flex items-center flex-shrink-0">
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Minimal Hero Section */}
