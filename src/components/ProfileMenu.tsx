@@ -74,7 +74,7 @@ const ProfileMenu = ({ userId, userRole }: ProfileMenuProps) => {
           </Avatar>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-card z-[1100]">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col">
             <span className="font-medium">{userData.name}</span>
