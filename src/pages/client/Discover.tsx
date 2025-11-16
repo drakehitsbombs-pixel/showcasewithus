@@ -227,9 +227,9 @@ const Discover = () => {
       const { data, error } = await supabase.functions.invoke('match-creators', {
         body: { 
           filters: {
-            styles: searchFilters.styles,
-            distance: searchFilters.distance,
-            budget_min: searchFilters.budgetMinimum,
+            styles: searchFilters.styles.length > 0 ? searchFilters.styles : undefined,
+            distance_miles: searchFilters.distance || undefined,
+            budget_min: searchFilters.budgetMinimum || undefined,
             budget_max: searchFilters.budgetMinimum > 0 ? searchFilters.budgetMinimum : 10000,
             client_lat: brief?.geo_lat,
             client_lng: brief?.geo_lng,
@@ -327,7 +327,7 @@ const Discover = () => {
                   {currentCreator.distance && (
                     <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
                       <MapPin className="w-3 h-3" />
-                      {formatMiles(kmToMiles(currentCreator.distance))} mi
+                      {formatMiles(currentCreator.distance)} mi
                     </div>
                   )}
                 </div>
@@ -522,7 +522,7 @@ const Discover = () => {
                                 <p className="text-sm text-muted-foreground flex items-center gap-1">
                                   <MapPin className="w-3 h-3" />
                                   {creator.users_extended?.city}
-                                  {creator.distance && ` • ${formatMiles(kmToMiles(creator.distance))} mi away`}
+                                  {creator.distance && ` • ${formatMiles(creator.distance)} mi away`}
                                 </p>
                               </div>
                               <div className="match-score-badge text-sm">

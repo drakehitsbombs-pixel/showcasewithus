@@ -9,16 +9,16 @@ interface MatchFilters {
   styles?: string[];
   budget_min?: number;
   budget_max?: number;
-  distance_km?: number;
+  distance_miles?: number;
   date_start?: string;
   date_end?: string;
   client_lat?: number;
   client_lng?: number;
 }
 
-// Haversine distance calculation in km
+// Haversine distance calculation in miles
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371; // Earth's radius in km
+  const R = 3959; // Earth's radius in miles
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -93,8 +93,8 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      if (filters.distance_km !== undefined && filters.distance_km !== null && (typeof filters.distance_km !== 'number' || filters.distance_km < 0 || filters.distance_km > 10000)) {
-        return new Response(JSON.stringify({ error: 'distance_km must be between 0 and 10000' }), {
+      if (filters.distance_miles !== undefined && filters.distance_miles !== null && (typeof filters.distance_miles !== 'number' || filters.distance_miles < 0 || filters.distance_miles > 10000)) {
+        return new Response(JSON.stringify({ error: 'distance_miles must be between 0 and 10000' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -205,13 +205,15 @@ Deno.serve(async (req) => {
         if (filters.client_lat && filters.client_lng && creatorLat && creatorLng) {
           distance = calculateDistance(filters.client_lat, filters.client_lng, creatorLat, creatorLng);
           
-          if (filters.distance_km && distance > filters.distance_km) {
+          if (filters.distance_miles && distance > filters.distance_miles) {
             passesHardFilters = false;
           }
           
           // Distance score (0-10 points)
-          if (creator.travel_radius_km && distance <= creator.travel_radius_km) {
-            const distanceScore = Math.max(0, 1 - (distance / creator.travel_radius_km));
+          // Convert creator's travel_radius_km to miles for comparison
+          const travelRadiusMiles = creator.travel_radius_km ? creator.travel_radius_km * 0.621371 : null;
+          if (travelRadiusMiles && distance <= travelRadiusMiles) {
+            const distanceScore = Math.max(0, 1 - (distance / travelRadiusMiles));
             score += distanceScore * 10;
           }
         }
