@@ -48,15 +48,37 @@ const Matches = () => {
           creator_user_id,
           client_user_id,
           created_at,
-          users_extended!matches_creator_user_id_fkey(name, avatar_url, city)
+          status
         `)
         .or(`creator_user_id.eq.${userId},client_user_id.eq.${userId}`)
         .eq("status", "matched")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setMatches(data || []);
+
+      // Fetch user details for each match
+      const matchesWithUsers = await Promise.all(
+        (data || []).map(async (match) => {
+          const otherUserId = match.creator_user_id === userId 
+            ? match.client_user_id 
+            : match.creator_user_id;
+
+          const { data: userData } = await supabase
+            .from("users_extended")
+            .select("name, avatar_url, city")
+            .eq("id", otherUserId)
+            .single();
+
+          return {
+            ...match,
+            users_extended: userData || { name: "Unknown", avatar_url: null, city: null }
+          };
+        })
+      );
+
+      setMatches(matchesWithUsers);
     } catch (error: any) {
+      console.error("Error loading matches:", error);
       toast.error("Failed to load matches");
     } finally {
       setLoading(false);
