@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Camera, Sparkles, Heart, Zap, ArrowRight } from "lucide-react";
 import { CategoryChips } from "@/components/CategoryChips";
@@ -48,12 +48,12 @@ const Index = () => {
       <header className="navbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px' }}>
         {/* Desktop Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center gap-4 flex-shrink-0">
-          <button onClick={() => navigate("/discover")} className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
+          <Link to="/discover" className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
             Find Photographers
-          </button>
-          <button onClick={() => navigate("/auth")} className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
+          </Link>
+          <Link to="/auth" className="text-sm font-semibold hover:text-cp-green transition-colors whitespace-nowrap">
             Become a Photographer
-          </button>
+          </Link>
         </nav>
         
         {/* Mobile: Left spacer */}
