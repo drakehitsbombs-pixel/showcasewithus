@@ -1120,3 +1120,22 @@ input, select, textarea{
 h1, h2, h3, h4, h5, h6, p, span, div, label{ color:inherit !important; }
 .text-foreground{ color:var(--ink) !important; }
 .text-muted-foreground, .text-muted{ color:var(--muted) !important; }
+
+/* FIX DROPDOWN TRANSPARENCY */
+[role="menu"], [role="listbox"], [role="combobox"], 
+.dropdown-menu, .popover, .select-content,
+[data-radix-popper-content-wrapper], [data-state="open"]{
+  background:#fff !important;
+  border:1px solid var(--border) !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.1) !important;
+  z-index:1000 !important;
+}
+
+/* Dropdown menu items */
+[role="menuitem"], [role="option"]{
+  background:#fff !important;
+  color:var(--ink) !important;
+}
+[role="menuitem"]:hover, [role="option"]:hover{
+  background:hsl(var(--muted-bg)) !important;
+}
