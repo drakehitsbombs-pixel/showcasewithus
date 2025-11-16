@@ -57,19 +57,19 @@ const Index = () => {
         <nav className="flex items-center gap-8">
           <button 
             onClick={() => navigate("/surfing")}
-            className="text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity"
+            className={`text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity ${navSolid ? 'text-cp-ink' : 'text-white'}`}
           >
             INSPIRATION
           </button>
           <button 
             onClick={() => navigate("/auth")}
-            className="text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity"
+            className={`text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity ${navSolid ? 'text-cp-ink' : 'text-white'}`}
           >
             JOIN
           </button>
           <button 
             onClick={() => navigate("/discover")}
-            className="text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity"
+            className={`text-sm font-medium uppercase tracking-wider hover:opacity-70 transition-opacity ${navSolid ? 'text-cp-ink' : 'text-white'}`}
           >
             PRIZES
           </button>
@@ -92,10 +92,12 @@ const Index = () => {
         </div>
 
         <div className="mammut-content">
+          <p className="eyebrow">Hire local photographers in minutes</p>
           <h1 className="display">
-            <span className="soft">Go further,</span> yet stay<br/>
-            <span className="strong">close.</span>
+            <span className="soft">FIND YOUR</span><br/>
+            <span className="strong">PERFECT MATCH</span>
           </h1>
+          <p className="sub">Browse, compare, and book—weddings, surf, portraits and more.</p>
         </div>
       </section>
     </div>
