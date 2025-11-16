@@ -1,36 +1,49 @@
-import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
-const categories = [
-  { id: "wedding", label: "Wedding" },
-  { id: "portrait", label: "Portrait" },
-  { id: "product", label: "Product" },
-  { id: "event", label: "Event" },
-  { id: "lifestyle", label: "Lifestyle" },
-  { id: "real-estate", label: "Real Estate" },
-  { id: "sports", label: "Sports" },
-  { id: "surfing", label: "Surfing" },
-  { id: "graduation", label: "Graduation" },
-];
+import { STYLE_OPTIONS } from "@/lib/constants";
 
 export function CategoryChips() {
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const currentStyles = searchParams.get("styles")?.split(',').filter(Boolean) || [];
 
-  const handleCategoryClick = (categoryId: string) => {
-    navigate(`/client/discover?tab=search&styles=${categoryId}`);
+  const handleCategoryClick = (styleId: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    
+    // Toggle the style
+    const newStyles = currentStyles.includes(styleId)
+      ? currentStyles.filter(s => s !== styleId)
+      : [...currentStyles, styleId];
+    
+    // Update URL
+    if (newStyles.length > 0) {
+      newParams.set('styles', newStyles.join(','));
+    } else {
+      newParams.delete('styles');
+    }
+    
+    // Ensure we're on the search tab
+    newParams.set('tab', 'search');
+    
+    setSearchParams(newParams);
   };
 
   return (
     <div className="w-full">
       <ScrollArea className="w-full whitespace-nowrap">
-        <div className="chips justify-center p-2">
-          {categories.map((category) => (
+        <div className="chips justify-center p-2" data-style-pills>
+          {STYLE_OPTIONS.map((style) => (
             <button
-              key={category.id}
-              className="chip cursor-pointer hover:shadow-sm transition-all"
-              onClick={() => handleCategoryClick(category.id)}
+              key={style.id}
+              className={`chip cursor-pointer hover:shadow-sm transition-all ${
+                currentStyles.includes(style.id) ? 'is-active' : ''
+              }`}
+              data-style-chip
+              data-style={style.id}
+              aria-pressed={currentStyles.includes(style.id)}
+              onClick={() => handleCategoryClick(style.id)}
             >
-              {category.label}
+              {style.label}
             </button>
           ))}
         </div>
