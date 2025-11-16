@@ -93,15 +93,21 @@ export const BookingModal = ({
         matchId = newMatch.id;
       }
 
-      // Get client details
+      // Get client details with privacy flags
       const { data: clientData } = await supabase
         .from("users_extended")
         .select("name, avatar_url, city, email")
         .eq("id", user.id)
         .single();
 
-      // Get creator details
+      // Get creator details with privacy flags
       const { data: creatorData } = await supabase
+        .from("creator_profiles")
+        .select("email_public, user_id")
+        .eq("user_id", creatorId)
+        .single();
+
+      const { data: creatorUserData } = await supabase
         .from("users_extended")
         .select("name, avatar_url, email")
         .eq("id", creatorId)
@@ -120,10 +126,11 @@ export const BookingModal = ({
         client_name: clientData?.name || null,
         client_avatar_url: clientData?.avatar_url || null,
         client_city: clientData?.city || null,
-        client_email: clientData?.email || null,
+        client_email: clientData?.email || null, // Client email always shared for booking confirmations
         creator_name: creatorName,
-        creator_avatar_url: creatorData?.avatar_url || null,
-        creator_email: creatorData?.email || null,
+        creator_avatar_url: creatorUserData?.avatar_url || null,
+        // Only share creator email if they've made it public
+        creator_email: (creatorData?.email_public ? creatorUserData?.email : null),
       });
 
       if (bookingError) throw bookingError;

@@ -35,10 +35,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { target_user_id } = await req.json();
+    const body = await req.json();
+    const { target_user_id } = body;
 
-    if (!target_user_id) {
-      return new Response(JSON.stringify({ error: 'target_user_id required' }), {
+    // Input validation
+    if (!target_user_id || typeof target_user_id !== 'string') {
+      return new Response(JSON.stringify({ error: 'target_user_id required and must be a string' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(target_user_id)) {
+      return new Response(JSON.stringify({ error: 'target_user_id must be a valid UUID' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
