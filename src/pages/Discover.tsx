@@ -4,11 +4,12 @@ import { Helmet } from "react-helmet";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Sliders } from "lucide-react";
+import { MapPin, Sliders, Grid3X3, Map as MapIcon, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { STYLE_OPTIONS, getStyleLabel, BUDGET_STEPS, formatBudget } from "@/lib/constants";
 import Footer from "@/components/Footer";
+import DiscoverMap from "@/components/DiscoverMap";
 
 const Discover = () => {
   const [creators, setCreators] = useState<any[]>([]);
@@ -20,6 +21,7 @@ const Discover = () => {
     distance: 50,
     budgetMinimum: 0,
   });
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const navigate = useNavigate();
 
   // Hydrate from URL on mount
@@ -339,41 +341,100 @@ const Discover = () => {
           </div>
 
           <div className="lg:col-span-3">
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="cp-card overflow-hidden">
-                    <Skeleton className="aspect-square w-full" />
-                    <div className="p-6 space-y-3">
-                      <Skeleton className="h-6 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-4 w-full" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : creators.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                  {creators.slice(0, 6).map((creator, index) => renderCreatorCard(creator, index))}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center border rounded-lg p-1 bg-muted/20">
+                  <Button
+                    variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                    className="gap-2"
+                  >
+                    <Grid3X3 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Grid</span>
+                  </Button>
+                  <Button
+                    variant={viewMode === 'map' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('map')}
+                    className="gap-2"
+                  >
+                    <MapIcon className="h-4 w-4" />
+                    <span className="hidden sm:inline">Map</span>
+                  </Button>
                 </div>
-
-                {/* Remaining photographers */}
-                {creators.length > 6 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-8">
-                    {creators.slice(6).map((creator, index) => renderCreatorCard(creator, index + 6))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-24">
-                <p className="text-lg text-foreground mb-2">No photographers match those filters</p>
-                <p className="text-sm text-muted-foreground mb-8">
-                  Try clearing filters or widening your budget
-                </p>
-                <Button onClick={clearFilters} variant="outline" className="border-primary text-primary hover:bg-primary/5">
-                  Clear Filters
+              </div>
+              {(searchFilters.styles.length > 0 || searchFilters.distance < 50 || searchFilters.budgetMinimum > 0) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="hidden sm:inline">Clear</span>
                 </Button>
+              )}
+            </div>
+
+            {viewMode === 'grid' ? (
+              loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="cp-card overflow-hidden">
+                      <Skeleton className="aspect-square w-full" />
+                      <div className="p-6 space-y-3">
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-full" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : creators.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {creators.slice(0, 6).map((creator, index) => renderCreatorCard(creator, index))}
+                  </div>
+
+                  {/* Remaining photographers */}
+                  {creators.length > 6 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-8">
+                      {creators.slice(6).map((creator, index) => renderCreatorCard(creator, index + 6))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-24">
+                  <p className="text-lg text-foreground mb-2">No photographers match those filters</p>
+                  <p className="text-sm text-muted-foreground mb-8">
+                    Try clearing filters or widening your budget
+                  </p>
+                  <Button onClick={clearFilters} variant="outline" className="border-primary text-primary hover:bg-primary/5">
+                    Clear Filters
+                  </Button>
+                </div>
+              )
+            ) : (
+              <div className="h-[600px] rounded-lg overflow-hidden border bg-card">
+                {loading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="animate-pulse text-muted-foreground">Loading map...</div>
+                  </div>
+                ) : (
+                  <DiscoverMap
+                    creators={creators.map(c => ({
+                      ...c,
+                      geo_lat: c.users_extended?.geo_lat || null,
+                      geo_lng: c.users_extended?.geo_lng || null,
+                      city: c.users_extended?.city || null,
+                    }))}
+                    userLocation={userLocation ? { lat: userLocation.lat, lng: userLocation.lon } : null}
+                    onMarkerClick={(creator) => {
+                      navigate(`/creator/${creator.slug || `id/${creator.user_id}`}`);
+                    }}
+                  />
+                )}
               </div>
             )}
           </div>
