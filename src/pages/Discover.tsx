@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Sliders } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
+import { STYLE_OPTIONS, getStyleLabel, BUDGET_STEPS, formatBudget } from "@/lib/constants";
 import Footer from "@/components/Footer";
 
 const Discover = () => {
@@ -195,13 +195,13 @@ const Discover = () => {
 
               <div className="space-y-6">
                 <div>
-                  <Label className="text-sm font-medium mb-3 block">Styles</Label>
+                  <Label className="filter-label">Styles</Label>
                   <div className="flex flex-wrap gap-2">
                     {STYLE_OPTIONS.map((style) => (
                       <button
                         key={style.id}
-                        className={`cp-chip transition-smooth ${
-                          searchFilters.styles.includes(style.id) ? 'bg-accent text-accent-foreground' : ''
+                        className={`filter-pill ${
+                          searchFilters.styles.includes(style.id) ? 'active' : ''
                         }`}
                         onClick={() => toggleStyle(style.id)}
                       >
@@ -212,19 +212,17 @@ const Discover = () => {
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium mb-3 block">Budget ≥</Label>
+                  <Label className="filter-label">Budget ≥</Label>
                   <select
                     className="w-full p-2 border border-input rounded-lg bg-background text-sm"
                     value={searchFilters.budgetMinimum}
                     onChange={(e) => setSearchFilters(prev => ({ ...prev, budgetMinimum: Number(e.target.value) }))}
                   >
-                    <option value={0}>Any Budget</option>
-                    <option value={100}>$100+</option>
-                    <option value={250}>$250+</option>
-                    <option value={500}>$500+</option>
-                    <option value={1000}>$1,000+</option>
-                    <option value={2000}>$2,000+</option>
-                    <option value={5000}>$5,000+</option>
+                    {BUDGET_STEPS.map((value) => (
+                      <option key={value} value={value}>
+                        {value === 0 ? 'Any Budget' : `${formatBudget(value)}+`}
+                      </option>
+                    ))}
                   </select>
                   <p className="text-xs text-muted-foreground mt-2">
                     Show photographers with minimum project budget at or below this amount

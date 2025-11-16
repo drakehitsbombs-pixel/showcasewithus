@@ -1139,3 +1139,46 @@ h1, h2, h3, h4, h5, h6, p, span, div, label{ color:inherit !important; }
 [role="menuitem"]:hover, [role="option"]:hover{
   background:hsl(var(--muted-bg)) !important;
 }
+
+/* FILTER PILLS - polished style for filter chips */
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--cp-gold) 35%, #fff 65%);
+  background: color-mix(in srgb, var(--cp-gold) 10%, #fff 90%);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.filter-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.filter-pill.active {
+  background: var(--cp-green);
+  border-color: var(--cp-green);
+  color: #fff;
+}
+
+/* Filter labels */
+.filter-label {
+  font-weight: 800;
+  margin: 8px 0 12px;
+  color: var(--ink);
+  font-size: 0.875rem;
+}
+
+/* Filter value display */
+.filter-value {
+  font-weight: 700;
+  color: var(--cp-green);
+  font-size: 0.875rem;
+}
