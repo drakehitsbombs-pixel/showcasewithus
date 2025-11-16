@@ -29,11 +29,16 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
-// Calculate Jaccard similarity for tag overlap
+// Calculate Jaccard similarity for tag overlap (case-insensitive)
 function jaccardSimilarity(set1: string[], set2: string[]): number {
   if (set1.length === 0 && set2.length === 0) return 0;
-  const intersection = set1.filter(x => set2.includes(x)).length;
-  const union = new Set([...set1, ...set2]).size;
+  
+  // Normalize to lowercase for comparison
+  const normalized1 = set1.map(s => s.toLowerCase());
+  const normalized2 = set2.map(s => s.toLowerCase());
+  
+  const intersection = normalized1.filter(x => normalized2.includes(x)).length;
+  const union = new Set([...normalized1, ...normalized2]).size;
   return union === 0 ? 0 : intersection / union;
 }
 
@@ -272,17 +277,30 @@ Deno.serve(async (req) => {
         }
 
         // Soft Score: Tag/Style overlap (0-40 points)
-        const creatorStyles = creator.styles || [];
-        const filterStyles = filters.styles || [];
+        const creatorStyles = (creator.styles || []).map((s: string) => s.toLowerCase());
+        const filterStyles = (filters.styles || []).map((s: string) => s.toLowerCase());
         
-        // Aggregate all tags from portfolio and projects
-        const portfolioTags = creatorPortfolioImages.flatMap((img: any) => img.tags || []);
-        const projectTags = creatorProjects.flatMap((proj: any) => proj.tags || []);
+        // Aggregate all tags from portfolio and projects (normalize to lowercase)
+        const portfolioTags = creatorPortfolioImages.flatMap((img: any) => 
+          (img.tags || []).map((t: string) => t.toLowerCase())
+        );
+        const projectTags = creatorProjects.flatMap((proj: any) => 
+          (proj.tags || []).map((t: string) => t.toLowerCase())
+        );
         const allCreatorTags = [...new Set([...creatorStyles, ...portfolioTags, ...projectTags])];
         
-        if (filterStyles.length > 0 && allCreatorTags.length > 0) {
-          const tagOverlap = jaccardSimilarity(filterStyles, allCreatorTags);
-          score += tagOverlap * 40;
+        // Hard Filter: If styles are specified, creator must have at least one matching style
+        if (filterStyles.length > 0) {
+          const hasMatchingStyle = allCreatorTags.some(tag => filterStyles.includes(tag));
+          if (!hasMatchingStyle) {
+            passesHardFilters = false;
+          }
+          
+          // Score based on overlap if they have matches
+          if (hasMatchingStyle && allCreatorTags.length > 0) {
+            const tagOverlap = jaccardSimilarity(filterStyles, allCreatorTags);
+            score += tagOverlap * 40;
+          }
         } else if (allCreatorTags.length > 0) {
           score += 20; // Has tags but no filter
         }

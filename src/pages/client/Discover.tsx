@@ -154,7 +154,7 @@ const Discover = () => {
   };
 
   useEffect(() => {
-    // Apply style filter from URL
+    // Apply style filter from URL for swipe tab
     const styleParam = searchParams.get("style");
     if (styleParam) {
       const stylesArray = styleParam.split(',').filter(s => s);
@@ -163,7 +163,17 @@ const Discover = () => {
         styles: stylesArray
       }));
     }
-  }, [searchParams]);
+
+    // Apply filters from URL for search tab
+    const stylesParam = searchParams.get("styles");
+    if (stylesParam && activeTab === "search") {
+      const stylesArray = stylesParam.split(',').filter(s => s);
+      setSearchFilters(prev => ({
+        ...prev,
+        styles: stylesArray
+      }));
+    }
+  }, [searchParams, activeTab]);
 
   useEffect(() => {
     if (user && brief) {
@@ -249,12 +259,25 @@ const Discover = () => {
   };
 
   const toggleSearchStyle = (style: string) => {
-    setSearchFilters(prev => ({
-      ...prev,
-      styles: prev.styles.includes(style)
+    setSearchFilters(prev => {
+      const newStyles = prev.styles.includes(style)
         ? prev.styles.filter(s => s !== style)
-        : [...prev.styles, style]
-    }));
+        : [...prev.styles, style];
+      
+      // Update URL with new styles
+      const newParams = new URLSearchParams(searchParams);
+      if (newStyles.length > 0) {
+        newParams.set('styles', newStyles.join(','));
+      } else {
+        newParams.delete('styles');
+      }
+      setSearchParams(newParams);
+      
+      return {
+        ...prev,
+        styles: newStyles
+      };
+    });
   };
 
   const clearSearchFilters = () => {
@@ -263,6 +286,11 @@ const Discover = () => {
       distance: 100,
       budgetMinimum: 0,
     });
+    
+    // Clear URL params
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('styles');
+    setSearchParams(newParams);
   };
 
   useEffect(() => {
