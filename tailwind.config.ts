@@ -15,6 +15,7 @@ export default {
 		extend: {
 			fontFamily: {
 				sans: ["var(--font-sans)"],
+				playfair: ['Playfair Display', 'serif'],
 			},
 			colors: {
 				border: "hsl(var(--border))",
