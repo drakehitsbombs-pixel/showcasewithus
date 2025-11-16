@@ -52,12 +52,6 @@ const Showcase = () => {
         .slice(0, 15)
         .map(([id]) => id);
 
-      if (sortedCreatorIds.length === 0) {
-        setCreators([]);
-        setLoading(false);
-        return;
-      }
-
       // Get creator profiles
       let query = supabase
         .from("creator_profiles")
@@ -66,18 +60,32 @@ const Showcase = () => {
           users_extended!inner(name, city, slug)
         `)
         .eq("public_profile", true)
-        .in("user_id", sortedCreatorIds);
+        .eq("is_discoverable", true);
+
+      // If we have view data, filter by those creators
+      if (sortedCreatorIds.length > 0) {
+        query = query.in("user_id", sortedCreatorIds);
+      }
 
       if (selectedStyle) {
         query = query.contains("styles", [selectedStyle]);
       }
 
+      // Limit results
+      query = query.limit(15);
+
       const { data: profiles, error: profilesError } = await query;
       if (profilesError) throw profilesError;
 
+      if (!profiles || profiles.length === 0) {
+        setCreators([]);
+        setLoading(false);
+        return;
+      }
+
       // Load portfolio for each creator
       const creatorsWithData = await Promise.all(
-        (profiles || []).map(async (creator) => {
+        profiles.map(async (creator) => {
           const { data: portfolio } = await supabase
             .from("portfolio_images")
             .select("url")
@@ -93,9 +101,15 @@ const Showcase = () => {
         })
       );
 
-      // Sort by views and add rank
+      // Sort by views (if available) or by rating/score
       const sorted = creatorsWithData
-        .sort((a, b) => b.unique_views - a.unique_views)
+        .sort((a, b) => {
+          if (sortedCreatorIds.length > 0) {
+            return b.unique_views - a.unique_views;
+          }
+          // Fallback sorting by rating and review count
+          return (b.rating_avg || 0) * (b.review_count || 0) - (a.rating_avg || 0) * (a.review_count || 0);
+        })
         .map((c, idx) => ({ ...c, rank: idx + 1 }));
 
       setCreators(sorted);
