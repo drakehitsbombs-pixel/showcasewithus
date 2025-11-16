@@ -86,6 +86,7 @@ export const FeaturedPhotographers = () => {
               variant="outline"
               size="icon"
               onClick={() => scroll('left')}
+              aria-label="Scroll left to view previous photographers"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
@@ -93,6 +94,7 @@ export const FeaturedPhotographers = () => {
               variant="outline"
               size="icon"
               onClick={() => scroll('right')}
+              aria-label="Scroll right to view more photographers"
             >
               <ChevronRight className="h-5 w-5" />
             </Button>
