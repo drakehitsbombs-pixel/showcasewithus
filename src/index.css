@@ -5,12 +5,12 @@
 /* Mammut-style Hero Styles */
 .mammut-hero {
   position: relative;
-  width: 100vw;
-  left: 50%;
-  margin-left: -50vw;
-  min-height: 100dvh;
+  width: 100%;
+  margin: 0;
+  min-height: 100vh;
   color: white;
   overflow: hidden;
+  background: #000;
 }
 
 .mammut-media {
@@ -34,87 +34,102 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.05) 75%);
+  background: linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0) 70%);
   pointer-events: none;
 }
 
 .mammut-content {
-  position: relative;
+  position: absolute;
+  left: 80px;
+  top: 55%;
+  transform: translateY(-50%);
   z-index: 2;
-  max-width: clamp(560px, 48vw, 760px);
-  padding: clamp(72px, 12vh, 120px) 24px 24px;
-  margin-left: clamp(16px, 8vw, 120px);
-  text-shadow: 0 2px 12px rgba(0,0,0,0.45);
+  max-width: 550px;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.5);
 }
 
 .mammut-content .eyebrow {
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  opacity: 0.9;
-  font-weight: 800;
-  margin: 0 0 12px;
-  font-size: clamp(11px, 1.2vw, 14px);
+  opacity: 0.75;
+  font-weight: 600;
+  font-size: 13px;
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .mammut-content .display {
   font-weight: 900;
-  font-size: clamp(40px, 8vw, 84px);
-  line-height: 1.02;
-  margin: 0 0 16px;
+  font-size: 56px;
+  line-height: 1.1;
+  margin: 0 0 20px;
+  color: #ffffff;
+  max-width: 500px;
 }
 
 .mammut-content .display .soft {
-  font-weight: 700;
-  opacity: 0.95;
+  font-weight: 600;
+  display: block;
 }
 
 .mammut-content .display .strong {
   font-weight: 900;
+  display: block;
 }
 
 .mammut-content .sub {
-  font-size: clamp(16px, 2.2vw, 20px);
+  font-size: 19px;
   line-height: 1.5;
   opacity: 0.95;
-  margin: 0 0 24px;
+  margin: 0 0 28px;
+  color: rgba(255, 255, 255, 0.95);
+  max-width: 480px;
 }
 
 .mammut-content .cta-row {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
+  margin-bottom: 12px;
 }
 
 .mammut-content .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 28px;
-  border-radius: 999px;
-  font-weight: 700;
+  padding: 0 28px;
+  height: 46px;
+  border-radius: 9999px;
+  font-weight: 600;
   font-size: 15px;
-  transition: transform 0.1s ease;
+  transition: all 0.2s ease;
+  border: none;
   cursor: pointer;
-}
-
-.mammut-content .btn:hover {
-  transform: translateY(-1px);
+  white-space: nowrap;
 }
 
 .mammut-content .btn-primary {
   background: hsl(var(--cp-green));
-  color: white;
-  border: 1px solid rgba(0,0,0,0.25);
+  color: #fff;
+  border: 2px solid hsl(var(--cp-green));
+}
+
+.mammut-content .btn-primary:hover {
+  background: hsl(var(--cp-green-700));
+  border-color: hsl(var(--cp-green-700));
+  transform: translateY(-1px);
 }
 
 .mammut-content .btn-ghost {
   background: transparent;
-  color: white;
-  border: 2px solid rgba(255,255,255,0.6);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .mammut-content .btn-ghost:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
 }
 
 .scroll-indicator {
@@ -157,21 +172,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0));
+  padding: 0 24px;
+  height: 70px;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
   color: white;
   border-bottom: 0 !important;
-  transition: background 0.25s ease, color 0.25s ease;
+  transition: all 0.3s ease;
 }
 
 .navbar.is-solid {
   background: white;
   color: hsl(var(--cp-ink));
   border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+  backdrop-filter: none;
 }
 
 .navbar a {
   color: inherit;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.navbar a:hover {
+  opacity: 0.8;
 }
 
 .navbar.is-solid a:not(.btn) {
@@ -181,12 +205,41 @@
 /* Mobile tweaks */
 @media (max-width: 768px) {
   .mammut-content {
-    margin-left: 20px;
-    padding-top: 96px;
+    left: 20px;
+    right: 20px;
+    max-width: calc(100% - 40px);
+    top: 50%;
+  }
+  
+  .mammut-content .eyebrow {
+    font-size: 11px;
+    margin-bottom: 12px;
   }
   
   .mammut-content .display {
-    font-size: clamp(34px, 9vw, 56px);
+    font-size: 32px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  
+  .mammut-content .sub {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .mammut-content .cta-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .mammut-content .btn {
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .navbar {
+    height: 60px;
+    padding: 0 16px;
   }
 }
 
@@ -577,15 +630,15 @@
     object-fit: cover;
   }
 
-  /* Page Frame (rounded outer container like Phamily) */
+  /* Page Frame (full-width for modern hero) */
   .page-frame {
-    max-width: 1280px;
-    margin: 24px auto;
-    border-radius: 24px;
-    overflow: hidden;
-    background: linear-gradient(180deg, hsl(var(--cp-green)) 0%, hsl(var(--cp-green)) 1px, hsl(var(--cp-cream)) 1px, hsl(var(--cp-cream)) 100%);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    overflow: visible;
+    background: hsl(var(--cp-cream));
+    box-shadow: none;
+    border: none;
   }
 
   /* Section Wrapper (phamilypharma style) */
@@ -1111,16 +1164,10 @@
   }
 
   /* ===== FULL-BLEED HERO ===== */
-  /* 1) Full-bleed container on large viewports */
+  /* Hero is already full-bleed by default */
   @media (min-width: 1024px) {
-    /* Relax page-frame for hero */
     .page-frame {
-      max-width: none !important;
-      margin: 0 !important;
-      border-radius: 0 !important;
-      border: none !important;
-      box-shadow: none !important;
-      background: var(--cream);
+      background: hsl(var(--cp-cream));
     }
   }
 
