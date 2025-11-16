@@ -8,6 +8,8 @@ import { ArrowLeft, Send, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import Navigation from "@/components/Navigation";
+import { messageSchema } from "@/lib/validation";
+import { z } from "zod";
 
 interface Message {
   id: string;
@@ -144,29 +146,37 @@ const Thread = () => {
     e.preventDefault();
     if (!newMessage.trim() || !currentUserId || !threadId || sending) return;
 
-    const messageText = newMessage.trim();
     setSending(true);
+    const originalMessage = newMessage;
     setNewMessage(""); // Optimistic clear
 
     try {
+      // Validate message against schema
+      const validated = messageSchema.parse({ text: newMessage });
+
       const { error } = await supabase.from("messages").insert({
         thread_id: threadId,
         sender_user_id: currentUserId,
-        text: messageText,
+        text: validated.text,
       });
 
       if (error) throw error;
     } catch (error) {
-      console.error("Error sending message:", error);
-      setNewMessage(messageText); // Restore on error
-      toast.error("Couldn't send. Tap to retry.", {
-        action: {
-          label: "Retry",
-          onClick: () => {
-            setNewMessage(messageText);
+      if (error instanceof z.ZodError) {
+        setNewMessage(originalMessage);
+        toast.error(error.errors[0].message);
+      } else {
+        console.error("Error sending message:", error);
+        setNewMessage(originalMessage); // Restore on error
+        toast.error("Couldn't send. Tap to retry.", {
+          action: {
+            label: "Retry",
+            onClick: () => {
+              setNewMessage(originalMessage);
+            },
           },
-        },
-      });
+        });
+      }
     } finally {
       setSending(false);
     }
@@ -196,10 +206,14 @@ const Thread = () => {
         .from("portfolios")
         .getPublicUrl(filePath);
 
+      // Validate message text
+      const imageMessageText = "📷 Sent an image";
+      const validated = messageSchema.parse({ text: imageMessageText });
+
       const { error: messageError } = await supabase.from("messages").insert({
         thread_id: threadId,
         sender_user_id: currentUserId,
-        text: "📷 Sent an image",
+        text: validated.text,
         media_url: publicUrl,
       });
 
