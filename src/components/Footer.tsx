@@ -92,7 +92,7 @@ const Footer = () => {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} ShowCase. All rights reserved.
           </p>
-          <p className="text-xs opacity-70 text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Some pages include ads or affiliate links. Featured listings are paid and clearly labeled.
           </p>
         </div>
