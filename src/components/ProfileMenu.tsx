@@ -29,15 +29,21 @@ const ProfileMenu = ({ userId, userRole }: ProfileMenuProps) => {
   const loadUserData = async () => {
     const { data: user } = await supabase
       .from("users_extended")
-      .select("name, role, avatar_url")
+      .select("name, avatar_url")
       .eq("id", userId)
       .single();
 
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .maybeSingle();
+
     if (user) {
-      setUserData(user);
+      setUserData({ ...user, role: roleData?.role });
       
       // Try to get avatar from creator_profiles if creator
-      if (user.role === "creator") {
+      if (roleData?.role === "creator") {
         const { data: profile } = await supabase
           .from("creator_profiles")
           .select("avatar_url")

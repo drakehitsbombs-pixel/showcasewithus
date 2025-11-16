@@ -49,9 +49,9 @@ const Index = () => {
 
   const checkUserRole = async (userId: string) => {
     const { data } = await supabase
-      .from("users_extended")
+      .from("user_roles")
       .select("role")
-      .eq("id", userId)
+      .eq("user_id", userId)
       .maybeSingle();
 
     if (data) {

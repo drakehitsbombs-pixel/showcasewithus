@@ -85,9 +85,9 @@ const CreatorProfile = () => {
     if (session) {
       setCurrentUser(session.user);
       const { data } = await supabase
-        .from("users_extended")
+        .from("user_roles")
         .select("role")
-        .eq("id", session.user.id)
+        .eq("user_id", session.user.id)
         .maybeSingle();
       setCurrentUserRole(data?.role || null);
     }

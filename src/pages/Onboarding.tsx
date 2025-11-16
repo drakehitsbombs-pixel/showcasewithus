@@ -26,9 +26,9 @@ const Onboarding = () => {
 
   const checkExistingProfile = async (userId: string) => {
     const { data } = await supabase
-      .from("users_extended")
+      .from("user_roles")
       .select("role")
-      .eq("id", userId)
+      .eq("user_id", userId)
       .maybeSingle();
 
     if (data) {
@@ -48,12 +48,11 @@ const Onboarding = () => {
       const userName = user.user_metadata?.name || "User";
       const validated = profileSchema.pick({ name: true }).parse({ name: userName });
 
-      // Insert into users_extended
+      // Insert into users_extended (without role - stored in user_roles for security)
       const { error: userError } = await supabase.from("users_extended").insert({
         id: user.id,
         email: user.email,
         name: validated.name,
-        role,
       });
 
       if (userError) throw userError;

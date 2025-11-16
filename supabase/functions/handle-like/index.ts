@@ -55,18 +55,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Determine roles
+    // Determine roles from user_roles table (secure storage)
     const { data: userRole } = await supabase
-      .from('users_extended')
+      .from('user_roles')
       .select('role')
-      .eq('id', user.id)
-      .single();
+      .eq('user_id', user.id)
+      .maybeSingle();
 
     const { data: targetRole } = await supabase
-      .from('users_extended')
+      .from('user_roles')
       .select('role')
-      .eq('id', target_user_id)
-      .single();
+      .eq('user_id', target_user_id)
+      .maybeSingle();
 
     const isClientLikingCreator = userRole?.role === 'client' && targetRole?.role === 'creator';
     
