@@ -1188,4 +1188,13 @@ h1, h2, h3, h4, h5, h6, p, span, div, label{ color:inherit !important; }
   font-weight: 700;
   color: var(--cp-green);
   font-size: 0.875rem;
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

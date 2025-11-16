@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="border-t border-border mt-auto">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="font-semibold text-foreground mb-3">Explore</h3>
+            <h3 className="font-semibold text-foreground mb-4">Explore</h3>
             <ul className="space-y-2">
               <li>
                 <Link 
@@ -24,19 +24,11 @@ const Footer = () => {
                   Showcase
                 </Link>
               </li>
-              <li>
-                <Link 
-                  to="/discover?styles=surfing" 
-                  className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-smooth"
-                >
-                  Surfing
-                </Link>
-              </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-3">Support</h3>
+            <h3 className="font-semibold text-foreground mb-4">Support</h3>
             <ul className="space-y-2">
               <li>
                 <Link 
@@ -51,21 +43,52 @@ const Footer = () => {
                   to="/contact" 
                   className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-smooth"
                 >
-                  Contact Us
+                  Contact
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-3">ShowCase</h3>
-            <p className="text-sm text-muted-foreground">
-              Connect photographers with clients for unforgettable shoots.
-            </p>
+            <h3 className="font-semibold text-foreground mb-4">Legal</h3>
+            <ul className="space-y-2">
+              <li>
+                <a 
+                  href="#" 
+                  className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-smooth"
+                >
+                  Terms
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="#" 
+                  className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-smooth"
+                >
+                  Privacy
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-foreground mb-4">Contact</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <a href="mailto:support@showcase.com" className="hover:text-foreground transition-smooth">
+                  support@showcase.com
+                </a>
+              </li>
+              <li>
+                <a href="tel:+1234567890" className="hover:text-foreground transition-smooth">
+                  (123) 456-7890
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-6 text-center space-y-2">
+        <div className="border-t border-border pt-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} ShowCase. All rights reserved.
           </p>

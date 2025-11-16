@@ -1,21 +1,21 @@
 import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Camera, Sparkles, Heart, Zap, ArrowRight } from "lucide-react";
-import { CategoryChips } from "@/components/CategoryChips";
-import { ShowcaseGrid } from "@/components/ShowcaseGrid";
+import { Camera } from "lucide-react";
 import { SocialProof } from "@/components/SocialProof";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+import { QuickSearchBar } from "@/components/QuickSearchBar";
+import { BrowseByStyle } from "@/components/BrowseByStyle";
+import { HowItWorks } from "@/components/HowItWorks";
+import { FeaturedPhotographers } from "@/components/FeaturedPhotographers";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   const navigate = useNavigate();
   
   // Intersection observers for scroll animations
   const socialProofAnim = useIntersectionObserver();
-  const howItWorksAnim = useIntersectionObserver();
-  const browseStyleAnim = useIntersectionObserver();
-  const featuredAnim = useIntersectionObserver();
   const ctaAnim = useIntersectionObserver();
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const Index = () => {
       <section className="hero">
         <div className="hero-inner">
           <p className="eyebrow text-white/90 uppercase tracking-widest text-xs md:text-sm font-semibold mb-4 md:mb-6">
-            The marketplace without the hassle
+            Hire local photographers in minutes
           </p>
           
           <h1 className="mb-6 text-4xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.9]">
@@ -91,17 +91,28 @@ const Index = () => {
           <div className="cta flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4">
             <button 
               onClick={() => navigate("/discover")}
-              className="btn-primary btn-lg w-full sm:w-auto text-sm md:text-base"
+              className="w-full sm:w-auto px-8 py-4 bg-primary hover:brightness-90 text-primary-foreground rounded-full font-semibold text-sm md:text-base transition-all shadow-lg"
             >
               I am looking for a photographer
             </button>
             <button 
               onClick={() => navigate("/auth")}
-              className="btn-secondary btn-lg w-full sm:w-auto text-sm md:text-base"
+              className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white/10 rounded-full font-semibold text-sm md:text-base transition-all"
             >
               I am a photographer
             </button>
           </div>
+          
+          <p className="mt-6 text-white/80 text-sm">
+            Free to browse • No signup to view profiles
+          </p>
+        </div>
+      </section>
+
+      {/* Quick Search Bar */}
+      <section className="py-12 bg-background">
+        <div className="container mx-auto px-4">
+          <QuickSearchBar />
         </div>
       </section>
 
@@ -118,115 +129,13 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section 
-        ref={howItWorksAnim.ref}
-        className={`section-sm bg-cp-cream transition-all duration-700 ${
-          howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
-        <div className="text-center mb-16">
-          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Simple Process</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">How It Works</h2>
-          <p className="text-cp-muted text-lg max-w-2xl mx-auto">
-            Finding the perfect photographer has never been easier
-          </p>
-        </div>
-        
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div 
-            className={`float-card text-center transition-all duration-700 ${
-              howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-            }`}
-            style={{ transitionDelay: howItWorksAnim.isVisible ? "100ms" : "0ms" }}
-          >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-cp-green/10 mb-6">
-              <Sparkles className="w-10 h-10 text-cp-green" />
-            </div>
-            <div className="text-cp-gold font-black text-5xl mb-4">01</div>
-            <h3 className="text-2xl font-bold text-cp-ink mb-3">Browse Profiles</h3>
-            <p className="text-cp-muted leading-relaxed">
-              Explore verified photographers in your area with detailed portfolios and reviews
-            </p>
-          </div>
-          
-          <div 
-            className={`float-card text-center transition-all duration-700 ${
-              howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-            }`}
-            style={{ transitionDelay: howItWorksAnim.isVisible ? "200ms" : "0ms" }}
-          >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-cp-green/10 mb-6">
-              <Heart className="w-10 h-10 text-cp-green" />
-            </div>
-            <div className="text-cp-gold font-black text-5xl mb-4">02</div>
-            <h3 className="text-2xl font-bold text-cp-ink mb-3">Match & Connect</h3>
-            <p className="text-cp-muted leading-relaxed">
-              Swipe through options and connect with photographers whose style matches yours
-            </p>
-          </div>
-          
-          <div 
-            className={`float-card text-center transition-all duration-700 ${
-              howItWorksAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-            }`}
-            style={{ transitionDelay: howItWorksAnim.isVisible ? "300ms" : "0ms" }}
-          >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-cp-green/10 mb-6">
-              <Zap className="w-10 h-10 text-cp-green" />
-            </div>
-            <div className="text-cp-gold font-black text-5xl mb-4">03</div>
-            <h3 className="text-2xl font-bold text-cp-ink mb-3">Book Instantly</h3>
-            <p className="text-cp-muted leading-relaxed">
-              Schedule your session, manage details, and get beautiful photos delivered
-            </p>
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
-      {/* Browse by Category */}
-      <section 
-        ref={browseStyleAnim.ref}
-        className={`section-sm bg-white transition-all duration-700 ${
-          browseStyleAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
-        <div className="text-center mb-12">
-          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Explore Styles</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">Browse by Style</h2>
-          <p className="text-cp-muted text-lg max-w-2xl mx-auto mb-8">
-            Find photographers who specialize in what you need
-          </p>
-        </div>
-        <div className="max-w-4xl mx-auto">
-          <CategoryChips />
-        </div>
-      </section>
+      {/* Browse by Style */}
+      <BrowseByStyle />
 
       {/* Featured Photographers */}
-      <section 
-        ref={featuredAnim.ref}
-        className={`section-sm bg-cp-cream transition-all duration-700 ${
-          featuredAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
-        <div className="text-center mb-12">
-          <p className="text-cp-gold uppercase tracking-widest text-sm font-bold mb-3">Top Talent</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-cp-ink mb-3">Featured Photographers</h2>
-          <p className="text-cp-muted text-lg max-w-2xl mx-auto">
-            Top-rated professionals ready to capture your special moments
-          </p>
-        </div>
-        <ShowcaseGrid />
-        <div className="text-center mt-10">
-          <button
-            onClick={() => navigate("/discover")}
-            className="btn-primary btn-lg inline-flex items-center gap-2"
-          >
-            View All Photographers
-            <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
-      </section>
+      <FeaturedPhotographers />
 
       {/* CTA Sections - Two Tiles */}
       <section 
@@ -263,18 +172,18 @@ const Index = () => {
             className={`tile p-10 text-center transition-all duration-700 ${
               ctaAnim.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
             }`}
-            style={{ transitionDelay: ctaAnim.isVisible ? "250ms" : "0ms" }}
+            style={{ transitionDelay: ctaAnim.isVisible ? "200ms" : "0ms" }}
           >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cp-gold/10 mb-5">
-              <Sparkles className="w-8 h-8 text-cp-gold" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cp-green/10 mb-5">
+              <Camera className="w-8 h-8 text-cp-green" />
             </div>
             <h3 className="text-2xl font-bold text-cp-ink mb-3">Are you a photographer?</h3>
             <p className="text-cp-muted text-base mb-6 leading-relaxed">
-              Join our platform to connect with clients, showcase your work, and grow your business.
+              Join our community, showcase your work, and connect with clients looking for your talent.
             </p>
             <button
               onClick={() => navigate("/auth")}
-              className="px-6 py-3 rounded-full bg-cp-gold text-white font-bold hover:brightness-110 transition-all text-sm"
+              className="btn-secondary btn-md"
             >
               Get Started
             </button>
@@ -283,58 +192,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="footer">
-        <div className="section">
-          <div className="grid md:grid-cols-2 gap-12 mb-12">
-            <div>
-              <h3 className="font-bold text-lg mb-6 uppercase tracking-wide text-cp-ink">Explore</h3>
-              <ul className="space-y-3">
-                <li>
-                  <button onClick={() => navigate("/discover")} className="text-cp-muted hover:text-cp-green transition-colors text-sm">
-                    Find Photographers
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => navigate("/auth")} className="text-cp-muted hover:text-cp-green transition-colors text-sm">
-                    Become a Photographer
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => navigate("/auth")} className="text-cp-muted hover:text-cp-green transition-colors text-sm">
-                    Sign In
-                  </button>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-bold text-lg mb-6 uppercase tracking-wide text-cp-ink">Support</h3>
-              <ul className="space-y-3">
-                <li>
-                  <button onClick={() => navigate("/help")} className="text-cp-muted hover:text-cp-green transition-colors text-sm">
-                    Help Center
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => navigate("/contact")} className="text-cp-muted hover:text-cp-green transition-colors text-sm">
-                    Contact Us
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-cp-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Camera className="w-6 h-6 text-cp-green" />
-              <span className="font-bold text-xl tracking-tight text-cp-ink">SHOW CASE</span>
-            </div>
-            <p className="text-cp-muted text-sm">
-              © {new Date().getFullYear()} Show Case. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
