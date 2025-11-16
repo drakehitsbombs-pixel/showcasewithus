@@ -74,56 +74,28 @@ const Discover = () => {
   const loadCreators = async () => {
     setLoading(true);
     try {
-      let query = supabase
-        .from("creator_profiles")
-        .select(`
-          *,
-          users_extended!inner(geo_lat, geo_lng, city)
-        `)
-        .eq("is_discoverable", true)
-        .eq("public_profile", true)
-        .eq("status", "published")
-        .order("showcase_score", { ascending: false })
-        .limit(100);
-
-      // Apply style filter
-      if (searchFilters.styles.length > 0) {
-        query = query.overlaps("styles", searchFilters.styles);
-      }
-
-      // Apply budget filter: show photographers whose minimum is at or below the selected budget
-      if (searchFilters.budgetMinimum > 0) {
-        query = query.lte("min_project_budget_usd", searchFilters.budgetMinimum);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
+      // Convert styles to lowercase for case-insensitive matching
+      const stylesLower = searchFilters.styles.map(s => s.toLowerCase());
       
-      let results = data || [];
+      const { data, error } = await supabase.rpc('search_creators', {
+        styles_array: stylesLower.length > 0 ? stylesLower : [],
+        max_budget: searchFilters.budgetMinimum > 0 ? searchFilters.budgetMinimum : null,
+        user_lat: userLocation?.lat || null,
+        user_lon: userLocation?.lon || null,
+        max_miles: searchFilters.distance > 0 ? searchFilters.distance : null,
+        result_limit: 100,
+        result_offset: 0
+      });
 
-      // Apply distance filter client-side if user has location
-      if (userLocation && searchFilters.distance > 0) {
-        results = results.filter((creator: any) => {
-          const creatorLat = creator.users_extended?.geo_lat;
-          const creatorLon = creator.users_extended?.geo_lng;
-          
-          // If creator has no location, include them
-          if (!creatorLat || !creatorLon) return true;
-          
-          const distance = calculateDistance(
-            userLocation.lat,
-            userLocation.lon,
-            creatorLat,
-            creatorLon
-          );
-          
-          return distance <= searchFilters.distance;
-        });
+      if (error) {
+        console.error('Error loading creators:', error);
+        throw error;
       }
 
-      setCreators(results.slice(0, 50));
+      setCreators(data || []);
     } catch (error) {
       console.error("Error loading creators:", error);
+      setCreators([]);
     } finally {
       setLoading(false);
     }

@@ -900,6 +900,33 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_creators: {
+        Args: {
+          max_budget?: number
+          max_miles?: number
+          result_limit?: number
+          result_offset?: number
+          styles_array?: string[]
+          user_lat?: number
+          user_lon?: number
+        }
+        Returns: {
+          avatar_url: string
+          city: string
+          display_name: string
+          distance_mi: number
+          geo_lat: number
+          geo_lng: number
+          id: string
+          min_project_budget_usd: number
+          rating_avg: number
+          review_count: number
+          showcase_score: number
+          slug: string
+          styles: string[]
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "creator" | "client"
