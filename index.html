@@ -15,8 +15,9 @@
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
     <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossorigin>
     
-    <!-- Load Inter and Outfit fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- Font preload (non-blocking) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"></noscript>
     
     <!-- Deferred loader helper -->
     <script>
