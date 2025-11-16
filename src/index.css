@@ -104,7 +104,7 @@
     --secondary-foreground: 0 0% 95%;
 
     --muted: 232 30% 15%;
-    --muted-foreground: 220 9% 64%;
+    --muted-foreground: 220 9% 75%; /* Increased from 64% for better contrast */
 
     --accent: 40 80% 55%;
     --accent-foreground: 232 38% 7%;
@@ -1021,4 +1021,14 @@
       min-height: 100svh;
     }
   }
+}
+
+/* Improved Tab Contrast for Dark Mode */
+.dark [role="tablist"] button[role="tab"] {
+  color: hsl(var(--muted-foreground));
+}
+
+.dark [role="tablist"] button[role="tab"][data-state="active"] {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
 }
