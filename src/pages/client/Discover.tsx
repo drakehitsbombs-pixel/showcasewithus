@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
+import SurfingLoader from "@/components/SurfingLoader";
 
 const Discover = () => {
   const [user, setUser] = useState<any>(null);
@@ -288,9 +289,7 @@ const Discover = () => {
 
           <TabsContent value="swipe">
             {loading ? (
-              <div className="text-center py-20">
-                <p className="text-muted-foreground">Loading photographers...</p>
-              </div>
+              <SurfingLoader />
             ) : currentCreator ? (
             <div className="max-w-lg mx-auto">
               <Card 
@@ -485,9 +484,7 @@ const Discover = () => {
 
               <div className="lg:col-span-3">
                 {searchLoading ? (
-                  <div className="text-center py-20">
-                    <p className="text-muted-foreground">Loading results...</p>
-                  </div>
+                  <SurfingLoader />
                 ) : searchResults.length > 0 ? (
                   <div className="space-y-4">
                     {searchResults.map((creator) => (
