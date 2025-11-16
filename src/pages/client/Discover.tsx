@@ -209,8 +209,21 @@ const Discover = () => {
   };
 
   const loadSearchResults = async () => {
+    if (!user || !brief) {
+      console.log('Skipping search - user or brief not available');
+      return;
+    }
+    
     setSearchLoading(true);
     try {
+      console.log('Loading search results with filters:', {
+        styles: searchFilters.styles,
+        distance: searchFilters.distance,
+        budgetMinimum: searchFilters.budgetMinimum,
+        client_lat: brief?.geo_lat,
+        client_lng: brief?.geo_lng,
+      });
+
       const { data, error } = await supabase.functions.invoke('match-creators', {
         body: { 
           filters: {
@@ -225,6 +238,7 @@ const Discover = () => {
       });
 
       if (error) throw error;
+      console.log('Search results received:', data?.creators?.length || 0, 'creators');
       setSearchResults(data?.creators || []);
     } catch (error: any) {
       console.error("Error loading search results:", error);
@@ -454,7 +468,7 @@ const Discover = () => {
                         Budget ≥ {searchFilters.budgetMinimum === 0 ? 'Any' : formatBudget(searchFilters.budgetMinimum)}
                       </Label>
                       <Slider
-                        value={[BUDGET_STEPS.indexOf(searchFilters.budgetMinimum as typeof BUDGET_STEPS[number])]}
+                        value={[Math.max(0, BUDGET_STEPS.indexOf(searchFilters.budgetMinimum as typeof BUDGET_STEPS[number]))]}
                         onValueChange={([index]) => setSearchFilters(prev => ({ 
                           ...prev, 
                           budgetMinimum: BUDGET_STEPS[index] 
