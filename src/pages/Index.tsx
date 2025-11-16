@@ -5,7 +5,7 @@ import { Camera } from "lucide-react";
 import { SocialProof } from "@/components/SocialProof";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
-import { QuickSearchBar } from "@/components/QuickSearchBar";
+
 import { BrowseByStyle } from "@/components/BrowseByStyle";
 import { HowItWorks } from "@/components/HowItWorks";
 import { FeaturedPhotographers } from "@/components/FeaturedPhotographers";
@@ -109,12 +109,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Quick Search Bar */}
-      <section className="py-12 bg-background">
-        <div className="container mx-auto px-4">
-          <QuickSearchBar />
-        </div>
-      </section>
 
       {/* Social Proof */}
       <section 
