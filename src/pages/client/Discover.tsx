@@ -327,7 +327,7 @@ const Discover = () => {
                   {currentCreator.distance && (
                     <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
                       <MapPin className="w-3 h-3" />
-                      {Math.round(currentCreator.distance)} km
+                      {formatMiles(kmToMiles(currentCreator.distance))} mi
                     </div>
                   )}
                 </div>
@@ -522,7 +522,7 @@ const Discover = () => {
                                 <p className="text-sm text-muted-foreground flex items-center gap-1">
                                   <MapPin className="w-3 h-3" />
                                   {creator.users_extended?.city}
-                                  {creator.distance && ` • ${Math.round(creator.distance)}km away`}
+                                  {creator.distance && ` • ${formatMiles(kmToMiles(creator.distance))} mi away`}
                                 </p>
                               </div>
                               <div className="match-score-badge text-sm">
