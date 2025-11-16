@@ -216,23 +216,27 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Hard Filter 2: Budget overlap
-        let budgetFit = false;
-        if (filters.budget_min !== undefined && filters.budget_max !== undefined &&
-            creator.price_band_low !== null && creator.price_band_high !== null) {
-          budgetFit = 
-            filters.budget_max >= creator.price_band_low &&
-            filters.budget_min <= creator.price_band_high;
-          
-          if (!budgetFit) {
-            passesHardFilters = false;
+        // Hard Filter 2: Budget - check if creator's minimum is within client's range
+        let budgetFit = true; // Default to true if no budget filter
+        if (filters.budget_min !== undefined && filters.budget_max !== undefined) {
+          // Creator passes if their minimum project budget is within the client's budget range
+          if (creator.min_project_budget_usd !== null) {
+            budgetFit = creator.min_project_budget_usd <= filters.budget_max;
+            
+            if (!budgetFit) {
+              passesHardFilters = false;
+            }
+            
+            // Budget score (0-20 points)
+            if (budgetFit) {
+              // Better score if creator's minimum is closer to client's minimum
+              const budgetScore = filters.budget_min > 0 
+                ? Math.max(0, 1 - Math.abs(creator.min_project_budget_usd - filters.budget_min) / filters.budget_max)
+                : 1;
+              score += budgetScore * 20;
+            }
           }
-          
-          // Budget score (0-20 points)
-          if (budgetFit) {
-            score += 20;
-          }
-        } else if (creator.price_band_low && creator.price_band_high) {
+        } else if (creator.min_project_budget_usd !== null) {
           // No filter, give partial points if they have pricing
           score += 10;
         }
