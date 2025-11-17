@@ -30,31 +30,33 @@ export const FeaturedPhotographers = () => {
       if (viewsData && viewsData.length > 0) {
         const creatorIds = viewsData.map(v => v.creator_user_id);
         
-        const { data: creatorsData } = await supabase
+        const { data: creatorsData, error } = await supabase
           .from('creator_profiles')
-          .select(`
-            *,
-            users_extended!inner(username, name)
-          `)
+          .select('*, users_extended!creator_profiles_user_id_fkey(username, name)')
           .in('user_id', creatorIds)
           .eq('status', 'published')
           .eq('public_profile', true);
+
+        if (error) {
+          console.error('Error fetching creators:', error);
+        }
 
         if (creatorsData) {
           setCreators(creatorsData);
         }
       } else {
         // Fallback: get top creators by showcase score
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('creator_profiles')
-          .select(`
-            *,
-            users_extended!inner(username, name)
-          `)
+          .select('*, users_extended!creator_profiles_user_id_fkey(username, name)')
           .eq('status', 'published')
           .eq('public_profile', true)
           .order('showcase_score', { ascending: false })
           .limit(10);
+        
+        if (error) {
+          console.error('Error fetching fallback creators:', error);
+        }
         
         if (data) setCreators(data);
       }
