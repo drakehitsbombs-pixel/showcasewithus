@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -8,9 +8,8 @@ import { getStyleLabel } from "@/lib/constants";
 
 export const FeaturedPhotographers = () => {
   const [creators, setCreators] = useState<any[]>([]);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const navigate = useNavigate();
-  const containerRef = useState<HTMLDivElement | null>(null)[0];
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadFeaturedCreators();
@@ -59,15 +58,13 @@ export const FeaturedPhotographers = () => {
   };
 
   const scroll = (direction: 'left' | 'right') => {
-    const container = document.getElementById('featured-scroll');
-    if (container) {
+    if (containerRef.current) {
       const scrollAmount = 320;
       const newPosition = direction === 'left' 
-        ? Math.max(0, scrollPosition - scrollAmount)
-        : scrollPosition + scrollAmount;
+        ? containerRef.current.scrollLeft - scrollAmount
+        : containerRef.current.scrollLeft + scrollAmount;
       
-      container.scrollTo({ left: newPosition, behavior: 'smooth' });
-      setScrollPosition(newPosition);
+      containerRef.current.scrollTo({ left: newPosition, behavior: 'smooth' });
     }
   };
 
@@ -102,7 +99,7 @@ export const FeaturedPhotographers = () => {
         </div>
 
         <div 
-          id="featured-scroll"
+          ref={containerRef}
           className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
