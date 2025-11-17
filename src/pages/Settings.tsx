@@ -289,7 +289,7 @@ const Settings = () => {
                 </div>
                 {isCreator && (
                   <div>
-                    <Label>Travel Radius: {travelRadius} km</Label>
+                    <Label>Travel Radius: {Math.round(travelRadius * 0.621371)} miles</Label>
                     <Slider
                       value={[travelRadius]}
                       onValueChange={(value) => setTravelRadius(value[0])}
@@ -354,7 +354,7 @@ const Settings = () => {
                     </p>
                     {priceLow > 0 && (
                       <div className="mt-2 p-2 bg-muted/50 rounded text-sm">
-                        Preview: <span className="font-semibold">Minimum project ${priceLow}</span>
+                        Preview: <span className="font-semibold">Project rates from ${priceLow}</span>
                       </div>
                     )}
                   </div>

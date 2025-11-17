@@ -268,8 +268,8 @@ const ProfileSetup = () => {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="radius">Travel Radius (km) *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="radius">Travel Radius (miles) *</Label>
                     <Input
                       id="radius"
                       type="number"
@@ -316,7 +316,7 @@ const ProfileSetup = () => {
                   {priceLow && (
                     <div className="p-3 bg-muted/50 rounded-md">
                       <p className="text-sm text-muted-foreground">
-                        Preview: <span className="font-semibold text-foreground">Minimum project ${priceLow}</span>
+                        Preview: <span className="font-semibold text-foreground">Project rates from ${priceLow}</span>
                       </p>
                     </div>
                   )}

@@ -149,14 +149,14 @@ const Me = () => {
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-5 w-5 text-muted-foreground" />
                     <span>
-                      Min project ${profileData.min_project_budget_usd}
+                      Project rates from ${profileData.min_project_budget_usd}
                     </span>
                   </div>
                 )}
                 {profileData.travel_radius_km && (
                   <div className="flex items-center gap-2">
                     <MapPin className="h-5 w-5 text-muted-foreground" />
-                    <span>Travel radius: {profileData.travel_radius_km} km</span>
+                    <span>Travel radius: {Math.round(profileData.travel_radius_km * 0.621371)} miles</span>
                   </div>
                 )}
                 {profileData.rating_avg > 0 && (

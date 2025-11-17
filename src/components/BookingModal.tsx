@@ -199,7 +199,7 @@ export const BookingModal = ({
             Send a booking request to {creatorName}
             {minProjectBudget && minProjectBudget > 0 && (
               <span className="block mt-1 text-sm">
-                Minimum project budget: ${minProjectBudget}
+                Project rates from: ${minProjectBudget}
               </span>
             )}
           </DialogDescription>

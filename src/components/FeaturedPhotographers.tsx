@@ -140,7 +140,7 @@ export const FeaturedPhotographers = () => {
               </div>
               {creator.min_project_budget_usd > 0 && (
                 <p className="text-sm font-medium text-primary">
-                  Minimum project ${creator.min_project_budget_usd.toLocaleString()}
+                  Project rates from ${creator.min_project_budget_usd.toLocaleString()}
                 </p>
               )}
             </Card>

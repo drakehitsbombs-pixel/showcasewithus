@@ -206,7 +206,7 @@ const Admin = () => {
                               <span>{creator.users_extended?.city || 'Location not set'}</span>
                               {creator.min_project_budget_usd > 0 && (
                                 <span>
-                                  Min project ${creator.min_project_budget_usd}
+                                  Project rates from ${creator.min_project_budget_usd}
                                 </span>
                               )}
                               <span>{creator.portfolio_images?.length || 0} images</span>
