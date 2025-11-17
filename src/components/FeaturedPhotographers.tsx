@@ -32,7 +32,10 @@ export const FeaturedPhotographers = () => {
         
         const { data: creatorsData } = await supabase
           .from('creator_profiles')
-          .select('*')
+          .select(`
+            *,
+            users_extended!inner(username, name)
+          `)
           .in('user_id', creatorIds)
           .eq('status', 'published')
           .eq('public_profile', true);
@@ -44,7 +47,10 @@ export const FeaturedPhotographers = () => {
         // Fallback: get top creators by showcase score
         const { data } = await supabase
           .from('creator_profiles')
-          .select('*')
+          .select(`
+            *,
+            users_extended!inner(username, name)
+          `)
           .eq('status', 'published')
           .eq('public_profile', true)
           .order('showcase_score', { ascending: false })
@@ -107,7 +113,7 @@ export const FeaturedPhotographers = () => {
             <Card
               key={creator.id}
               className="flex-none w-72 p-4 cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => navigate(`/creator/${creator.slug || `id/${creator.user_id}`}`)}
+              onClick={() => navigate(`/creator/${creator.users_extended?.username || `id/${creator.user_id}`}`)}
             >
               <div className="aspect-square bg-muted rounded-lg mb-3 overflow-hidden">
                 <img
