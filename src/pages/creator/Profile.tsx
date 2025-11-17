@@ -416,7 +416,7 @@ const CreatorProfile = () => {
                 {profile.min_project_budget_usd > 0 && (
                   <div className="flex items-center gap-1 text-sm">
                     <DollarSign className="w-4 h-4 text-muted-foreground" />
-                    <span>Min project ${profile.min_project_budget_usd}</span>
+                    <span>Project rates from ${profile.min_project_budget_usd}</span>
                   </div>
                 )}
                 {profile.rating_avg !== null && (
@@ -428,7 +428,7 @@ const CreatorProfile = () => {
                 )}
                 {profile.travel_radius_km && (
                   <div className="text-sm text-muted-foreground">
-                    Travels {profile.travel_radius_km}km
+                    Travels {Math.round(profile.travel_radius_km * 0.621371)} miles
                   </div>
                 )}
               </div>

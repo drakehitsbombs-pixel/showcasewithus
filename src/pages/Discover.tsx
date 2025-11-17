@@ -193,7 +193,7 @@ const Discover = () => {
           )}
           {creator.min_project_budget_usd > 0 && (
             <p className="text-sm font-semibold text-primary">
-              Minimum project ${creator.min_project_budget_usd.toLocaleString()}
+              Project rates from ${creator.min_project_budget_usd.toLocaleString()}
             </p>
           )}
         </div>

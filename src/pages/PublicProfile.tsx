@@ -183,7 +183,7 @@ const PublicProfile = () => {
                   {showMinBudget && (
                     <div className="flex items-center gap-2 text-primary font-semibold">
                       <DollarSign className="w-5 h-5" />
-                      <span>Min project ${profile.min_project_budget_usd}</span>
+                      <span>Project rates from ${profile.min_project_budget_usd}</span>
                     </div>
                   )}
                 </div>

@@ -337,13 +337,13 @@ const MeEdit = () => {
                   </p>
                   {formData.min_project_budget_usd && (
                     <div className="mt-2 p-2 bg-muted/50 rounded text-xs">
-                      Preview: <span className="font-semibold">Minimum project ${formData.min_project_budget_usd}</span>
+                      Preview: <span className="font-semibold">Project rates from ${formData.min_project_budget_usd}</span>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <Label>Travel Radius: {formData.travel_radius_km} km</Label>
+                  <Label>Travel Radius: {Math.round(formData.travel_radius_km * 0.621371)} miles</Label>
                   <Slider
                     value={[formData.travel_radius_km]}
                     onValueChange={(value) => setFormData((prev: any) => ({ ...prev, travel_radius_km: value[0] }))}
