@@ -8,9 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
-import { kmToMiles, formatMiles } from "@/lib/constants";
+import { kmToMiles, formatMiles, STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
 
-const availableStyles = ["wedding", "portrait", "product", "event", "lifestyle", "editorial"];
+const availableStyles = STYLE_OPTIONS.map(s => s.id);
 
 const ProfileEdit = () => {
   const [user, setUser] = useState<any>(null);
@@ -153,7 +153,7 @@ const ProfileEdit = () => {
                     size="sm"
                     onClick={() => toggleStyle(style)}
                   >
-                    {style}
+                    {getStyleLabel(style)}
                   </Button>
                 ))}
               </div>

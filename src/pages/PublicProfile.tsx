@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Star, DollarSign, MessageSquare, Calendar, Mail, Phone, ArrowLeft } from "lucide-react";
 import Footer from "@/components/Footer";
+import { getStyleLabel } from "@/lib/constants";
 
 const PublicProfile = () => {
   const { slug } = useParams();
@@ -169,7 +170,7 @@ const PublicProfile = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {profile.styles?.map((style: string) => <span key={style} className="cp-chip">{style}</span>)}
+                  {profile.styles?.map((style: string) => <span key={style} className="cp-chip">{getStyleLabel(style)}</span>)}
                 </div>
 
                 <div className="flex items-center gap-6">
