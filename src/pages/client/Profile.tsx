@@ -11,11 +11,9 @@ import { Slider } from "@/components/ui/slider";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
+import { STYLE_OPTIONS, getStyleLabel } from "@/lib/constants";
 
-const availableStyles = [
-  "Wedding", "Portrait", "Product", "Event", "Lifestyle", 
-  "Editorial", "Real Estate", "Food", "Sports", "Surfing"
-];
+const availableStyles = STYLE_OPTIONS.map(s => s.id);
 
 const ClientProfile = () => {
   const navigate = useNavigate();
@@ -236,7 +234,7 @@ const ClientProfile = () => {
                     className="cursor-pointer"
                     onClick={() => toggleStyle(style)}
                   >
-                    {style}
+                    {getStyleLabel(style)}
                   </Badge>
                 ))}
               </div>
