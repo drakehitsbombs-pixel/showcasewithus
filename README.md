@@ -89,3 +89,33 @@ or connect a custom domain via **Project → Settings → Domains**.
 - Extend the build pipeline for direct mobile app store deployment.
 
 ---
+
+## 🎯 Google AdSense Setup
+
+This project is configured to support Google AdSense for monetization. Follow these steps to activate it:
+
+### 1. Add Your AdSense Script
+
+- **File:** `index.html` (lines 30-32)
+- **What to do:** Replace the existing `<script>` tag with the AdSense code snippet from your [Google AdSense dashboard](https://www.google.com/adsense/).
+- **Important:** Update the `client=ca-pub-XXXXXXXXXX` parameter with your actual AdSense publisher ID.
+
+### 2. Update ads.txt
+
+- **File:** `public/ads.txt`
+- **What to do:** Replace `PUB-ID-GOES-HERE` with your real Google AdSense publisher ID (the number after `ca-pub-` in your AdSense account).
+- **Example:** If your publisher ID is `ca-pub-1234567890123456`, the file should read:
+  ```
+  google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
+  ```
+- **Note:** This file will be accessible at `https://showcasewithus.org/ads.txt` after deployment. Google AdSense requires this file to verify site ownership.
+
+### 3. Verify in AdSense
+
+After deploying these changes:
+1. Go to your [Google AdSense dashboard](https://www.google.com/adsense/)
+2. Add your site (showcasewithus.org) if you haven't already
+3. Google will check for the AdSense script in your HTML and the ads.txt file at the root
+4. Once verified, ads will start serving on your site
+
+---
