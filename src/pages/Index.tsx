@@ -29,22 +29,45 @@ const Index = () => {
       }
     });
 
-    // Scroll effects for nav and parallax
-    const handleScroll = () => {
-      const solid = window.scrollY > window.innerHeight * 0.75;
+    // Cache element reference and viewport height to avoid repeated queries
+    let mediaEl: HTMLElement | null = null;
+    let viewportHeight = window.innerHeight;
+    let rafId: number | null = null;
+
+    const updateParallax = () => {
+      if (!mediaEl) {
+        mediaEl = document.querySelector(".mammut-video, .mammut-img");
+      }
+      const scrollY = window.scrollY;
+      const solid = scrollY > viewportHeight * 0.75;
       setNavSolid(solid);
 
-      const media = document.querySelector(".mammut-video, .mammut-img");
-      if (media instanceof HTMLElement) {
-        const t = Math.min(1, window.scrollY / window.innerHeight);
-        media.style.transform = `scale(${1.02 + t * 0.03}) translateY(${t * 10}px)`;
+      if (mediaEl) {
+        const t = Math.min(1, scrollY / viewportHeight);
+        mediaEl.style.transform = `scale(${1.02 + t * 0.03}) translateY(${t * 10}px)`;
+      }
+      rafId = null;
+    };
+
+    const handleScroll = () => {
+      if (rafId === null) {
+        rafId = requestAnimationFrame(updateParallax);
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    const handleResize = () => {
+      viewportHeight = window.innerHeight;
+    };
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
+    updateParallax();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const checkUserRole = async (userId: string) => {
