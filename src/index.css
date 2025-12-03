@@ -763,6 +763,40 @@
     color: #fff;
   }
 
+  /* Filter pill (style buttons in Discover) */
+  .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: var(--radius-lg);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .filter-pill:hover {
+    border-color: hsl(var(--muted-foreground));
+    background: hsl(var(--secondary));
+  }
+
+  .filter-pill.active {
+    background: var(--cp-green);
+    border-color: var(--cp-green);
+    color: #fff;
+  }
+
+  .filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+    margin-bottom: 10px;
+    display: block;
+  }
+
   /* Discover card price line + tag row spacing */
   .price-line {
     color: var(--cp-green);
