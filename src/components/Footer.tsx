@@ -75,13 +75,13 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">Contact</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="mailto:support@showcase.com" className="hover:text-foreground transition-smooth">
-                  support@showcase.com
+                <a href="mailto:dphill19@calpoly.edu" className="hover:text-foreground transition-smooth">
+                  dphill19@calpoly.edu
                 </a>
               </li>
               <li>
-                <a href="tel:+1234567890" className="hover:text-foreground transition-smooth">
-                  (123) 456-7890
+                <a href="tel:+15593876303" className="hover:text-foreground transition-smooth">
+                  559-387-6303
                 </a>
               </li>
             </ul>
