@@ -160,7 +160,7 @@ const Discover = () => {
       >
         <div className="aspect-square bg-muted relative">
           <img
-            src={coverImage || '/img/placeholder-photo.jpg'}
+            src={coverImage || '/placeholder.svg'}
             alt={`${displayName} portfolio cover`}
             className="w-full h-full object-cover"
             loading={index < 3 ? "eager" : "lazy"}
